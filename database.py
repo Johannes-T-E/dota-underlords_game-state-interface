@@ -304,29 +304,74 @@ class UnderlordsDatabaseManager:
     
     def update_match_end_time(self, match_id: str, timestamp: datetime):
         """Update match ended_at timestamp."""
-        cursor = self.conn.cursor()
-        cursor.execute("""
-            UPDATE matches 
-            SET ended_at = ?
-            WHERE match_id = ?
-        """, (timestamp, match_id))
-        self.conn.commit()
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute("""
+                UPDATE matches 
+                SET ended_at = ?
+                WHERE match_id = ?
+            """, (timestamp, match_id))
+            self.conn.commit()
+        except sqlite3.OperationalError as e:
+            if "cannot start a transaction within a transaction" in str(e):
+                # Rollback and retry
+                self.conn.rollback()
+                cursor = self.conn.cursor()
+                cursor.execute("""
+                    UPDATE matches 
+                    SET ended_at = ?
+                    WHERE match_id = ?
+                """, (timestamp, match_id))
+                self.conn.commit()
+            else:
+                raise
     
     def update_player_final_place(self, match_id: str, player_id: str, final_place: int, timestamp: datetime):
         """Update a player's final_place in their latest snapshot."""
-        cursor = self.conn.cursor()
-        cursor.execute("""
-            UPDATE public_player_snapshots 
-            SET final_place = ?
-            WHERE match_id = ? AND player_id = ? AND sequence_number = (
-                SELECT MAX(sequence_number) 
-                FROM public_player_snapshots 
-                WHERE match_id = ? AND player_id = ?
-            )
-        """, (final_place, match_id, player_id, match_id, player_id))
-        self.conn.commit()
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute("""
+                UPDATE public_player_snapshots 
+                SET final_place = ?
+                WHERE match_id = ? AND player_id = ? AND sequence_number = (
+                    SELECT MAX(sequence_number) 
+                    FROM public_player_snapshots 
+                    WHERE match_id = ? AND player_id = ?
+                )
+            """, (final_place, match_id, player_id, match_id, player_id))
+            self.conn.commit()
+        except sqlite3.OperationalError as e:
+            if "cannot start a transaction within a transaction" in str(e):
+                # Rollback and retry
+                self.conn.rollback()
+                cursor = self.conn.cursor()
+                cursor.execute("""
+                    UPDATE public_player_snapshots 
+                    SET final_place = ?
+                    WHERE match_id = ? AND player_id = ? AND sequence_number = (
+                        SELECT MAX(sequence_number) 
+                        FROM public_player_snapshots 
+                        WHERE match_id = ? AND player_id = ?
+                    )
+                """, (final_place, match_id, player_id, match_id, player_id))
+                self.conn.commit()
+            else:
+                raise
     
     
+    
+    def execute_in_transaction(self, operations):
+        """Execute multiple database operations in a single transaction."""
+        try:
+            cursor = self.conn.cursor()
+            for operation in operations:
+                cursor.execute(operation['sql'], operation['params'])
+            self.conn.commit()
+            return True
+        except Exception as e:
+            self.conn.rollback()
+            print(f"[DATABASE ERROR] Transaction failed: {e}")
+            return False
     
     def close(self):
         """Close database connection."""

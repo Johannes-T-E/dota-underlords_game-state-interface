@@ -7,6 +7,7 @@ class UnderlordsScoreboard {
         this.currentSort = { field: 'health', direction: 'desc' };
         this.playerChangeEvents = {};
         this.heroesData = null;
+        this.boardVisualizer = null;
         this.init();
     }
 
@@ -21,9 +22,52 @@ class UnderlordsScoreboard {
             const response = await fetch('/static/underlords_heroes.json');
             this.heroesData = await response.json();
             console.log('[Scoreboard] Heroes data loaded');
+            
+            // Initialize board visualizer after heroes data is loaded
+            this.initializeBoardVisualizer();
         } catch (error) {
             console.error('[Scoreboard] Failed to load heroes data:', error);
         }
+    }
+    
+    initializeBoardVisualizer() {
+        if (typeof BoardVisualizer !== 'undefined') {
+            this.boardVisualizer = new BoardVisualizer(this.heroesData);
+            window.boardVisualizer = this.boardVisualizer; // Make globally accessible
+            console.log('[Scoreboard] Board visualizer initialized');
+        } else {
+            console.error('[Scoreboard] BoardVisualizer class not found');
+        }
+    }
+    
+    // Ensure global reference is always available
+    ensureGlobalBoardVisualizer() {
+        if (this.boardVisualizer && !window.boardVisualizer) {
+            window.boardVisualizer = this.boardVisualizer;
+        }
+    }
+    
+    attachPlayerRowClickHandlers() {
+        // Re-attach click handlers to all player rows
+        document.querySelectorAll('.player-row').forEach(row => {
+            const playerId = row.id.replace('player-', '');
+            
+            // Remove existing click listeners to avoid duplicates
+            row.replaceWith(row.cloneNode(true));
+            const newRow = document.getElementById(`player-${playerId}`);
+            
+            if (newRow) {
+                newRow.addEventListener('click', () => {
+                    if (this.boardVisualizer) {
+                        // Find the player data
+                        const player = this.data.players.find(p => p.player_id === playerId);
+                        if (player) {
+                            this.boardVisualizer.togglePlayerBoard(playerId, player);
+                        }
+                    }
+                });
+            }
+        });
     }
 
     getDotaUnitNameFromUnitId(unitId) {
@@ -95,6 +139,16 @@ class UnderlordsScoreboard {
     handleMatchUpdate(data) {
         this.data = data;
         this.displayScoreboard();
+        
+        // Only clear boards if this is a completely new match (different match_id)
+        if (this.boardVisualizer && this.lastState) {
+            const oldMatchId = this.lastState.match_id;
+            const newMatchId = data.match_id;
+            if (oldMatchId && oldMatchId !== newMatchId) {
+                console.log('[Scoreboard] Match changed, clearing all boards');
+                this.boardVisualizer.clearAllBoards();
+            }
+        }
     }
 
     displayScoreboard() {
@@ -102,6 +156,9 @@ class UnderlordsScoreboard {
             this.showNoMatch();
             return;
         }
+
+        // Ensure global board visualizer reference is available
+        this.ensureGlobalBoardVisualizer();
 
         this.hideError();
         this.showMatchInfo();
@@ -127,6 +184,18 @@ class UnderlordsScoreboard {
             this.lastState = JSON.parse(JSON.stringify(this.data));
         } else {
             this.updateTableWithDiff(this.data.players);
+            // Re-attach click handlers after any DOM updates
+            this.attachPlayerRowClickHandlers();
+        }
+        
+        // Update all selected boards with latest data after any changes
+        if (this.boardVisualizer && this.boardVisualizer.selectedPlayers.size > 0) {
+            this.boardVisualizer.selectedPlayers.forEach(playerId => {
+                const player = this.data.players.find(p => p.player_id === playerId);
+                if (player) {
+                    this.boardVisualizer.onPlayerDataUpdate(playerId, player);
+                }
+            });
         }
     }
 
@@ -233,6 +302,11 @@ class UnderlordsScoreboard {
             if (!this.arraysEqual(player.units, lastPlayer.units)) {
                 this.updateUnitsDisplay(playerId, player.units);
                 this.addChangeEvent(playerId, { type: 'units', delta: 1 });
+                
+                // Update board visualizer if player is selected
+                if (this.boardVisualizer) {
+                    this.boardVisualizer.onPlayerDataUpdate(playerId, player);
+                }
             }
         });
 
@@ -324,6 +398,9 @@ class UnderlordsScoreboard {
         console.log('[Scoreboard] renderTable called: full DOM re-render');
         const playersContainer = document.getElementById('playersContainer');
         
+        // Store current selection state before clearing DOM
+        const currentSelections = this.boardVisualizer ? Array.from(this.boardVisualizer.selectedPlayers) : [];
+        
         playersContainer.innerHTML = '';
 
         // Sort players by current sort criteria
@@ -331,8 +408,35 @@ class UnderlordsScoreboard {
 
         sortedPlayers.forEach((player, index) => {
             const playerRow = this.createPlayerRow(player, index + 1);
+            
+            // Add click handler for board visualization
+            playerRow.addEventListener('click', () => {
+                if (this.boardVisualizer) {
+                    this.boardVisualizer.togglePlayerBoard(player.player_id, player);
+                }
+            });
+            
             playersContainer.appendChild(playerRow);
         });
+        
+        // Restore board visualizations for previously selected players
+        if (this.boardVisualizer && currentSelections.length > 0) {
+            currentSelections.forEach(playerId => {
+                const player = sortedPlayers.find(p => p.player_id === playerId);
+                if (player) {
+                    // Make sure the player is still in the selectedPlayers Set
+                    this.boardVisualizer.selectedPlayers.add(playerId);
+                    // Only add if board doesn't already exist
+                    const existingBoard = document.getElementById(`board-${playerId}`);
+                    if (!existingBoard) {
+                        this.boardVisualizer.addBoardDisplay(playerId, player);
+                    } else {
+                        // Update existing board with new data
+                        this.boardVisualizer.onPlayerDataUpdate(playerId, player);
+                    }
+                }
+            });
+        }
     }
 
     createPlayerRow(player, position) {

@@ -179,11 +179,19 @@ def check_match_end(match_id: str, timestamp: datetime) -> bool:
         winner = still_playing[0]
         winner_id = winner['player_id']
         print(f"[MATCH END] Player {second_place[0]['player_id']} got 2nd, marking {winner_id} as winner")
-        db.update_player_final_place(match_id, winner_id, 1, timestamp)
-        match_state.players[winner_id]['final_place'] = 1
-        db.update_match_end_time(match_id, timestamp)
-        print(f"[MATCH END] Match {match_id} ended")
-        return True
+        
+        # Use a single transaction for match end operations
+        try:
+            db.update_player_final_place(match_id, winner_id, 1, timestamp)
+            match_state.players[winner_id]['final_place'] = 1
+            db.update_match_end_time(match_id, timestamp)
+            print(f"[MATCH END] Match {match_id} ended")
+            return True
+        except Exception as e:
+            print(f"[ERROR] Failed to update match end: {e}")
+            # Rollback any partial changes
+            db.conn.rollback()
+            return False
     
     return False
 
