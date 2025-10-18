@@ -44,14 +44,18 @@ class MatchState:
     def __init__(self):
         self.match_id = None                    # needs to be calculated.
         self.match_start = None                 # needs to be calculated.
-        self.round_number = 0                   # needs to be calculated.
-        self.round_phase = None                 # needs to be calculated.
+        self.round_number = 1                   # Start at round 1
+        self.round_phase = 'prep'               # Start in prep phase
         self.players = {}       # player_id -> player_data
         self.private_player = {} # private data for the human player only
         self.candidates = {}    # player_id -> player_data
         self.sequences = {}     # player_id -> last_sequence_number
         self.buffer = []        # (public_state, timestamp) tuples
         self.private_buffer = [] # (private_state, timestamp) tuples
+        
+        # NEW: Round tracking state
+        self.tracked_player_id = None  # Current "source of truth" player
+        self.last_combat_type = 0  # Track previous combat_type for transition detection
     
     def reset(self):
         """Reset to initial state."""
@@ -59,12 +63,16 @@ class MatchState:
         self.match_start = None
         self.players = {}
         self.private_player = {}
-        self.round_number = 0
-        self.round_phase = None
+        self.round_number = 1  # Reset to 1
+        self.round_phase = 'prep'  # Reset to prep
         self.candidates = {}
         self.sequences = {}
         self.buffer = []
         self.private_buffer = []
+        
+        # NEW: Reset tracking state
+        self.tracked_player_id = None
+        self.last_combat_type = 0
 
 # Global match state
 match_state = MatchState()
@@ -163,6 +171,55 @@ def is_valid_new_player(public_state):
         public_state.get('xp', 0) == 0
     )
 
+def find_highest_hp_player(players: Dict) -> str:
+    """Find player with highest HP to use as round tracking source."""
+    if not players:
+        return None
+    
+    highest_hp = -1
+    highest_player_id = None
+    
+    for player_id, player_data in players.items():
+        hp = player_data.get('health', 0)
+        if hp > highest_hp:
+            highest_hp = hp
+            highest_player_id = player_id
+    
+    return highest_player_id
+
+def update_round_tracking(player_id: str, public_state: Dict):
+    """Update round number and phase based on combat_type transitions."""
+    combat_type = public_state.get('combat_type', 0)
+    
+    # Initialize tracked player if not set (game start)
+    if match_state.tracked_player_id is None:
+        match_state.tracked_player_id = find_highest_hp_player(match_state.players)
+        match_state.last_combat_type = combat_type
+        match_state.round_number = 1
+        match_state.round_phase = 'prep'
+        print(f"[ROUND] Tracking started: Player {match_state.tracked_player_id}, Round 1.prep")
+        return
+    
+    # Only track transitions for the designated player
+    if player_id != match_state.tracked_player_id:
+        return
+    
+    # Detect phase transition: combat → prep (increment round)
+    if match_state.last_combat_type != 0 and combat_type == 0:
+        match_state.round_number += 1
+        match_state.round_phase = 'prep'
+        # Find new highest HP player for next round
+        match_state.tracked_player_id = find_highest_hp_player(match_state.players)
+        print(f"[ROUND] → Round {match_state.round_number}.prep (now tracking player {match_state.tracked_player_id})")
+    
+    # Detect phase transition: prep → combat
+    elif match_state.last_combat_type == 0 and combat_type != 0:
+        match_state.round_phase = 'combat'
+        print(f"[ROUND] → Round {match_state.round_number}.combat")
+    
+    # Update last state
+    match_state.last_combat_type = combat_type
+
 def check_match_end(match_id: str, timestamp: datetime) -> bool:
     """Check if match has ended using in-memory player states."""
     players = match_state.players
@@ -197,16 +254,8 @@ def check_match_end(match_id: str, timestamp: datetime) -> bool:
 
 def update_public_player_state(player_id: str, public_state: Dict, timestamp: datetime):
     """Update in-memory player state directly from GSI data."""
-    # Calculate round info
-    wins = public_state.get('wins', 0)
-    losses = public_state.get('losses', 0)
-    round_number = wins + losses + 1
-    combat_type = public_state.get('combat_type', 0)
-    round_phase = 'prep' if combat_type == 0 else 'combat'
-    
-    # Update round info
-    match_state.round_number = round_number
-    match_state.round_phase = round_phase
+    # NEW: Use centralized round tracking
+    update_round_tracking(player_id, public_state)
     
     # Get or preserve player metadata
     existing_player = match_state.players.get(player_id, {})
