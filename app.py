@@ -239,6 +239,7 @@ def check_match_end(match_id: str, timestamp: datetime) -> bool:
         # Use a single transaction for match end operations
         try:
             db.update_player_final_place(match_id, winner_id, 1, timestamp)
+            db.update_match_player_final_place(match_id, winner_id, 1)  # Add this line
             match_state.players[winner_id]['final_place'] = 1
             db.update_match_end_time(match_id, timestamp)
             print(f"[MATCH END] Match {match_id} ended")
@@ -284,8 +285,8 @@ def update_public_player_state(player_id: str, public_state: Dict, timestamp: da
         'next_level_xp': public_state.get('next_level_xp', 0),
         
         # Match performance
-        'wins': wins,
-        'losses': losses,
+        'wins': public_state.get('wins', 0),
+        'losses': public_state.get('losses', 0),
         'win_streak': public_state.get('win_streak', 0),
         'lose_streak': public_state.get('lose_streak', 0),
         'net_worth': public_state.get('net_worth', 0),
@@ -576,6 +577,9 @@ def process_gsi_data(data):
                         # Check for match end
                         final_place = public_state.get('final_place', 0)
                         if final_place > 0:
+                            # Update match_players table
+                            db.update_match_player_final_place(match_state.match_id, player_id, final_place)
+                            
                             if check_match_end(match_state.match_id, timestamp):
                                 print(f"[MATCH END] Clearing game state")
                                 match_state.reset()

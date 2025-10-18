@@ -358,7 +358,29 @@ class UnderlordsDatabaseManager:
             else:
                 raise
     
-    
+    def update_match_player_final_place(self, match_id: str, player_id: str, final_place: int):
+        """Update a player's final_place in the match_players table."""
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute("""
+                UPDATE match_players 
+                SET final_place = ?
+                WHERE match_id = ? AND player_id = ?
+            """, (final_place, match_id, player_id))
+            self.conn.commit()
+        except sqlite3.OperationalError as e:
+            if "cannot start a transaction within a transaction" in str(e):
+                # Rollback and retry
+                self.conn.rollback()
+                cursor = self.conn.cursor()
+                cursor.execute("""
+                    UPDATE match_players 
+                    SET final_place = ?
+                    WHERE match_id = ? AND player_id = ?
+                """, (final_place, match_id, player_id))
+                self.conn.commit()
+            else:
+                raise
     
     def execute_in_transaction(self, operations):
         """Execute multiple database operations in a single transaction."""
