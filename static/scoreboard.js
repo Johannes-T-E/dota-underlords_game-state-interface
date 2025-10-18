@@ -138,17 +138,23 @@ class UnderlordsScoreboard {
 
     handleMatchUpdate(data) {
         this.data = data;
-        this.displayScoreboard();
         
-        // Only clear boards if this is a completely new match (different match_id)
-        if (this.boardVisualizer && this.lastState) {
-            const oldMatchId = this.lastState.match_id;
-            const newMatchId = data.match_id;
-            if (oldMatchId && oldMatchId !== newMatchId) {
-                console.log('[Scoreboard] Match changed, clearing all boards');
-                this.boardVisualizer.clearAllBoards();
+        // Detect match change and clear state if needed
+        if (this.lastState) {
+            const oldMatchId = this.lastState.match?.match_id;
+            const newMatchId = data.match?.match_id;
+            
+            if (oldMatchId && newMatchId && oldMatchId !== newMatchId) {
+                console.log('[Scoreboard] Match changed! Clearing lastState and boards');
+                this.lastState = null;  // Clear old state for new match
+                
+                if (this.boardVisualizer) {
+                    this.boardVisualizer.clearAllBoards();
+                }
             }
         }
+        
+        this.displayScoreboard();
     }
 
     displayScoreboard() {
@@ -205,9 +211,9 @@ class UnderlordsScoreboard {
         const roundValue = document.getElementById('roundValue');
         const phaseValue = document.getElementById('phaseValue');
 
-        matchIdValue.textContent = this.data.match_id || 'Unknown';
-        roundValue.textContent = this.data.round || 0;
-        phaseValue.textContent = this.data.phase || 'Unknown';
+        matchIdValue.textContent = this.data.match?.match_id || 'Unknown';
+        roundValue.textContent = this.data.current_round?.round_number || 0;
+        phaseValue.textContent = this.data.current_round?.round_phase || 'Unknown';
 
         matchInfo.classList.remove('hide');
     }
