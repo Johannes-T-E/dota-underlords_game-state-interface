@@ -2103,6 +2103,134 @@
         "texturename": "skeleton_king",
         "movespeed": 310,
         "healthBarOffset": 20
+      },
+      "annexis": {
+        "content_enable_group": null,
+        "abilities": [
+          "wraith_king_wraithfire_blast",
+          "wraith_king_raise_dead"
+        ],
+        "armor": 10,
+        "attackAnimationPoint": 0.56,
+        "attackRange": 1,
+        "attackRate": 1.3,
+        "damageMin": [90, 180, 360],
+        "damageMax": [110, 220, 440],
+        "displayName": "#dac_hero_name_wraith_king",
+        "dota_unit_name": "npc_dota_hero_annexis",
+        "draftTier": 5,
+        "goldCost": 5,
+        "health": [2000, 4000, 8000],
+        "id": 1001,
+        "hintWords": [
+          "#dac_hero_hint_melee",
+          "#dac_hero_hint_tanky"
+        ],
+        "keywords": "fallen swordsman",
+        "magicResist": 10,
+        "maxmana": 75,
+        "model": "models/heroes/wraith_king/wraith_king.vmdl",
+        "model_scale": 0.65,
+        "soundSet": "Hero_WraithKing",
+        "texturename": "skeleton_king",
+        "movespeed": 310,
+        "healthBarOffset": 20
+      },
+      "jull": {
+        "content_enable_group": null,
+        "abilities": [
+          "wraith_king_wraithfire_blast",
+          "wraith_king_raise_dead"
+        ],
+        "armor": 10,
+        "attackAnimationPoint": 0.56,
+        "attackRange": 1,
+        "attackRate": 1.3,
+        "damageMin": [90, 180, 360],
+        "damageMax": [110, 220, 440],
+        "displayName": "#dac_hero_name_wraith_king",
+        "dota_unit_name": "npc_dota_hero_jull",
+        "draftTier": 5,
+        "goldCost": 5,
+        "health": [2000, 4000, 8000],
+        "id": 1002,
+        "hintWords": [
+          "#dac_hero_hint_melee",
+          "#dac_hero_hint_tanky"
+        ],
+        "keywords": "fallen swordsman",
+        "magicResist": 10,
+        "maxmana": 75,
+        "model": "models/heroes/wraith_king/wraith_king.vmdl",
+        "model_scale": 0.65,
+        "soundSet": "Hero_WraithKing",
+        "texturename": "skeleton_king",
+        "movespeed": 310,
+        "healthBarOffset": 20
+      },
+      "enno": {
+        "content_enable_group": null,
+        "abilities": [
+          "wraith_king_wraithfire_blast",
+          "wraith_king_raise_dead"
+        ],
+        "armor": 10,
+        "attackAnimationPoint": 0.56,
+        "attackRange": 1,
+        "attackRate": 1.3,
+        "damageMin": [90, 180, 360],
+        "damageMax": [110, 220, 440],
+        "displayName": "#dac_hero_name_wraith_king",
+        "dota_unit_name": "npc_dota_hero_enno",
+        "draftTier": 5,
+        "goldCost": 5,
+        "health": [2000, 4000, 8000],
+        "id": 1003,
+        "hintWords": [
+          "#dac_hero_hint_melee",
+          "#dac_hero_hint_tanky"
+        ],
+        "keywords": "fallen swordsman",
+        "magicResist": 10,
+        "maxmana": 75,
+        "model": "models/heroes/wraith_king/wraith_king.vmdl",
+        "model_scale": 0.65,
+        "soundSet": "Hero_WraithKing",
+        "texturename": "skeleton_king",
+        "movespeed": 310,
+        "healthBarOffset": 20
+      },
+      "hobgen": {
+        "content_enable_group": null,
+        "abilities": [
+          "wraith_king_wraithfire_blast",
+          "wraith_king_raise_dead"
+        ],
+        "armor": 10,
+        "attackAnimationPoint": 0.56,
+        "attackRange": 1,
+        "attackRate": 1.3,
+        "damageMin": [90, 180, 360],
+        "damageMax": [110, 220, 440],
+        "displayName": "#dac_hero_name_wraith_king",
+        "dota_unit_name": "npc_dota_hero_hobgen",
+        "draftTier": 5,
+        "goldCost": 5,
+        "health": [2000, 4000, 8000],
+        "id": 1004,
+        "hintWords": [
+          "#dac_hero_hint_melee",
+          "#dac_hero_hint_tanky"
+        ],
+        "keywords": "fallen swordsman",
+        "magicResist": 10,
+        "maxmana": 75,
+        "model": "models/heroes/wraith_king/wraith_king.vmdl",
+        "model_scale": 0.65,
+        "soundSet": "Hero_WraithKing",
+        "texturename": "skeleton_king",
+        "movespeed": 310,
+        "healthBarOffset": 20
       }
     }
 }
