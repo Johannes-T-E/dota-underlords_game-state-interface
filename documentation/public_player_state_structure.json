@@ -1,0 +1,420 @@
+{
+  "timestamp": "2025-01-27T00:00:00.000000",
+  "description": "Public Player State Structure Documentation",
+  "structure": {
+    "public_player_state": {
+      "type": "object",
+      "presence_percentage": 78.9,
+      "description": "Public player state information",
+      "children": {
+        "account_id": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Player account identifier"
+        },
+        "board_buddy": {
+          "type": "object",
+          "presence_percentage": 100.0,
+          "description": "Board buddy information",
+          "children": {
+            "desired_pos_x": {
+              "type": "float",
+              "presence_percentage": 100.0,
+              "description": "Desired X position of board buddy"
+            },
+            "desired_pos_y": {
+              "type": "float",
+              "presence_percentage": 100.0,
+              "description": "Desired Y position of board buddy"
+            }
+          }
+        },
+        "board_unit_limit": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Maximum number of units allowed on board"
+        },
+        "bot_persona_name": {
+          "type": "string",
+          "presence_percentage": 73.3,
+          "description": "Bot player persona name"
+        },
+        "brawny_kills_float": {
+          "type": "float",
+          "presence_percentage": 100.0,
+          "description": "Floating point brawny kills count"
+        },
+        "city_prestige_level": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "City prestige level"
+        },
+        "combat_duration": {
+          "type": "float",
+          "presence_percentage": 100.0,
+          "description": "Duration of combat in seconds"
+        },
+        "combat_result": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Result of combat (1=win, 2=loss)"
+        },
+        "combat_type": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Type of combat encounter"
+        },
+        "connection_status": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Player connection status"
+        },
+        "disconnected_time": {
+          "type": "float",
+          "presence_percentage": 100.0,
+          "description": "Time disconnected in seconds"
+        },
+        "event_tier": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Current event tier"
+        },
+        "final_place": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Final placement in match"
+        },
+        "gold": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Current gold amount"
+        },
+        "health": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Current health points"
+        },
+        "is_human_player": {
+          "type": "boolean",
+          "presence_percentage": 100.0,
+          "description": "Whether player is human (true) or bot (false)"
+        },
+        "is_mirrored_match": {
+          "type": "boolean",
+          "presence_percentage": 100.0,
+          "description": "Whether this is a mirrored match"
+        },
+        "item_slots": {
+          "type": "array",
+          "presence_percentage": 100.0,
+          "description": "Array of item slots",
+          "children": {
+            "assigned_unit_entindex": {
+              "type": "integer",
+              "presence_percentage": 73.8,
+              "description": "Entity index of assigned unit"
+            },
+            "item_id": {
+              "type": "integer",
+              "presence_percentage": 100.0,
+              "description": "Item identifier"
+            },
+            "slot_index": {
+              "type": "integer",
+              "presence_percentage": 100.0,
+              "description": "Index of the item slot"
+            }
+          }
+        },
+        "level": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Player level"
+        },
+        "lobby_team": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Lobby team identifier"
+        },
+        "lose_streak": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Current losing streak count"
+        },
+        "losses": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Total number of losses"
+        },
+        "net_worth": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Total net worth"
+        },
+        "next_level_xp": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "XP required for next level"
+        },
+        "opponent_player_slot": {
+          "type": "integer",
+          "presence_percentage": 68.7,
+          "description": "Player slot of current opponent"
+        },
+        "owns_event": {
+          "type": "boolean",
+          "presence_percentage": 100.0,
+          "description": "Whether player owns the current event"
+        },
+        "persona_name": {
+          "type": "string",
+          "presence_percentage": 26.7,
+          "description": "Player persona name"
+        },
+        "platform": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Platform identifier"
+        },
+        "player_loadout": {
+          "type": "array",
+          "presence_percentage": 26.7,
+          "description": "Player loadout items",
+          "children": {
+            "def_index": {
+              "type": "integer",
+              "presence_percentage": 100.0,
+              "description": "Definition index of loadout item"
+            },
+            "slot": {
+              "type": "integer",
+              "presence_percentage": 100.0,
+              "description": "Loadout slot number"
+            },
+            "sub_slot": {
+              "type": "integer",
+              "presence_percentage": 100.0,
+              "description": "Loadout sub-slot number"
+            }
+          }
+        },
+        "player_slot": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Player slot number"
+        },
+        "rank_tier": {
+          "type": "integer",
+          "presence_percentage": 26.7,
+          "description": "Player rank tier"
+        },
+        "reroll_cost_modifier": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Modifier for reroll cost"
+        },
+        "sequence_number": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Sequence number for ordering"
+        },
+        "shop_cost_modifier": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Modifier for shop costs"
+        },
+        "stat_best_victory_duration": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Best victory duration statistic"
+        },
+        "stat_best_victory_net_worth": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Best victory net worth statistic"
+        },
+        "stat_best_victory_remaining_health_percent": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Best victory remaining health percentage"
+        },
+        "stat_best_victory_units": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Best victory units count"
+        },
+        "stat_prev_victory_duration": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Previous victory duration statistic"
+        },
+        "stat_prev_victory_net_worth": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Previous victory net worth statistic"
+        },
+        "stat_prev_victory_units": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Previous victory units count"
+        },
+        "synergies": {
+          "type": "array",
+          "presence_percentage": 100.0,
+          "description": "Array of active synergies",
+          "children": {
+            "bench_additional_unique_unit_count": {
+              "type": "integer",
+              "presence_percentage": 41.8,
+              "description": "Additional unique unit count on bench"
+            },
+            "keyword": {
+              "type": "integer",
+              "presence_percentage": 100.0,
+              "description": "Synergy keyword identifier"
+            },
+            "unique_unit_count": {
+              "type": "integer",
+              "presence_percentage": 100.0,
+              "description": "Number of unique units for synergy"
+            }
+          }
+        },
+        "underlord": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Selected underlord identifier"
+        },
+        "underlord_selected_talents": {
+          "type": "array",
+          "presence_percentage": 67.4,
+          "description": "Array of selected underlord talents"
+        },
+        "units": {
+          "type": "array",
+          "presence_percentage": 99.0,
+          "description": "Array of player units",
+          "children": {
+            "can_be_sold": {
+              "type": "boolean",
+              "presence_percentage": 100.0,
+              "description": "Whether unit can be sold"
+            },
+            "can_move_to_bench": {
+              "type": "boolean",
+              "presence_percentage": 100.0,
+              "description": "Whether unit can be moved to bench"
+            },
+            "duel_bonus_damage": {
+              "type": "integer",
+              "presence_percentage": 100.0,
+              "description": "Bonus damage in duels"
+            },
+            "entindex": {
+              "type": "integer",
+              "presence_percentage": 100.0,
+              "description": "Entity index of the unit"
+            },
+            "float_kill_count": {
+              "type": "float",
+              "presence_percentage": 100.0,
+              "description": "Floating point kill count"
+            },
+            "gold_value": {
+              "type": "integer",
+              "presence_percentage": 100.0,
+              "description": "Gold value of the unit"
+            },
+            "is_placeable_item": {
+              "type": "boolean",
+              "presence_percentage": 9.6,
+              "description": "Whether unit is a placeable item"
+            },
+            "keywords": {
+              "type": "array",
+              "presence_percentage": 84.9,
+              "description": "Array of unit keywords"
+            },
+            "kill_count": {
+              "type": "integer",
+              "presence_percentage": 100.0,
+              "description": "Integer kill count"
+            },
+            "kill_streak": {
+              "type": "integer",
+              "presence_percentage": 100.0,
+              "description": "Current kill streak"
+            },
+            "position": {
+              "type": "object",
+              "presence_percentage": 100.0,
+              "description": "Unit position on board",
+              "children": {
+                "x": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "description": "X coordinate position"
+                },
+                "y": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "description": "Y coordinate position"
+                }
+              }
+            },
+            "rank": {
+              "type": "integer",
+              "presence_percentage": 100.0,
+              "description": "Unit rank/star level"
+            },
+            "recommended_for_placement": {
+              "type": "boolean",
+              "presence_percentage": 100.0,
+              "description": "Whether unit is recommended for placement"
+            },
+            "unit_cap_cost": {
+              "type": "integer",
+              "presence_percentage": 100.0,
+              "description": "Unit cap cost"
+            },
+            "unit_id": {
+              "type": "integer",
+              "presence_percentage": 100.0,
+              "description": "Unit identifier"
+            }
+          }
+        },
+        "vs_opponent_draws": {
+          "type": "integer",
+          "presence_percentage": 62.9,
+          "description": "Draws against current opponent"
+        },
+        "vs_opponent_losses": {
+          "type": "integer",
+          "presence_percentage": 62.9,
+          "description": "Losses against current opponent"
+        },
+        "vs_opponent_wins": {
+          "type": "integer",
+          "presence_percentage": 62.9,
+          "description": "Wins against current opponent"
+        },
+        "win_streak": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Current winning streak count"
+        },
+        "wins": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Total number of wins"
+        },
+        "xp": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Current experience points"
+        }
+      }
+    }
+  }
+}

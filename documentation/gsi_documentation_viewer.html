@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GSI Documentation Viewer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            background: #1a1a1a;
+            min-height: 100vh;
+            padding: 16px;
+            color: #e5e5e5;
+            line-height: 1.4;
+            font-weight: 400;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #2a2a2a;
+            border-radius: 8px;
+            border: 1px solid #404040;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #333333;
+            color: #e5e5e5;
+            padding: 20px 24px;
+            border-bottom: 1px solid #404040;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin: 0 0 4px 0;
+            font-weight: 600;
+            color: #e5e5e5;
+        }
+
+        .header .subtitle {
+            font-size: 14px;
+            color: #999999;
+            margin: 0;
+        }
+
+        .stats-bar {
+            background: #333333;
+            padding: 16px 24px;
+            border-bottom: 1px solid #404040;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: left;
+            margin: 0;
+            padding: 0;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #e5e5e5;
+            margin: 0;
+        }
+
+        .stat-label {
+            color: #999999;
+            font-size: 12px;
+            font-weight: 400;
+            margin: 0;
+        }
+
+        .content {
+            padding: 16px 24px;
+        }
+
+
+        .field-item {
+            margin: 0;
+            padding: 2px 0px;
+            border-radius: 4px;
+            background: #333333;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .field-item.depth-0:hover > .field-header > .field-name > span {
+            color: #ff5500 !important;
+            text-shadow: 0 0 8px rgba(255, 85, 0, 0.5);
+        }
+        .field-item.depth-1:hover > .field-header > .field-name > span {
+            color: #ff9100 !important;
+            text-shadow: 0 0 8px rgba(255, 145, 0, 0.5);
+        }
+        .field-item.depth-2:hover > .field-header > .field-name > span {
+            color: #fff700 !important;
+            text-shadow: 0 0 8px rgba(255, 247, 0, 0.5);
+        }
+        .field-item.depth-3:hover > .field-header > .field-name > span {
+            color: #00ff11 !important;
+            text-shadow: 0 0 8px rgba(0, 255, 17, 0.5);
+        }
+        .field-item.depth-4:hover > .field-header > .field-name > span {
+            color: #00ffc3 !important;
+            text-shadow: 0 0 8px rgba(0, 255, 195, 0.5);
+        }
+        .field-item.depth-5:hover > .field-header > .field-name > span {
+            color: #f200ff !important;
+            text-shadow: 0 0 8px rgba(242, 0, 255, 0.5);
+        }
+        .field-item.depth-6:hover > .field-header > .field-name > span {
+            color: #ffff00 !important;
+            text-shadow: 0 0 8px rgba(255, 255, 0, 0.5);
+        }
+        .field-item.depth-7:hover > .field-header > .field-name > span {
+            color: #00ff80 !important;
+            text-shadow: 0 0 8px rgba(0, 255, 128, 0.5);
+        }
+        .field-item.depth-8:hover > .field-header > .field-name > span {
+            color: #ff4000 !important;
+            text-shadow: 0 0 8px rgba(255, 64, 0, 0.5);
+        }
+        .field-item.depth-9:hover > .field-header > .field-name > span {
+            color: #4080ff !important;
+            text-shadow: 0 0 8px rgba(64, 128, 255, 0.5);
+        }
+
+        .field-item.expanded {
+            background: #3a3a3a;
+            border-left-color: #666666;
+        }
+
+        .field-header {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            padding: 0;
+            gap: 12px;
+            position: relative;
+        }
+
+        .field-name {
+            font-weight: 600;
+            color: #e5e5e5;
+            font-size: 14px;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .field-presence {
+            color: #c0c0c0;
+            font-size: 12px;
+            font-weight: 600;
+            /* font-family: monospace; */
+            position: absolute;
+            right: 80px;
+        }
+
+        .field-type {
+            background: #2a2a2a;
+            color: #cccccc;
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            min-width: fit-content;
+            text-align: center;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .field-type.array {
+            color: #00ff00;
+            text-shadow: 0 0 4px #00ff00;
+        }
+
+        .field-type.object {
+            color: #ff0080;
+            text-shadow: 0 0 4px #ff0080;
+        }
+
+        .field-type.string {
+            color: #00ffff;
+            text-shadow: 0 0 4px #00ffff;
+        }
+
+        .field-type.integer {
+            color: #ff9900;
+            text-shadow: 0 0 4px #ff8000;
+        }
+
+        .field-type.boolean {
+            color: #ffff00;
+            text-shadow: 0 0 4px #ffff00;
+        }
+
+        .field-type.float {
+            color: #e100ff;
+            text-shadow: 0 0 4px #8000ff;
+        }
+
+
+
+        .field-children {
+            margin-left: 16px;
+            margin-top: 0;
+            border-left: 2px solid #555555;
+            padding-left: 12px;
+            display: none;
+        }
+
+        .field-children .field-item {
+            margin-right: 0;
+        }
+
+        /* Depth-based color coding - text only */
+        .field-item.depth-0 .field-name span {
+            color: #ff5500;
+        }
+        .field-item.depth-1 .field-name span {
+            color: #ff9100;
+        }
+        .field-item.depth-2 .field-name span {
+            color: #fff700;
+        }
+        .field-item.depth-3 .field-name span {
+            color: #00ff11;
+        }
+        .field-item.depth-4 .field-name span {
+            color: #00ffc3;
+        }
+        .field-item.depth-5 .field-name span {
+            color: #f200ff;
+        }
+        .field-item.depth-6 .field-name span {
+            color: #ffff00;
+        }
+        .field-item.depth-7 .field-name span {
+            color: #00ff80;
+        }
+        .field-item.depth-8 .field-name span {
+            color: #ff4000;
+        }
+        .field-item.depth-9 .field-name span {
+            color: #4080ff;
+        }
+
+        .field-children.expanded {
+            display: block;
+        }
+
+        .toggle-btn {
+            background: transparent;
+            border: none;
+            color: #999999;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 6px;
+            transition: color 0.2s ease;
+            width: 14px;
+            height: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .toggle-btn:hover {
+            color: #cccccc;
+        }
+
+        .field-description {
+            color: #999999;
+            font-style: italic;
+            margin-top: 4px;
+            font-size: 12px;
+        }
+
+        .examples {
+            margin-top: 6px;
+            padding: 6px;
+            background: #2a2a2a;
+            border-radius: 3px;
+            font-size: 11px;
+            display: none;
+        }
+
+        .examples.visible {
+            display: block;
+        }
+
+        .examples-toggle {
+            background: #2a2a2a;
+            color: #666666;
+            cursor: pointer;
+            font-size: 8px;
+            font-weight: normal;
+            margin-left: 4px;
+            transition: all 0.2s ease;
+            border-radius: 50%;
+            width: 12px;
+            height: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .examples-toggle:hover {
+            background: #333333;
+            color: #888888;
+        }
+
+        .examples-toggle::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a1a1a;
+            color: #e5e5e5;
+            padding: 6px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+        }
+
+        .examples-toggle:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .examples-title {
+            font-weight: 600;
+            color: #e5e5e5;
+            margin-bottom: 4px;
+        }
+
+        .example-item {
+            background: #444444;
+            color: #e5e5e5;
+            padding: 2px 6px;
+            margin: 2px;
+            border-radius: 2px;
+            display: inline-block;
+            border: 1px solid #555555;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #a0aec0;
+        }
+
+        .error {
+            background: #742a2a;
+            color: #feb2b2;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .search-box {
+            margin-bottom: 16px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #555555;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.2s ease;
+            background: #333333;
+            color: #e5e5e5;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #666666;
+        }
+
+        .search-box input::placeholder {
+            color: #999999;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 50px;
+            color: #a0aec0;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .stats-bar {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .field-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .field-stats {
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>GSI Documentation Viewer</h1>
+            <div class="subtitle">Auto-generated Game State Integration Documentation</div>
+        </div>
+
+        <div class="stats-bar" id="statsBar">
+            <div class="stat-item">
+                <div class="stat-value" id="totalSamples">-</div>
+                <div class="stat-label">Total Samples</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="fieldCount">-</div>
+                <div class="stat-label">Fields Found</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="lastUpdated">-</div>
+                <div class="stat-label">Last Updated</div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search fields..." />
+            </div>
+
+            <div id="loading" class="loading">
+                Loading documentation...
+            </div>
+
+            <div id="error" class="error" style="display: none;">
+                Error loading documentation. Please make sure the GSI Doc Generator is running and has processed some data.
+            </div>
+
+            <div id="noResults" class="no-results" style="display: none;">
+                No fields found matching your search.
+            </div>
+
+            <div id="structureTree" class="structure-tree" style="display: none;">
+                <!-- Structure will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let documentationData = null;
+        let filteredData = null;
+
+        // Load documentation data
+        async function loadDocumentation() {
+            try {
+                const response = await fetch('gsi_documentation.json');
+                if (!response.ok) {
+                    throw new Error('Failed to load documentation');
+                }
+                documentationData = await response.json();
+                filteredData = documentationData;
+                displayDocumentation();
+            } catch (error) {
+                console.error('Error loading documentation:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+            }
+        }
+
+        // Display documentation
+        function displayDocumentation() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error').style.display = 'none';
+            
+            // Update stats
+            document.getElementById('totalSamples').textContent = filteredData.total_samples.toLocaleString();
+            document.getElementById('fieldCount').textContent = filteredData.field_count.toLocaleString();
+            document.getElementById('lastUpdated').textContent = new Date(filteredData.timestamp).toLocaleString();
+            
+            // Build structure tree
+            const structureTree = document.getElementById('structureTree');
+            structureTree.innerHTML = buildStructureHTML(filteredData.structure, '', 0);
+            structureTree.style.display = 'block';
+        }
+
+        // Get type abbreviation
+        function getTypeAbbreviation(type) {
+            const abbreviations = {
+                'array': 'ARR',
+                'object': 'OBJ',
+                'string': 'STR',
+                'integer': 'INT',
+                'boolean': 'BOOL',
+                'float': 'FLT',
+                'null': 'NULL'
+            };
+            return abbreviations[type.toLowerCase()] || type.toUpperCase();
+        }
+
+        // Build HTML for structure
+        function buildStructureHTML(structure, path = '', depth = 0) {
+            let html = '';
+            
+            // Sort entries to put public_player_state before private_player_state
+            const sortedEntries = Object.entries(structure).sort(([a], [b]) => {
+                if (a === 'public_player_state' && b === 'private_player_state') return -1;
+                if (a === 'private_player_state' && b === 'public_player_state') return 1;
+                return a.localeCompare(b);
+            });
+            
+            for (const [key, value] of sortedEntries) {
+                const currentPath = path ? `${path}.${key}` : key;
+                const hasChildren = value.children && Object.keys(value.children).length > 0;
+                const isExpanded = hasChildren;
+                
+                // Skip description for specific fields
+                const skipDescription = ['block', 'data', 'public_player_state', 'private_player_state'];
+                const shouldShowDescription = value.description && !skipDescription.includes(key);
+                
+                html += `
+                    <div class="field-item depth-${Math.min(depth, 9)}" data-path="${currentPath}">
+                        <div class="field-header">
+                            <div class="field-name">
+                                ${hasChildren ? `<button class="toggle-btn" onclick="toggleField('${currentPath}')">▸</button>` : '<span style="width: 20px; flex-shrink: 0;"></span>'}
+                                <span>${key}</span>
+                                ${value.examples && value.examples.length > 0 ? `<button class="examples-toggle" data-tooltip="${value.examples.join(', ')}" title="Examples">!</button>` : ''}
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span class="field-presence">${value.presence_percentage.toFixed(1)}%</span>
+                                <span class="field-type ${value.type}">${getTypeAbbreviation(value.type)}</span>
+                            </div>
+                        </div>
+                        ${shouldShowDescription ? `<div class="field-description">${value.description}</div>` : ''}
+                        ${hasChildren ? `
+                            <div class="field-children ${isExpanded ? 'expanded' : ''}" id="children-${currentPath}">
+                                ${buildStructureHTML(value.children, currentPath, depth + 1)}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+            
+            return html;
+        }
+
+        // Toggle field expansion
+        function toggleField(path) {
+            const children = document.getElementById(`children-${path}`);
+            const button = document.querySelector(`[data-path="${path}"] .toggle-btn`);
+            const fieldItem = document.querySelector(`[data-path="${path}"]`);
+            
+            if (children.classList.contains('expanded')) {
+                children.classList.remove('expanded');
+                button.textContent = '▸';
+                fieldItem.classList.remove('expanded');
+            } else {
+                children.classList.add('expanded');
+                button.textContent = '▾';
+                fieldItem.classList.add('expanded');
+            }
+        }
+
+
+        // Search functionality
+        function searchFields(query) {
+            if (!documentationData) return;
+            
+            const searchTerm = query.toLowerCase();
+            
+            if (!searchTerm) {
+                filteredData = documentationData;
+            } else {
+                // Simple search - in a real implementation, you'd want more sophisticated filtering
+                filteredData = {
+                    ...documentationData,
+                    structure: filterStructure(documentationData.structure, searchTerm)
+                };
+            }
+            
+            displayDocumentation();
+        }
+
+        // Filter structure based on search term
+        function filterStructure(structure, searchTerm) {
+            const filtered = {};
+            
+            for (const [key, value] of Object.entries(structure)) {
+                if (key.toLowerCase().includes(searchTerm)) {
+                    filtered[key] = value;
+                } else if (value.children) {
+                    const filteredChildren = filterStructure(value.children, searchTerm);
+                    if (Object.keys(filteredChildren).length > 0) {
+                        filtered[key] = {
+                            ...value,
+                            children: filteredChildren
+                        };
+                    }
+                }
+            }
+            
+            return filtered;
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            searchFields(e.target.value);
+        });
+
+        // Load documentation on page load
+        loadDocumentation();
+        
+        // Auto-refresh every 30 seconds
+        setInterval(loadDocumentation, 30000);
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,635 @@
+{
+  "block": [
+    {
+      "data": [
+        {
+          "public_player_state": {
+            "account_id": 123456789,
+            "board_buddy": {
+              "desired_pos_x": 2.5,
+              "desired_pos_y": 1.0
+            },
+            "board_unit_limit": 5,
+            "bot_persona_name": "#DAC_BotName_42",
+            "brawny_kills_float": 3.5,
+            "city_prestige_level": 0,
+            "combat_duration": 25.3,
+            "combat_result": 1,
+            "combat_type": 2,
+            "connection_status": 1,
+            "disconnected_time": 0.0,
+            "event_tier": 0,
+            "final_place": 0,
+            "gold": 15,
+            "health": 95,
+            "is_human_player": true,
+            "is_mirrored_match": false,
+            "item_slots": [
+              {
+                "assigned_unit_entindex": 45,
+                "item_id": 10201,
+                "slot_index": 0
+              },
+              {
+                "assigned_unit_entindex": 67,
+                "item_id": 10103,
+                "slot_index": 1
+              }
+            ],
+            "level": 4,
+            "lobby_team": 1,
+            "lose_streak": 0,
+            "losses": 2,
+            "net_worth": 28,
+            "next_level_xp": 15,
+            "opponent_player_slot": 3,
+            "owns_event": true,
+            "persona_name": "PlayerName",
+            "platform": 1,
+            "player_loadout": [
+              {
+                "def_index": 100049,
+                "slot": 0,
+                "sub_slot": 0
+              },
+              {
+                "def_index": 100053,
+                "slot": 4,
+                "sub_slot": 59650
+              }
+            ],
+            "player_slot": 1,
+            "rank_tier": 70,
+            "reroll_cost_modifier": 0,
+            "sequence_number": 85,
+            "shop_cost_modifier": 0,
+            "stat_best_victory_duration": 0,
+            "stat_best_victory_net_worth": 0,
+            "stat_best_victory_remaining_health_percent": 0,
+            "stat_best_victory_units": 0,
+            "stat_prev_victory_duration": 0,
+            "stat_prev_victory_net_worth": 0,
+            "stat_prev_victory_units": 0,
+            "synergies": [
+              {
+                "bench_additional_unique_unit_count": 1,
+                "keyword": 12,
+                "unique_unit_count": 2
+              },
+              {
+                "bench_additional_unique_unit_count": 0,
+                "keyword": 18,
+                "unique_unit_count": 3
+              }
+            ],
+            "underlord": 2,
+            "underlord_selected_talents": [1, 3],
+            "units": [
+              {
+                "can_be_sold": true,
+                "can_move_to_bench": true,
+                "duel_bonus_damage": 0,
+                "entindex": 50,
+                "float_kill_count": 2.0,
+                "gold_value": 2,
+                "is_placeable_item": false,
+                "keywords": [12, 18],
+                "kill_count": 2,
+                "kill_streak": 1,
+                "position": {
+                  "x": 2,
+                  "y": 1
+                },
+                "rank": 1,
+                "recommended_for_placement": true,
+                "unit_cap_cost": 1,
+                "unit_id": 4
+              },
+              {
+                "can_be_sold": true,
+                "can_move_to_bench": true,
+                "duel_bonus_damage": 5,
+                "entindex": 52,
+                "float_kill_count": 0.0,
+                "gold_value": 1,
+                "is_placeable_item": false,
+                "keywords": [12],
+                "kill_count": 0,
+                "kill_streak": 0,
+                "position": {
+                  "x": 1,
+                  "y": 0
+                },
+                "rank": 0,
+                "recommended_for_placement": false,
+                "unit_cap_cost": 1,
+                "unit_id": 5
+              }
+            ],
+            "vs_opponent_draws": 0,
+            "vs_opponent_losses": 1,
+            "vs_opponent_wins": 2,
+            "win_streak": 2,
+            "wins": 3,
+            "xp": 5
+          }
+        },
+        {
+          "public_player_state": {
+          "account_id": 123456789,
+          "board_buddy": {
+            "desired_pos_x": 2.5,
+            "desired_pos_y": 1.0
+          },
+          "board_unit_limit": 5,
+          "bot_persona_name": "#DAC_BotName_42",
+          "brawny_kills_float": 3.5,
+          "city_prestige_level": 0,
+          "combat_duration": 25.3,
+          "combat_result": 1,
+          "combat_type": 2,
+          "connection_status": 1,
+          "disconnected_time": 0.0,
+          "event_tier": 0,
+          "final_place": 0,
+          "gold": 15,
+          "health": 95,
+          "is_human_player": true,
+          "is_mirrored_match": false,
+          "item_slots": [
+            {
+              "assigned_unit_entindex": 45,
+              "item_id": 10201,
+              "slot_index": 0
+            },
+            {
+              "assigned_unit_entindex": 67,
+              "item_id": 10103,
+              "slot_index": 1
+            }
+          ],
+          "level": 4,
+          "lobby_team": 1,
+          "lose_streak": 0,
+          "losses": 2,
+          "net_worth": 28,
+          "next_level_xp": 15,
+          "opponent_player_slot": 3,
+          "owns_event": true,
+          "persona_name": "PlayerName",
+          "platform": 1,
+          "player_loadout": [
+            {
+              "def_index": 100049,
+              "slot": 0,
+              "sub_slot": 0
+            },
+            {
+              "def_index": 100053,
+              "slot": 4,
+              "sub_slot": 59650
+            }
+          ],
+          "player_slot": 1,
+          "rank_tier": 70,
+          "reroll_cost_modifier": 0,
+          "sequence_number": 85,
+          "shop_cost_modifier": 0,
+          "stat_best_victory_duration": 0,
+          "stat_best_victory_net_worth": 0,
+          "stat_best_victory_remaining_health_percent": 0,
+          "stat_best_victory_units": 0,
+          "stat_prev_victory_duration": 0,
+          "stat_prev_victory_net_worth": 0,
+          "stat_prev_victory_units": 0,
+          "synergies": [
+            {
+              "bench_additional_unique_unit_count": 1,
+              "keyword": 12,
+              "unique_unit_count": 2
+            },
+            {
+              "bench_additional_unique_unit_count": 0,
+              "keyword": 18,
+              "unique_unit_count": 3
+            }
+          ],
+          "underlord": 2,
+          "underlord_selected_talents": [1, 3],
+          "units": [
+            {
+              "can_be_sold": true,
+              "can_move_to_bench": true,
+              "duel_bonus_damage": 0,
+              "entindex": 50,
+              "float_kill_count": 2.0,
+              "gold_value": 2,
+              "is_placeable_item": false,
+              "keywords": [12, 18],
+              "kill_count": 2,
+              "kill_streak": 1,
+              "position": {
+                "x": 2,
+                "y": 1
+              },
+              "rank": 1,
+              "recommended_for_placement": true,
+              "unit_cap_cost": 1,
+              "unit_id": 4
+            },
+            {
+              "can_be_sold": true,
+              "can_move_to_bench": true,
+              "duel_bonus_damage": 5,
+              "entindex": 52,
+              "float_kill_count": 0.0,
+              "gold_value": 1,
+              "is_placeable_item": false,
+              "keywords": [12],
+              "kill_count": 0,
+              "kill_streak": 0,
+              "position": {
+                "x": 1,
+                "y": 0
+              },
+              "rank": 0,
+              "recommended_for_placement": false,
+              "unit_cap_cost": 1,
+              "unit_id": 5
+            }
+          ],
+          "vs_opponent_draws": 0,
+          "vs_opponent_losses": 1,
+          "vs_opponent_wins": 2,
+          "win_streak": 2,
+          "wins": 3,
+          "xp": 5
+          }
+        },
+        {
+          "public_player_state": {
+            "account_id": 123456789,
+            "board_buddy": {
+              "desired_pos_x": 2.5,
+              "desired_pos_y": 1.0
+            },
+            "board_unit_limit": 5,
+            "bot_persona_name": "#DAC_BotName_42",
+            "brawny_kills_float": 3.5,
+            "city_prestige_level": 0,
+            "combat_duration": 25.3,
+            "combat_result": 1,
+            "combat_type": 2,
+            "connection_status": 1,
+            "disconnected_time": 0.0,
+            "event_tier": 0,
+            "final_place": 0,
+            "gold": 15,
+            "health": 95,
+            "is_human_player": true,
+            "is_mirrored_match": false,
+            "item_slots": [
+              {
+                "assigned_unit_entindex": 45,
+                "item_id": 10201,
+                "slot_index": 0
+              },
+              {
+                "assigned_unit_entindex": 67,
+                "item_id": 10103,
+                "slot_index": 1
+              }
+            ],
+            "level": 4,
+            "lobby_team": 1,
+            "lose_streak": 0,
+            "losses": 2,
+            "net_worth": 28,
+            "next_level_xp": 15,
+            "opponent_player_slot": 3,
+            "owns_event": true,
+            "persona_name": "PlayerName",
+            "platform": 1,
+            "player_loadout": [
+              {
+                "def_index": 100049,
+                "slot": 0,
+                "sub_slot": 0
+              },
+              {
+                "def_index": 100053,
+                "slot": 4,
+                "sub_slot": 59650
+              }
+            ],
+            "player_slot": 1,
+            "rank_tier": 70,
+            "reroll_cost_modifier": 0,
+            "sequence_number": 85,
+            "shop_cost_modifier": 0,
+            "stat_best_victory_duration": 0,
+            "stat_best_victory_net_worth": 0,
+            "stat_best_victory_remaining_health_percent": 0,
+            "stat_best_victory_units": 0,
+            "stat_prev_victory_duration": 0,
+            "stat_prev_victory_net_worth": 0,
+            "stat_prev_victory_units": 0,
+            "synergies": [
+              {
+                "bench_additional_unique_unit_count": 1,
+                "keyword": 12,
+                "unique_unit_count": 2
+              },
+              {
+                "bench_additional_unique_unit_count": 0,
+                "keyword": 18,
+                "unique_unit_count": 3
+              }
+            ],
+            "underlord": 2,
+            "underlord_selected_talents": [1, 3],
+            "units": [
+              {
+                "can_be_sold": true,
+                "can_move_to_bench": true,
+                "duel_bonus_damage": 0,
+                "entindex": 50,
+                "float_kill_count": 2.0,
+                "gold_value": 2,
+                "is_placeable_item": false,
+                "keywords": [12, 18],
+                "kill_count": 2,
+                "kill_streak": 1,
+                "position": {
+                  "x": 2,
+                  "y": 1
+                },
+                "rank": 1,
+                "recommended_for_placement": true,
+                "unit_cap_cost": 1,
+                "unit_id": 4
+              },
+              {
+                "can_be_sold": true,
+                "can_move_to_bench": true,
+                "duel_bonus_damage": 5,
+                "entindex": 52,
+                "float_kill_count": 0.0,
+                "gold_value": 1,
+                "is_placeable_item": false,
+                "keywords": [12],
+                "kill_count": 0,
+                "kill_streak": 0,
+                "position": {
+                  "x": 1,
+                  "y": 0
+                },
+                "rank": 0,
+                "recommended_for_placement": false,
+                "unit_cap_cost": 1,
+                "unit_id": 5
+              }
+            ],
+            "vs_opponent_draws": 0,
+            "vs_opponent_losses": 1,
+            "vs_opponent_wins": 2,
+            "win_streak": 2,
+            "wins": 3,
+            "xp": 5
+          }
+        },
+        {
+          "public_player_state": {
+          "account_id": 123456789,
+          "board_buddy": {
+            "desired_pos_x": 2.5,
+            "desired_pos_y": 1.0
+          },
+          "board_unit_limit": 5,
+          "bot_persona_name": "#DAC_BotName_42",
+          "brawny_kills_float": 3.5,
+          "city_prestige_level": 0,
+          "combat_duration": 25.3,
+          "combat_result": 1,
+          "combat_type": 2,
+          "connection_status": 1,
+          "disconnected_time": 0.0,
+          "event_tier": 0,
+          "final_place": 0,
+          "gold": 15,
+          "health": 95,
+          "is_human_player": true,
+          "is_mirrored_match": false,
+          "item_slots": [
+            {
+              "assigned_unit_entindex": 45,
+              "item_id": 10201,
+              "slot_index": 0
+            },
+            {
+              "assigned_unit_entindex": 67,
+              "item_id": 10103,
+              "slot_index": 1
+            }
+          ],
+          "level": 4,
+          "lobby_team": 1,
+          "lose_streak": 0,
+          "losses": 2,
+          "net_worth": 28,
+          "next_level_xp": 15,
+          "opponent_player_slot": 3,
+          "owns_event": true,
+          "persona_name": "PlayerName",
+          "platform": 1,
+          "player_loadout": [
+            {
+              "def_index": 100049,
+              "slot": 0,
+              "sub_slot": 0
+            },
+            {
+              "def_index": 100053,
+              "slot": 4,
+              "sub_slot": 59650
+            }
+          ],
+          "player_slot": 1,
+          "rank_tier": 70,
+          "reroll_cost_modifier": 0,
+          "sequence_number": 85,
+          "shop_cost_modifier": 0,
+          "stat_best_victory_duration": 0,
+          "stat_best_victory_net_worth": 0,
+          "stat_best_victory_remaining_health_percent": 0,
+          "stat_best_victory_units": 0,
+          "stat_prev_victory_duration": 0,
+          "stat_prev_victory_net_worth": 0,
+          "stat_prev_victory_units": 0,
+          "synergies": [
+            {
+              "bench_additional_unique_unit_count": 1,
+              "keyword": 12,
+              "unique_unit_count": 2
+            },
+            {
+              "bench_additional_unique_unit_count": 0,
+              "keyword": 18,
+              "unique_unit_count": 3
+            }
+          ],
+          "underlord": 2,
+          "underlord_selected_talents": [1, 3],
+          "units": [
+            {
+              "can_be_sold": true,
+              "can_move_to_bench": true,
+              "duel_bonus_damage": 0,
+              "entindex": 50,
+              "float_kill_count": 2.0,
+              "gold_value": 2,
+              "is_placeable_item": false,
+              "keywords": [12, 18],
+              "kill_count": 2,
+              "kill_streak": 1,
+              "position": {
+                "x": 2,
+                "y": 1
+              },
+              "rank": 1,
+              "recommended_for_placement": true,
+              "unit_cap_cost": 1,
+              "unit_id": 4
+            },
+            {
+              "can_be_sold": true,
+              "can_move_to_bench": true,
+              "duel_bonus_damage": 5,
+              "entindex": 52,
+              "float_kill_count": 0.0,
+              "gold_value": 1,
+              "is_placeable_item": false,
+              "keywords": [12],
+              "kill_count": 0,
+              "kill_streak": 0,
+              "position": {
+                "x": 1,
+                "y": 0
+              },
+              "rank": 0,
+              "recommended_for_placement": false,
+              "unit_cap_cost": 1,
+              "unit_id": 5
+            }
+          ],
+          "vs_opponent_draws": 0,
+          "vs_opponent_losses": 1,
+          "vs_opponent_wins": 2,
+          "win_streak": 2,
+          "wins": 3,
+          "xp": 5
+          }
+        },
+        {
+          "private_player_state": {
+            "can_select_underlord": false,
+            "challenges": [
+              {
+                "claimed": 0,
+                "initial_progress": 2,
+                "progress": 5,
+                "sequence_id": 158,
+                "slot_id": 1
+              },
+              {
+                "claimed": 0,
+                "initial_progress": 384,
+                "progress": 390,
+                "sequence_id": 152,
+                "slot_id": 2
+              }
+            ],
+            "gold_earned_this_round": 10,
+            "grants_rewards": 1,
+            "oldest_unclaimed_reward": {
+              "choices": [
+                {
+                  "available": true,
+                  "item_id": 10114
+                },
+                {
+                  "available": true,
+                  "item_id": 10205
+                },
+                {
+                  "available": true,
+                  "item_id": 10203
+                }
+              ],
+              "reward_id": 14
+            },
+            "player_slot": 1,
+            "reroll_cost": 2,
+            "sequence_number": 85,
+            "shop_generation_id": 4,
+            "shop_locked": false,
+            "shop_units": [
+              {
+                "gold_cost": 3,
+                "keywords": [12, 18, 24],
+                "unit_id": 122,
+                "wanted_legendary": false,
+                "will_combine_three_stars": false,
+                "will_combine_two_stars": true
+              },
+              {
+                "gold_cost": 2,
+                "keywords": [12, 18],
+                "unit_id": 132,
+                "wanted_legendary": false,
+                "will_combine_three_stars": false,
+                "will_combine_two_stars": false
+              },
+              {
+                "gold_cost": 1,
+                "keywords": [12],
+                "unit_id": 15,
+                "wanted_legendary": false,
+                "will_combine_three_stars": false,
+                "will_combine_two_stars": false
+              },
+              {
+                "gold_cost": 3,
+                "keywords": [18, 24],
+                "unit_id": 21,
+                "wanted_legendary": false,
+                "will_combine_three_stars": true,
+                "will_combine_two_stars": false
+              },
+              {
+                "gold_cost": 2,
+                "keywords": [12, 18, 24],
+                "unit_id": 41,
+                "wanted_legendary": false,
+                "will_combine_three_stars": false,
+                "will_combine_two_stars": true
+              }
+            ],
+            "unclaimed_reward_count": 1,
+            "underlord_picker_offering": [
+              {
+                "build_id": 0,
+                "underlord_id": 1
+              },
+              {
+                "build_id": 1,
+                "underlord_id": 2
+              }
+            ],
+            "used_item_reward_reroll_this_round": false
+          }
+        }
+      ]
+    }
+  ]
+}

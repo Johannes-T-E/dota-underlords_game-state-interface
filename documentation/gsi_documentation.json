@@ -1,0 +1,1634 @@
+{
+  "timestamp": "2025-10-15T22:51:06.912898",
+  "total_samples": 184,
+  "field_count": 114,
+  "parent_instance_counts": {
+    "block": 552,
+    "block.data": 2260,
+    "block.data.public_player_state": 1784,
+    "block.data.public_player_state.item_slots": 6158,
+    "block.data.public_player_state.units": 21631,
+    "block.data.public_player_state.units.position": 21631,
+    "block.data.public_player_state.synergies": 20037,
+    "block.data.public_player_state.player_loadout": 24752,
+    "block.data.public_player_state.board_buddy": 1784,
+    "block.data.private_player_state": 476,
+    "block.data.private_player_state.shop_units": 2380,
+    "block.data.private_player_state.challenges": 28560,
+    "block.data.private_player_state.oldest_unclaimed_reward": 12,
+    "block.data.private_player_state.oldest_unclaimed_reward.choices": 36,
+    "block.data.private_player_state.underlord_picker_offering": 8
+  },
+  "structure": {
+    "block": {
+      "type": "array",
+      "presence_percentage": 100.0,
+      "frequency": 184,
+      "first_seen": "2025-10-15T22:28:49.587327",
+      "last_seen": "2025-10-15T22:51:06.903898",
+      "examples": [],
+      "array_lengths": [
+        57657,
+        29213,
+        14701,
+        7520,
+        4356,
+        2201,
+        1121,
+        585,
+        313,
+        180
+      ],
+      "description": "Root array containing game state blocks",
+      "children": {
+        "data": {
+          "type": "array",
+          "presence_percentage": 100.0,
+          "frequency": 552,
+          "first_seen": "2025-10-15T22:28:49.587327",
+          "last_seen": "2025-10-15T22:51:06.903898",
+          "examples": [],
+          "array_lengths": [
+            2,
+            9,
+            9,
+            9,
+            3,
+            9,
+            9,
+            9,
+            9,
+            9
+          ],
+          "description": "Array of player data objects",
+          "children": {
+            "private_player_state": {
+              "type": "object",
+              "presence_percentage": 21.1,
+              "frequency": 476,
+              "first_seen": "2025-10-15T22:28:49.587327",
+              "last_seen": "2025-10-15T22:51:06.903898",
+              "examples": [],
+              "array_lengths": [],
+              "description": "Private player state information",
+              "children": {
+                "can_select_underlord": {
+                  "type": "boolean",
+                  "presence_percentage": 100.0,
+                  "frequency": 476,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    false,
+                    true
+                  ],
+                  "array_lengths": []
+                },
+                "challenges": {
+                  "type": "array",
+                  "presence_percentage": 100.0,
+                  "frequency": 476,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [],
+                  "array_lengths": [
+                    60,
+                    60,
+                    60,
+                    60,
+                    60,
+                    60,
+                    60,
+                    60,
+                    60,
+                    60
+                  ],
+                  "children": {
+                    "claimed": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 28560,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        0
+                      ],
+                      "array_lengths": []
+                    },
+                    "initial_progress": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 28560,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        2,
+                        384,
+                        308,
+                        85,
+                        68
+                      ],
+                      "array_lengths": []
+                    },
+                    "progress": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 28560,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        0,
+                        9,
+                        2,
+                        17,
+                        26
+                      ],
+                      "array_lengths": []
+                    },
+                    "sequence_id": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 28560,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        158,
+                        152,
+                        1
+                      ],
+                      "array_lengths": []
+                    },
+                    "slot_id": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 28560,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        1,
+                        2,
+                        17,
+                        20,
+                        21
+                      ],
+                      "array_lengths": []
+                    }
+                  }
+                },
+                "gold_earned_this_round": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 476,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    0,
+                    9,
+                    10,
+                    11,
+                    12
+                  ],
+                  "array_lengths": []
+                },
+                "grants_rewards": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 476,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    1
+                  ],
+                  "array_lengths": []
+                },
+                "oldest_unclaimed_reward": {
+                  "type": "object",
+                  "presence_percentage": 2.5,
+                  "frequency": 12,
+                  "first_seen": "2025-10-15T22:29:22.634790",
+                  "last_seen": "2025-10-15T22:50:20.528612",
+                  "examples": [],
+                  "array_lengths": [],
+                  "children": {
+                    "choices": {
+                      "type": "array",
+                      "presence_percentage": 100.0,
+                      "frequency": 12,
+                      "first_seen": "2025-10-15T22:29:22.634790",
+                      "last_seen": "2025-10-15T22:50:20.528612",
+                      "examples": [],
+                      "array_lengths": [
+                        3,
+                        3,
+                        3,
+                        3,
+                        3,
+                        3,
+                        3,
+                        3,
+                        3,
+                        3
+                      ],
+                      "children": {
+                        "available": {
+                          "type": "boolean",
+                          "presence_percentage": 100.0,
+                          "frequency": 36,
+                          "first_seen": "2025-10-15T22:29:22.634790",
+                          "last_seen": "2025-10-15T22:50:20.528612",
+                          "examples": [
+                            true
+                          ],
+                          "array_lengths": []
+                        },
+                        "item_id": {
+                          "type": "integer",
+                          "presence_percentage": 100.0,
+                          "frequency": 36,
+                          "first_seen": "2025-10-15T22:29:22.634790",
+                          "last_seen": "2025-10-15T22:50:20.528612",
+                          "examples": [
+                            10114,
+                            10205,
+                            10203,
+                            10118,
+                            10112
+                          ],
+                          "array_lengths": []
+                        }
+                      }
+                    },
+                    "reward_id": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 12,
+                      "first_seen": "2025-10-15T22:29:22.634790",
+                      "last_seen": "2025-10-15T22:50:20.528612",
+                      "examples": [
+                        14,
+                        17,
+                        32,
+                        33,
+                        42
+                      ],
+                      "array_lengths": []
+                    }
+                  }
+                },
+                "player_slot": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 476,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    1
+                  ],
+                  "array_lengths": []
+                },
+                "reroll_cost": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 476,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    0,
+                    2
+                  ],
+                  "array_lengths": []
+                },
+                "sequence_number": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 476,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    85,
+                    86,
+                    87,
+                    93,
+                    97
+                  ],
+                  "array_lengths": []
+                },
+                "shop_generation_id": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 476,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    4,
+                    5,
+                    6,
+                    7,
+                    8
+                  ],
+                  "array_lengths": []
+                },
+                "shop_locked": {
+                  "type": "boolean",
+                  "presence_percentage": 100.0,
+                  "frequency": 476,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    false
+                  ],
+                  "array_lengths": []
+                },
+                "shop_units": {
+                  "type": "array",
+                  "presence_percentage": 100.0,
+                  "frequency": 476,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [],
+                  "array_lengths": [
+                    5,
+                    5,
+                    5,
+                    5,
+                    5,
+                    5,
+                    5,
+                    5,
+                    5,
+                    5
+                  ],
+                  "children": {
+                    "gold_cost": {
+                      "type": "integer",
+                      "presence_percentage": 90.4,
+                      "frequency": 2152,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        3,
+                        2,
+                        1
+                      ],
+                      "array_lengths": []
+                    },
+                    "keywords": {
+                      "type": "array",
+                      "presence_percentage": 90.4,
+                      "frequency": 2152,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [],
+                      "array_lengths": [
+                        3,
+                        2,
+                        2,
+                        2,
+                        3,
+                        3,
+                        2,
+                        2,
+                        2,
+                        3
+                      ],
+                      "children": {}
+                    },
+                    "unit_id": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 2380,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        122,
+                        132,
+                        15,
+                        21,
+                        41
+                      ],
+                      "array_lengths": []
+                    },
+                    "wanted_legendary": {
+                      "type": "boolean",
+                      "presence_percentage": 90.4,
+                      "frequency": 2152,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        false
+                      ],
+                      "array_lengths": []
+                    },
+                    "will_combine_three_stars": {
+                      "type": "boolean",
+                      "presence_percentage": 90.4,
+                      "frequency": 2152,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        false,
+                        true
+                      ],
+                      "array_lengths": []
+                    },
+                    "will_combine_two_stars": {
+                      "type": "boolean",
+                      "presence_percentage": 90.4,
+                      "frequency": 2152,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        false,
+                        true
+                      ],
+                      "array_lengths": []
+                    }
+                  }
+                },
+                "unclaimed_reward_count": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 476,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    0,
+                    1
+                  ],
+                  "array_lengths": []
+                },
+                "underlord_picker_offering": {
+                  "type": "array",
+                  "presence_percentage": 0.4,
+                  "frequency": 2,
+                  "first_seen": "2025-10-15T22:37:12.261205",
+                  "last_seen": "2025-10-15T22:37:27.285477",
+                  "examples": [],
+                  "array_lengths": [
+                    4,
+                    4
+                  ],
+                  "children": {
+                    "build_id": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 8,
+                      "first_seen": "2025-10-15T22:37:12.261205",
+                      "last_seen": "2025-10-15T22:37:27.285477",
+                      "examples": [
+                        0,
+                        1
+                      ],
+                      "array_lengths": []
+                    },
+                    "underlord_id": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 8,
+                      "first_seen": "2025-10-15T22:37:12.261205",
+                      "last_seen": "2025-10-15T22:37:27.285477",
+                      "examples": [
+                        1,
+                        2,
+                        3,
+                        4
+                      ],
+                      "array_lengths": []
+                    }
+                  }
+                },
+                "used_item_reward_reroll_this_round": {
+                  "type": "boolean",
+                  "presence_percentage": 100.0,
+                  "frequency": 476,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    false,
+                    true
+                  ],
+                  "array_lengths": []
+                }
+              }
+            },
+            "public_player_state": {
+              "type": "object",
+              "presence_percentage": 78.9,
+              "frequency": 1784,
+              "first_seen": "2025-10-15T22:28:49.587327",
+              "last_seen": "2025-10-15T22:51:06.903898",
+              "examples": [],
+              "array_lengths": [],
+              "description": "Public player state information",
+              "children": {
+                "account_id": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    249722568,
+                    0
+                  ],
+                  "array_lengths": []
+                },
+                "board_buddy": {
+                  "type": "object",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [],
+                  "array_lengths": [],
+                  "children": {
+                    "desired_pos_x": {
+                      "type": "float",
+                      "presence_percentage": 100.0,
+                      "frequency": 1784,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        0.0
+                      ],
+                      "array_lengths": []
+                    },
+                    "desired_pos_y": {
+                      "type": "float",
+                      "presence_percentage": 100.0,
+                      "frequency": 1784,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        0.0
+                      ],
+                      "array_lengths": []
+                    }
+                  }
+                },
+                "board_unit_limit": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    3,
+                    4,
+                    5,
+                    6,
+                    7
+                  ],
+                  "array_lengths": []
+                },
+                "bot_persona_name": {
+                  "type": "string",
+                  "presence_percentage": 73.3,
+                  "frequency": 1308,
+                  "first_seen": "2025-10-15T22:29:09.189803",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    "#DAC_BotName_41",
+                    "#DAC_BotName_64",
+                    "#DAC_BotName_61",
+                    "#DAC_BotName_70",
+                    "#DAC_BotName_24"
+                  ],
+                  "array_lengths": []
+                },
+                "brawny_kills_float": {
+                  "type": "float",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    0.0,
+                    4.0,
+                    2.0,
+                    5.25,
+                    3.0
+                  ],
+                  "array_lengths": []
+                },
+                "city_prestige_level": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    0
+                  ],
+                  "array_lengths": []
+                },
+                "combat_duration": {
+                  "type": "float",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    9.15,
+                    30.85,
+                    31.45,
+                    29.05,
+                    23.2
+                  ],
+                  "array_lengths": []
+                },
+                "combat_result": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    2,
+                    1
+                  ],
+                  "array_lengths": []
+                },
+                "combat_type": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    0,
+                    3,
+                    2
+                  ],
+                  "array_lengths": []
+                },
+                "connection_status": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    1
+                  ],
+                  "array_lengths": []
+                },
+                "disconnected_time": {
+                  "type": "float",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    0.0
+                  ],
+                  "array_lengths": []
+                },
+                "event_tier": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    222,
+                    0
+                  ],
+                  "array_lengths": []
+                },
+                "final_place": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    0,
+                    8,
+                    6,
+                    5,
+                    3
+                  ],
+                  "array_lengths": []
+                },
+                "gold": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    19,
+                    7,
+                    15,
+                    11,
+                    13
+                  ],
+                  "array_lengths": []
+                },
+                "health": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    90,
+                    98,
+                    97,
+                    100,
+                    96
+                  ],
+                  "array_lengths": []
+                },
+                "is_human_player": {
+                  "type": "boolean",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    true,
+                    false
+                  ],
+                  "array_lengths": []
+                },
+                "is_mirrored_match": {
+                  "type": "boolean",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    false,
+                    true
+                  ],
+                  "array_lengths": []
+                },
+                "item_slots": {
+                  "type": "array",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [],
+                  "array_lengths": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                  ],
+                  "children": {
+                    "assigned_unit_entindex": {
+                      "type": "integer",
+                      "presence_percentage": 73.8,
+                      "frequency": 4547,
+                      "first_seen": "2025-10-15T22:29:09.189803",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        78,
+                        14,
+                        36,
+                        94,
+                        88
+                      ],
+                      "array_lengths": []
+                    },
+                    "item_id": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 6158,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        10201,
+                        10103,
+                        10108,
+                        10100,
+                        10202
+                      ],
+                      "array_lengths": []
+                    },
+                    "slot_index": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 6158,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        0,
+                        1,
+                        2,
+                        3,
+                        4
+                      ],
+                      "array_lengths": []
+                    }
+                  }
+                },
+                "level": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    3,
+                    4,
+                    5,
+                    6,
+                    7
+                  ],
+                  "array_lengths": []
+                },
+                "lobby_team": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    0,
+                    2,
+                    3,
+                    5,
+                    1
+                  ],
+                  "array_lengths": []
+                },
+                "lose_streak": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    3,
+                    0,
+                    1,
+                    2,
+                    4
+                  ],
+                  "array_lengths": []
+                },
+                "losses": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    3,
+                    2,
+                    1,
+                    0,
+                    4
+                  ],
+                  "array_lengths": []
+                },
+                "net_worth": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    25,
+                    24,
+                    27,
+                    32,
+                    34
+                  ],
+                  "array_lengths": []
+                },
+                "next_level_xp": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    5,
+                    15,
+                    20,
+                    25,
+                    35
+                  ],
+                  "array_lengths": []
+                },
+                "opponent_player_slot": {
+                  "type": "integer",
+                  "presence_percentage": 68.7,
+                  "frequency": 1226,
+                  "first_seen": "2025-10-15T22:29:09.189803",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    7,
+                    2,
+                    1,
+                    4,
+                    6
+                  ],
+                  "array_lengths": []
+                },
+                "owns_event": {
+                  "type": "boolean",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    true,
+                    false
+                  ],
+                  "array_lengths": []
+                },
+                "persona_name": {
+                  "type": "string",
+                  "presence_percentage": 26.7,
+                  "frequency": 476,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    "K\u00e6lle"
+                  ],
+                  "array_lengths": []
+                },
+                "platform": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    1,
+                    0
+                  ],
+                  "array_lengths": []
+                },
+                "player_loadout": {
+                  "type": "array",
+                  "presence_percentage": 26.7,
+                  "frequency": 476,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [],
+                  "array_lengths": [
+                    52,
+                    52,
+                    52,
+                    52,
+                    52,
+                    52,
+                    52,
+                    52,
+                    52,
+                    52
+                  ],
+                  "children": {
+                    "def_index": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 24752,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        100049,
+                        100053,
+                        100050,
+                        100059,
+                        100058
+                      ],
+                      "array_lengths": []
+                    },
+                    "slot": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 24752,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        0,
+                        4,
+                        9,
+                        11,
+                        12
+                      ],
+                      "array_lengths": []
+                    },
+                    "sub_slot": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 24752,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        0,
+                        59650,
+                        64007,
+                        64513,
+                        65024
+                      ],
+                      "array_lengths": []
+                    }
+                  }
+                },
+                "player_slot": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    1,
+                    3,
+                    4,
+                    6,
+                    2
+                  ],
+                  "array_lengths": []
+                },
+                "rank_tier": {
+                  "type": "integer",
+                  "presence_percentage": 26.7,
+                  "frequency": 476,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    70
+                  ],
+                  "array_lengths": []
+                },
+                "reroll_cost_modifier": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    0
+                  ],
+                  "array_lengths": []
+                },
+                "sequence_number": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    85,
+                    386,
+                    259,
+                    293,
+                    86
+                  ],
+                  "array_lengths": []
+                },
+                "shop_cost_modifier": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    0
+                  ],
+                  "array_lengths": []
+                },
+                "stat_best_victory_duration": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    0
+                  ],
+                  "array_lengths": []
+                },
+                "stat_best_victory_net_worth": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    0
+                  ],
+                  "array_lengths": []
+                },
+                "stat_best_victory_remaining_health_percent": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    0
+                  ],
+                  "array_lengths": []
+                },
+                "stat_best_victory_units": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    0
+                  ],
+                  "array_lengths": []
+                },
+                "stat_prev_victory_duration": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    0
+                  ],
+                  "array_lengths": []
+                },
+                "stat_prev_victory_net_worth": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    0
+                  ],
+                  "array_lengths": []
+                },
+                "stat_prev_victory_units": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    0
+                  ],
+                  "array_lengths": []
+                },
+                "synergies": {
+                  "type": "array",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [],
+                  "array_lengths": [
+                    7,
+                    13,
+                    6,
+                    9,
+                    9,
+                    7,
+                    9,
+                    8,
+                    6,
+                    13
+                  ],
+                  "children": {
+                    "bench_additional_unique_unit_count": {
+                      "type": "integer",
+                      "presence_percentage": 41.8,
+                      "frequency": 8371,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        1,
+                        3,
+                        2
+                      ],
+                      "array_lengths": []
+                    },
+                    "keyword": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 20037,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        12,
+                        13,
+                        18,
+                        19,
+                        24
+                      ],
+                      "array_lengths": []
+                    },
+                    "unique_unit_count": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 20037,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        0,
+                        1,
+                        2,
+                        3,
+                        4
+                      ],
+                      "array_lengths": []
+                    }
+                  }
+                },
+                "underlord": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    0,
+                    3,
+                    1,
+                    2,
+                    4
+                  ],
+                  "array_lengths": []
+                },
+                "underlord_selected_talents": {
+                  "type": "array",
+                  "presence_percentage": 67.4,
+                  "frequency": 1202,
+                  "first_seen": "2025-10-15T22:37:12.261205",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [],
+                  "array_lengths": [
+                    2,
+                    2,
+                    2,
+                    2,
+                    2,
+                    2,
+                    2,
+                    2,
+                    2,
+                    2
+                  ],
+                  "children": {}
+                },
+                "units": {
+                  "type": "array",
+                  "presence_percentage": 99.0,
+                  "frequency": 1766,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [],
+                  "array_lengths": [
+                    3,
+                    9,
+                    4,
+                    7,
+                    6,
+                    3,
+                    8,
+                    5,
+                    3,
+                    9
+                  ],
+                  "children": {
+                    "can_be_sold": {
+                      "type": "boolean",
+                      "presence_percentage": 100.0,
+                      "frequency": 21631,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        true
+                      ],
+                      "array_lengths": []
+                    },
+                    "can_move_to_bench": {
+                      "type": "boolean",
+                      "presence_percentage": 100.0,
+                      "frequency": 21631,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        true
+                      ],
+                      "array_lengths": []
+                    },
+                    "duel_bonus_damage": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 21631,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        0,
+                        5,
+                        10,
+                        15,
+                        20
+                      ],
+                      "array_lengths": []
+                    },
+                    "entindex": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 21631,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        50,
+                        52,
+                        54,
+                        8,
+                        10
+                      ],
+                      "array_lengths": []
+                    },
+                    "float_kill_count": {
+                      "type": "float",
+                      "presence_percentage": 100.0,
+                      "frequency": 21631,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        0.0,
+                        1.0,
+                        2.0,
+                        5.0,
+                        7.0
+                      ],
+                      "array_lengths": []
+                    },
+                    "gold_value": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 21631,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        1,
+                        2,
+                        3,
+                        0,
+                        4
+                      ],
+                      "array_lengths": []
+                    },
+                    "is_placeable_item": {
+                      "type": "boolean",
+                      "presence_percentage": 9.6,
+                      "frequency": 2087,
+                      "first_seen": "2025-10-15T22:29:22.634790",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        true
+                      ],
+                      "array_lengths": []
+                    },
+                    "keywords": {
+                      "type": "array",
+                      "presence_percentage": 84.9,
+                      "frequency": 18360,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [],
+                      "array_lengths": [
+                        2,
+                        3,
+                        2,
+                        3,
+                        2,
+                        3,
+                        2,
+                        2,
+                        3,
+                        3
+                      ],
+                      "children": {}
+                    },
+                    "kill_count": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 21631,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        0,
+                        1,
+                        2,
+                        5,
+                        7
+                      ],
+                      "array_lengths": []
+                    },
+                    "kill_streak": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 21631,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        0,
+                        1,
+                        6,
+                        4,
+                        2
+                      ],
+                      "array_lengths": []
+                    },
+                    "position": {
+                      "type": "object",
+                      "presence_percentage": 100.0,
+                      "frequency": 21631,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [],
+                      "array_lengths": [],
+                      "children": {
+                        "x": {
+                          "type": "integer",
+                          "presence_percentage": 100.0,
+                          "frequency": 21631,
+                          "first_seen": "2025-10-15T22:28:49.587327",
+                          "last_seen": "2025-10-15T22:51:06.903898",
+                          "examples": [
+                            0,
+                            1,
+                            4,
+                            3,
+                            2
+                          ],
+                          "array_lengths": []
+                        },
+                        "y": {
+                          "type": "integer",
+                          "presence_percentage": 100.0,
+                          "frequency": 21631,
+                          "first_seen": "2025-10-15T22:28:49.587327",
+                          "last_seen": "2025-10-15T22:51:06.903898",
+                          "examples": [
+                            -1,
+                            3,
+                            0,
+                            2,
+                            1
+                          ],
+                          "array_lengths": []
+                        }
+                      }
+                    },
+                    "rank": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 21631,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        1,
+                        2,
+                        0,
+                        3
+                      ],
+                      "array_lengths": []
+                    },
+                    "recommended_for_placement": {
+                      "type": "boolean",
+                      "presence_percentage": 100.0,
+                      "frequency": 21631,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        true,
+                        false
+                      ],
+                      "array_lengths": []
+                    },
+                    "unit_cap_cost": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 21631,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        1,
+                        0
+                      ],
+                      "array_lengths": []
+                    },
+                    "unit_id": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 21631,
+                      "first_seen": "2025-10-15T22:28:49.587327",
+                      "last_seen": "2025-10-15T22:51:06.903898",
+                      "examples": [
+                        4,
+                        5,
+                        9,
+                        41,
+                        112
+                      ],
+                      "array_lengths": []
+                    }
+                  }
+                },
+                "vs_opponent_draws": {
+                  "type": "integer",
+                  "presence_percentage": 62.9,
+                  "frequency": 1122,
+                  "first_seen": "2025-10-15T22:29:13.992622",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    0
+                  ],
+                  "array_lengths": []
+                },
+                "vs_opponent_losses": {
+                  "type": "integer",
+                  "presence_percentage": 62.9,
+                  "frequency": 1122,
+                  "first_seen": "2025-10-15T22:29:13.992622",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    1,
+                    0,
+                    2,
+                    3
+                  ],
+                  "array_lengths": []
+                },
+                "vs_opponent_wins": {
+                  "type": "integer",
+                  "presence_percentage": 62.9,
+                  "frequency": 1122,
+                  "first_seen": "2025-10-15T22:29:13.992622",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ],
+                  "array_lengths": []
+                },
+                "win_streak": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4
+                  ],
+                  "array_lengths": []
+                },
+                "wins": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4
+                  ],
+                  "array_lengths": []
+                },
+                "xp": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 1784,
+                  "first_seen": "2025-10-15T22:28:49.587327",
+                  "last_seen": "2025-10-15T22:51:06.903898",
+                  "examples": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    14
+                  ],
+                  "array_lengths": []
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

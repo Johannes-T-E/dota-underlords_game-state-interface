@@ -1,0 +1,178 @@
+{
+  "timestamp": "2025-01-27T00:00:00.000000",
+  "description": "Private Player State Structure Documentation",
+  "structure": {
+    "private_player_state": {
+      "type": "object",
+      "presence_percentage": 21.1,
+      "description": "Private player state information",
+      "children": {
+        "can_select_underlord": {
+          "type": "boolean",
+          "presence_percentage": 100.0,
+          "description": "Whether player can select an underlord"
+        },
+        "challenges": {
+          "type": "array",
+          "presence_percentage": 100.0,
+          "description": "Array of player challenges",
+          "children": {
+            "claimed": {
+              "type": "integer",
+              "presence_percentage": 100.0,
+              "description": "Whether challenge is claimed (0=no, 1=yes)"
+            },
+            "initial_progress": {
+              "type": "integer",
+              "presence_percentage": 100.0,
+              "description": "Initial progress value for challenge"
+            },
+            "progress": {
+              "type": "integer",
+              "presence_percentage": 100.0,
+              "description": "Current progress value for challenge"
+            },
+            "sequence_id": {
+              "type": "integer",
+              "presence_percentage": 100.0,
+              "description": "Sequence identifier for challenge"
+            },
+            "slot_id": {
+              "type": "integer",
+              "presence_percentage": 100.0,
+              "description": "Slot identifier for challenge"
+            }
+          }
+        },
+        "gold_earned_this_round": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Gold earned in the current round"
+        },
+        "grants_rewards": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Whether player grants rewards"
+        },
+        "oldest_unclaimed_reward": {
+          "type": "object",
+          "presence_percentage": 2.5,
+          "description": "Oldest unclaimed reward information",
+          "children": {
+            "choices": {
+              "type": "array",
+              "presence_percentage": 100.0,
+              "description": "Array of reward choices",
+              "children": {
+                "available": {
+                  "type": "boolean",
+                  "presence_percentage": 100.0,
+                  "description": "Whether reward choice is available"
+                },
+                "item_id": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "description": "Item identifier for reward choice"
+                }
+              }
+            },
+            "reward_id": {
+              "type": "integer",
+              "presence_percentage": 100.0,
+              "description": "Reward identifier"
+            }
+          }
+        },
+        "player_slot": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Player slot number"
+        },
+        "reroll_cost": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Cost to reroll shop"
+        },
+        "sequence_number": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Sequence number for ordering"
+        },
+        "shop_generation_id": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Shop generation identifier"
+        },
+        "shop_locked": {
+          "type": "boolean",
+          "presence_percentage": 100.0,
+          "description": "Whether shop is locked"
+        },
+        "shop_units": {
+          "type": "array",
+          "presence_percentage": 100.0,
+          "description": "Array of units available in shop",
+          "children": {
+            "gold_cost": {
+              "type": "integer",
+              "presence_percentage": 90.4,
+              "description": "Gold cost to purchase unit"
+            },
+            "keywords": {
+              "type": "array",
+              "presence_percentage": 90.4,
+              "description": "Array of unit keywords"
+            },
+            "unit_id": {
+              "type": "integer",
+              "presence_percentage": 100.0,
+              "description": "Unit identifier"
+            },
+            "wanted_legendary": {
+              "type": "boolean",
+              "presence_percentage": 90.4,
+              "description": "Whether unit is wanted legendary"
+            },
+            "will_combine_three_stars": {
+              "type": "boolean",
+              "presence_percentage": 90.4,
+              "description": "Whether unit will combine to three stars"
+            },
+            "will_combine_two_stars": {
+              "type": "boolean",
+              "presence_percentage": 90.4,
+              "description": "Whether unit will combine to two stars"
+            }
+          }
+        },
+        "unclaimed_reward_count": {
+          "type": "integer",
+          "presence_percentage": 100.0,
+          "description": "Number of unclaimed rewards"
+        },
+        "underlord_picker_offering": {
+          "type": "array",
+          "presence_percentage": 0.4,
+          "description": "Array of underlord picker offerings",
+          "children": {
+            "build_id": {
+              "type": "integer",
+              "presence_percentage": 100.0,
+              "description": "Build identifier for underlord"
+            },
+            "underlord_id": {
+              "type": "integer",
+              "presence_percentage": 100.0,
+              "description": "Underlord identifier"
+            }
+          }
+        },
+        "used_item_reward_reroll_this_round": {
+          "type": "boolean",
+          "presence_percentage": 100.0,
+          "description": "Whether item reward reroll was used this round"
+        }
+      }
+    }
+  }
+}
