@@ -29,6 +29,9 @@ LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
 GSI_HOST = '0.0.0.0'  # Must match game's GSI config
 GSI_PORT = 3000       # Must match game's GSI config
 
+# Client owner identification (the player running this GSI client)
+CLIENT_OWNER_ACCOUNT_ID = '249722568'
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = SECRET_KEY
 socketio = SocketIO(app, cors_allowed_origins="*")
@@ -251,6 +254,23 @@ def check_match_end(match_id: str, timestamp: datetime) -> bool:
             return False
     
     return False
+
+def abandon_match(match_id: str, timestamp: datetime, reason: str = "Manual"):
+    """Mark a match as abandoned and reset game state."""
+    print(f"[MATCH ABANDONED] Match {match_id} - Reason: {reason}")
+    
+    # Update database: set match end time
+    db.update_match_end_time(match_id, timestamp)
+    
+    # Reset match state to allow new game detection
+    match_state.reset()
+    
+    # Emit update to connected clients
+    socketio.emit('match_abandoned', {
+        'match_id': match_id,
+        'reason': reason,
+        'timestamp': timestamp.isoformat()
+    }, to=None)
 
 def update_public_player_state(player_id: str, public_state: Dict, timestamp: datetime):
     """Update in-memory player state directly from GSI data."""
@@ -563,6 +583,21 @@ def process_gsi_data(data):
                 
                 else:
                     # Active match - update memory and store in DB
+                    
+                    # Check if client owner has reset (indicates abandoned previous game)
+                    if player_id == CLIENT_OWNER_ACCOUNT_ID and player_id in match_state.players:
+                        old_health = match_state.players[player_id].get('health', 0)
+                        old_slot = match_state.players[player_id].get('player_slot', 0)
+                        new_health = public_state.get('health', 0)
+                        new_slot = public_state.get('player_slot', 0)
+                        
+                        # Detect game abandonment: health reset to 100 OR slot changed
+                        if (new_health == 100 and old_health < 100) or (new_slot != old_slot and new_slot > 0):
+                            print(f"[MATCH ABANDONED] Detected new game start (health: {old_health}→{new_health}, slot: {old_slot}→{new_slot})")
+                            abandon_match(match_state.match_id, timestamp, reason="Client owner started new game")
+                            # Don't process this update; it belongs to the new game
+                            continue
+                    
                     if player_id in match_state.players:
                         # Update sequence tracker
                         match_state.sequences[player_id] = sequence_num
@@ -631,7 +666,21 @@ def health_check():
         'gsi_endpoint': f"http://{GSI_HOST}:{GSI_PORT}/upload"
     })
 
-
+@app.route('/api/abandon_match', methods=['POST'])
+def abandon_match_endpoint():
+    """Manually abandon the current active match."""
+    if match_state.match_id is None:
+        return jsonify({'error': 'No active match'}), 400
+    
+    match_id = match_state.match_id
+    timestamp = datetime.now()
+    abandon_match(match_id, timestamp, reason="Manual abandonment")
+    
+    return jsonify({
+        'status': 'success',
+        'match_id': match_id,
+        'message': 'Match abandoned successfully'
+    })
 
 # GSI endpoint
 @app.route('/upload', methods=['POST'])

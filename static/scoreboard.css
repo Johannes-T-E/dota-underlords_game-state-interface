@@ -98,6 +98,22 @@ h1 {
     font-weight: bold;
 }
 
+.abandon-button {
+    background: #d32f2f;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: auto;
+    transition: background-color 0.2s;
+}
+
+.abandon-button:hover {
+    background: #b71c1c;
+}
+
 /* No Match State */
 .no-match {
     text-align: center;

@@ -93,6 +93,27 @@ class UnderlordsScoreboard {
                 this.sortBy(field);
             });
         });
+        
+        // Abandon match button
+        document.getElementById('abandonButton').addEventListener('click', async () => {
+            if (!confirm('Are you sure you want to abandon this match?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/abandon_match', { method: 'POST' });
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    console.log('Match abandoned:', data.match_id);
+                } else {
+                    alert('Failed to abandon match: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Error abandoning match:', error);
+                alert('Failed to abandon match');
+            }
+        });
     }
 
     connectWebSocket() {
@@ -120,6 +141,11 @@ class UnderlordsScoreboard {
 
         this.socket.on('test_response', (data) => {
             console.log('[WebSocket] Test response:', data);
+        });
+
+        this.socket.on('match_abandoned', (data) => {
+            console.log('[WebSocket] Match abandoned:', data);
+            // UI will automatically update when match state clears
         });
     }
 
