@@ -395,6 +395,55 @@ class UnderlordsDatabaseManager:
             print(f"[DATABASE ERROR] Transaction failed: {e}")
             return False
     
+    def delete_match(self, match_id: str) -> bool:
+        """Delete a match and all associated data."""
+        try:
+            cursor = self.conn.cursor()
+            
+            # Delete in order: snapshots first, then players, then match
+            cursor.execute("DELETE FROM private_player_snapshots WHERE match_id = ?", (match_id,))
+            cursor.execute("DELETE FROM public_player_snapshots WHERE match_id = ?", (match_id,))
+            cursor.execute("DELETE FROM match_players WHERE match_id = ?", (match_id,))
+            cursor.execute("DELETE FROM matches WHERE match_id = ?", (match_id,))
+            
+            self.conn.commit()
+            print(f"[DB] Deleted match {match_id} and all associated data")
+            return True
+        except Exception as e:
+            self.conn.rollback()
+            print(f"[DB ERROR] Failed to delete match {match_id}: {e}")
+            return False
+
+    def get_all_matches(self) -> List[Dict]:
+        """Get list of all matches with basic info."""
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute("""
+                SELECT 
+                    match_id,
+                    started_at,
+                    ended_at,
+                    player_count,
+                    created_at
+                FROM matches
+                ORDER BY started_at DESC
+            """)
+            
+            matches = []
+            for row in cursor.fetchall():
+                matches.append({
+                    'match_id': row[0],
+                    'started_at': row[1],
+                    'ended_at': row[2],
+                    'player_count': row[3],
+                    'created_at': row[4]
+                })
+            
+            return matches
+        except Exception as e:
+            print(f"[DB ERROR] Failed to get matches: {e}")
+            return []
+
     def close(self):
         """Close database connection."""
         if self.conn:

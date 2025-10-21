@@ -632,6 +632,10 @@ def process_gsi_data(data):
 def scoreboard():
     return render_template('scoreboard.html')
 
+@app.route('/matches')
+def matches_page():
+    return render_template('matches.html')
+
 @app.route('/api/status')
 def get_status():
     """Get system status."""
@@ -681,6 +685,39 @@ def abandon_match_endpoint():
         'match_id': match_id,
         'message': 'Match abandoned successfully'
     })
+
+@app.route('/api/matches', methods=['GET'])
+def get_matches():
+    """Get list of all matches."""
+    matches = db.get_all_matches()
+    return jsonify({
+        'status': 'success',
+        'matches': matches,
+        'count': len(matches)
+    })
+
+@app.route('/api/matches/<match_id>', methods=['DELETE'])
+def delete_match(match_id):
+    """Delete a specific match and all its data."""
+    # Prevent deletion of active match
+    if match_state.match_id == match_id:
+        return jsonify({
+            'status': 'error',
+            'message': 'Cannot delete active match. Abandon it first.'
+        }), 400
+    
+    success = db.delete_match(match_id)
+    
+    if success:
+        return jsonify({
+            'status': 'success',
+            'message': f'Match {match_id} deleted successfully'
+        })
+    else:
+        return jsonify({
+            'status': 'error',
+            'message': 'Failed to delete match'
+        }), 500
 
 # GSI endpoint
 @app.route('/upload', methods=['POST'])
