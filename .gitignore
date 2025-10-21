@@ -4,7 +4,7 @@ venv/
 env/
 
 # Frontend directory
-frontend/
+frontend_old/
 
 # Python cache
 __pycache__/
@@ -37,3 +37,12 @@ Thumbs.db
 .env.development.local
 .env.test.local
 .env.production.local
+
+# React/Node.js
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/.eslintcache
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*

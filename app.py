@@ -3,8 +3,9 @@ Unified GSI Listener + Web App for Dota Underlords.
 Combines both services in one process for maximum speed.
 """
 
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, send_from_directory
 from flask_socketio import SocketIO, emit
+from flask_cors import CORS
 from datetime import datetime
 from database import UnderlordsDatabaseManager
 import json
@@ -32,7 +33,20 @@ GSI_PORT = 3000       # Must match game's GSI config
 # Client owner identification (the player running this GSI client)
 CLIENT_OWNER_ACCOUNT_ID = '249722568'
 
-app = Flask(__name__)
+# Determine if we're in production or development
+PRODUCTION = os.getenv('PRODUCTION', 'false').lower() == 'true'
+FRONTEND_BUILD_DIR = os.path.join(os.path.dirname(__file__), 'frontend', 'dist')
+
+# Flask app setup
+if PRODUCTION and os.path.exists(FRONTEND_BUILD_DIR):
+    # Production: serve React from dist folder
+    app = Flask(__name__, static_folder='frontend/dist', static_url_path='')
+else:
+    # Development: use default Flask setup (React runs separately)
+    app = Flask(__name__)
+    # Enable CORS for development (React dev server runs on different port)
+    CORS(app, resources={r"/*": {"origins": ["http://localhost:5173", "http://127.0.0.1:5173"]}})
+
 app.config['SECRET_KEY'] = SECRET_KEY
 socketio = SocketIO(app, cors_allowed_origins="*")
 
@@ -627,14 +641,23 @@ def process_gsi_data(data):
 # Flask Routes
 # ==========================================
 
+# Serve React App (Production mode)
+if PRODUCTION and os.path.exists(FRONTEND_BUILD_DIR):
+    @app.route('/')
+    @app.route('/scoreboard')
+    @app.route('/matches')
+    def serve_react_app():
+        """Serve the React app for all frontend routes."""
+        return send_from_directory(app.static_folder, 'index.html')
+else:
+    # Development mode - keep old template routes for reference
+    @app.route('/scoreboard')
+    def scoreboard():
+        return render_template('scoreboard.html')
 
-@app.route('/scoreboard')
-def scoreboard():
-    return render_template('scoreboard.html')
-
-@app.route('/matches')
-def matches_page():
-    return render_template('matches.html')
+    @app.route('/matches')
+    def matches_page():
+        return render_template('matches.html')
 
 @app.route('/api/status')
 def get_status():
