@@ -1,3 +1,9 @@
+import { memo } from 'react';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import { togglePlayerBoard } from '../../store/boardSlice';
+import { useHeroesData } from '../../hooks/useHeroesData';
+import { usePlayerChanges } from '../../hooks/usePlayerChanges';
+import { getHeroIconPath, getStarIconPath } from '../../utils/heroHelpers';
 import { PlayerState } from '../../types';
 
 interface PlayerRowProps {
@@ -5,91 +11,191 @@ interface PlayerRowProps {
   rank: number;
 }
 
-export const PlayerRow = ({ player, rank }: PlayerRowProps) => {
-  const getUnitIcon = (_unitId: number) => {
-    // This will need heroes data loaded - simplified for now
-    return `/icons/hero_icons_scaled_56x56/npc_dota_hero_abaddon_png.png`;
+export const PlayerRow = memo(({ player, rank }: PlayerRowProps) => {
+  const dispatch = useAppDispatch();
+  const { selectedPlayerIds } = useAppSelector((state) => state.board);
+  const { heroesData } = useHeroesData();
+  const changeEvents = usePlayerChanges(player.player_id, player);
+
+  const handleRowClick = () => {
+    dispatch(togglePlayerBoard({ playerId: player.player_id, playerData: player }));
+  };
+
+  const getUnitIcon = (unitId: number) => {
+    return getHeroIconPath(unitId, heroesData);
   };
 
   const getStarIcon = (rank: number) => {
-    return `/icons/UI_icons/star_icons/star_rank${rank}_psd.png`;
+    return getStarIconPath(rank);
+  };
+
+  const isSelected = selectedPlayerIds.includes(player.player_id);
+
+  // Separate units into roster (y >= 0) and bench (y = -1)
+  const units = player.units || [];
+  const rosterUnits = units.filter(unit => unit.position && unit.position.y >= 0);
+  const benchUnits = units.filter(unit => unit.position && unit.position.y === -1);
+
+  const formatRecord = () => {
+    if (player.wins === null || player.losses === null) {
+      return '—';
+    }
+    const wins = player.wins || 0;
+    const losses = player.losses || 0;
+    return `${wins}-${losses}`;
+  };
+
+  const renderChangeBar = () => {
+    return (
+      <div className="change-bar">
+        {changeEvents.map((event, idx) => (
+          <div
+            key={idx}
+            className="change-event"
+            style={{
+              color: event.type === 'gold' 
+                ? (event.delta > 0 ? '#bada55' : '#e6c200')
+                : event.type === 'health'
+                ? (event.delta > 0 ? '#2ecc40' : '#e74c3c')
+                : event.type === 'level'
+                ? '#00bfff'
+                : '#aaa'
+            }}
+          >
+            {event.type === 'gold' && `${event.delta > 0 ? '+' : ''}${event.delta}g`}
+            {event.type === 'health' && `${event.delta > 0 ? '+' : ''}${event.delta}hp`}
+            {event.type === 'level' && `Lv${event.delta > 0 ? '+' : ''}${event.delta}`}
+            {event.type === 'units' && 'Units'}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const createRosterContainer = () => {
+    return (
+      <div className="roster-container">
+        {rosterUnits.map((unit, idx) => (
+          <div key={idx} className="roster-unit">
+            <img
+              src={getUnitIcon(unit.unit_id)}
+              alt={`Unit ${unit.unit_id}`}
+              className="hero-portrait"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = '/icons/hero_icons_scaled_56x56/npc_dota_hero_abaddon_png.png';
+              }}
+            />
+            <div className="stars-container">
+              <div className="star-list">
+                {Array.from({ length: unit.rank || 0 }, (_, i) => (
+                  <div
+                    key={i}
+                    className={`star-icon rank${Math.min(unit.rank || 0, 3)}`}
+                    style={{
+                      backgroundImage: `url(${getStarIcon(unit.rank || 0)})`,
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const createBenchContainer = () => {
+    return (
+      <div className="bench-container">
+        {benchUnits.map((unit, idx) => (
+          <div key={idx} className="roster-unit">
+            <img
+              src={getUnitIcon(unit.unit_id)}
+              alt={`Unit ${unit.unit_id}`}
+              className="hero-portrait"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = '/icons/hero_icons_scaled_56x56/npc_dota_hero_abaddon_png.png';
+              }}
+            />
+            <div className="stars-container">
+              <div className="star-list">
+                {Array.from({ length: unit.rank || 0 }, (_, i) => (
+                  <div
+                    key={i}
+                    className={`star-icon rank${Math.min(unit.rank || 0, 3)}`}
+                    style={{
+                      backgroundImage: `url(${getStarIcon(unit.rank || 0)})`,
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
   };
 
   return (
-    <div className="player-row" id={`player-${player.player_id}`}>
+    <div 
+      className={`player-row ${isSelected ? 'selected' : ''}`} 
+      id={`player-${player.player_id}`}
+      onClick={handleRowClick}
+      style={{ cursor: 'pointer' }}
+    >
       {/* Place */}
-      <div className="col-place">
-        <span className="place-number">{rank}</span>
+      <div className="col-place" style={{ display: 'flex', alignItems: 'center' }}>
+        {renderChangeBar()}
+        <div className="place-number">{rank}</div>
       </div>
 
       {/* Player Name */}
       <div className="col-player">
-        <span className="player-name" title={player.persona_name || player.bot_persona_name}>
-          {player.persona_name || player.bot_persona_name || 'Unknown Player'}
-        </span>
+        <div className="name-container">
+          <div className="player-name" title={player.persona_name || player.bot_persona_name}>
+            {player.persona_name || player.bot_persona_name || 'Unknown Player'}
+          </div>
+          <div className="name-bottom">
+            <div className="unit-display">
+              <div className="unit-icon"></div>
+              <div className="unit-label">{player.level || 0}</div>
+            </div>
+            <div className="gold-display">
+              <div className="gold-icon"></div>
+              <div className="gold-label">{player.gold || 0}</div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Health */}
       <div className="col-health">
-        <img
-          src="/icons/UI_icons/other_icons/icon_health_psd.png"
-          alt="HP"
-          className="stat-icon"
-        />
-        <span className="health-value">{player.health}</span>
+        <div className="health-column">
+          <div className="health-large">{player.health !== null ? player.health : '—'}</div>
+          <div className="health-icon-large"></div>
+        </div>
       </div>
 
       {/* Record (Wins - Losses) */}
       <div className="col-record">
-        <span className="wins">{player.wins}</span>
-        <span className="separator">-</span>
-        <span className="losses">{player.losses}</span>
+        <div className="record-label">{formatRecord()}</div>
       </div>
 
       {/* Net Worth */}
       <div className="col-networth">
-        <img
-          src="/icons/UI_icons/other_icons/icon_gold_bevel_psd.png"
-          alt="Gold"
-          className="stat-icon"
-        />
-        <span className="networth-value">{player.net_worth}</span>
+        <div className="networth-label">{player.net_worth !== null ? player.net_worth : '—'}</div>
       </div>
 
       {/* Roster (Board Units) */}
       <div className="col-roster">
-        <div className="units-container">
-          {player.units && player.units.length > 0 ? (
-            player.units.map((unit, idx) => (
-              <div key={idx} className="unit-slot">
-                <img
-                  src={getUnitIcon(unit.unit_id)}
-                  alt={`Unit ${unit.unit_id}`}
-                  className="unit-icon"
-                />
-                {unit.rank > 1 && (
-                  <img
-                    src={getStarIcon(unit.rank)}
-                    alt={`Rank ${unit.rank}`}
-                    className="unit-star"
-                  />
-                )}
-              </div>
-            ))
-          ) : (
-            <span className="empty-units">No units</span>
-          )}
-        </div>
+        {createRosterContainer()}
       </div>
 
       {/* Bench */}
       <div className="col-bench">
-        <div className="bench-container">
-          {/* Bench units would go here - currently empty in the data */}
-          <span className="empty-bench">-</span>
-        </div>
+        {createBenchContainer()}
       </div>
     </div>
   );
-};
+});
 

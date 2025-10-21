@@ -1,7 +1,10 @@
 // Player state types
 export interface Unit {
   unit_id: number;
-  position: number;
+  position: {
+    x: number;
+    y: number;
+  };
   rank: number;
   keywords?: string[];
 }

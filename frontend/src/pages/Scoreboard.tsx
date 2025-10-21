@@ -3,6 +3,7 @@ import { useAppSelector } from '../hooks/redux';
 import { ConnectionStatus } from '../components/Scoreboard/ConnectionStatus';
 import { MatchInfo } from '../components/Scoreboard/MatchInfo';
 import { ScoreboardTable } from '../components/Scoreboard/ScoreboardTable';
+import { BoardVisualizer } from '../components/Scoreboard/BoardVisualizer';
 import '../styles/scoreboard.css';
 import '../styles/board-visualizer.css';
 
@@ -25,8 +26,7 @@ export const Scoreboard = () => {
       {currentMatch ? (
         <>
           <ScoreboardTable />
-          {/* Board visualizations container */}
-          <div id="boardsContainer" className="boards-container"></div>
+          <BoardVisualizer />
         </>
       ) : (
         <div id="noMatch" className="no-match">

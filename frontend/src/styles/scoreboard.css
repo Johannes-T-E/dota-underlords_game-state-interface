@@ -203,6 +203,11 @@ h1 {
     background: var(--self-row-color);
 }
 
+.player-row.selected {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--accent-color);
+}
+
 /* Place number styling */
 .place-number {
     width: 100%;
@@ -445,6 +450,33 @@ h1 {
     border-radius: 6px;
     margin-bottom: 2rem;
     text-align: center;
+}
+
+/* Navigation */
+.navigation {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.nav-button {
+    background: var(--secondary-color);
+    color: var(--accent-color);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.nav-button:hover {
+    background: var(--accent-color);
+    color: var(--primary-color);
+    border-color: var(--accent-color);
 }
 
 /* Utility classes */

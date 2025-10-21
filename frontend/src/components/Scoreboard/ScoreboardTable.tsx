@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
-import { useAppSelector } from '../../hooks/redux';
+import { useAppSelector, useAppDispatch } from '../../hooks/redux';
+import { updateBoardData } from '../../store/boardSlice';
 import { PlayerRow } from './PlayerRow';
 import type { PlayerState } from '../../types';
 
@@ -7,7 +8,9 @@ type SortField = 'health' | 'record' | 'networth';
 type SortDirection = 'asc' | 'desc';
 
 export const ScoreboardTable = () => {
+  const dispatch = useAppDispatch();
   const { players } = useAppSelector((state) => state.match);
+  const { selectedPlayerIds } = useAppSelector((state) => state.board);
   const [sortField, setSortField] = useState<SortField>('health');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
@@ -47,6 +50,16 @@ export const ScoreboardTable = () => {
 
     return sorted;
   }, [players, sortField, sortDirection]);
+
+  // Update board data for selected players
+  useMemo(() => {
+    selectedPlayerIds.forEach(playerId => {
+      const player = players.find(p => p.player_id === playerId);
+      if (player) {
+        dispatch(updateBoardData({ playerId, playerData: player }));
+      }
+    });
+  }, [players, selectedPlayerIds, dispatch]);
 
   if (players.length === 0) {
     return null;
