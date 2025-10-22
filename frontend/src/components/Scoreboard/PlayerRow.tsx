@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { togglePlayerBoard } from '../../store/boardSlice';
 import { useHeroesData } from '../../hooks/useHeroesData';
 import { usePlayerChanges } from '../../hooks/usePlayerChanges';
-import { getHeroIconPath, getStarIconPath } from '../../utils/heroHelpers';
+import { HeroPortrait } from './HeroPortrait';
 import { PlayerState } from '../../types';
 
 interface PlayerRowProps {
@@ -21,13 +21,6 @@ export const PlayerRow = memo(({ player, rank }: PlayerRowProps) => {
     dispatch(togglePlayerBoard({ playerId: player.player_id, playerData: player }));
   };
 
-  const getUnitIcon = (unitId: number) => {
-    return getHeroIconPath(unitId, heroesData);
-  };
-
-  const getStarIcon = (rank: number) => {
-    return getStarIconPath(rank);
-  };
 
   const isSelected = selectedPlayerIds.includes(player.player_id);
 
@@ -77,27 +70,11 @@ export const PlayerRow = memo(({ player, rank }: PlayerRowProps) => {
       <div className="roster-container">
         {rosterUnits.map((unit, idx) => (
           <div key={idx} className="roster-unit">
-            <img
-              src={getUnitIcon(unit.unit_id)}
-              alt={`Unit ${unit.unit_id}`}
-              className="hero-portrait"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = '/icons/hero_icons_scaled_56x56/npc_dota_hero_abaddon_png.png';
-              }}
+            <HeroPortrait 
+              unitId={unit.unit_id}
+              rank={unit.rank || 0}
+              heroesData={heroesData}
             />
-            <div className="stars-container">
-              <div className="star-list">
-                {Array.from({ length: unit.rank || 0 }, (_, i) => (
-                  <div
-                    key={i}
-                    className={`star-icon rank${Math.min(unit.rank || 0, 3)}`}
-                    style={{
-                      backgroundImage: `url(${getStarIcon(unit.rank || 0)})`,
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
           </div>
         ))}
       </div>
@@ -109,27 +86,11 @@ export const PlayerRow = memo(({ player, rank }: PlayerRowProps) => {
       <div className="bench-container">
         {benchUnits.map((unit, idx) => (
           <div key={idx} className="roster-unit">
-            <img
-              src={getUnitIcon(unit.unit_id)}
-              alt={`Unit ${unit.unit_id}`}
-              className="hero-portrait"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = '/icons/hero_icons_scaled_56x56/npc_dota_hero_abaddon_png.png';
-              }}
+            <HeroPortrait 
+              unitId={unit.unit_id}
+              rank={unit.rank || 0}
+              heroesData={heroesData}
             />
-            <div className="stars-container">
-              <div className="star-list">
-                {Array.from({ length: unit.rank || 0 }, (_, i) => (
-                  <div
-                    key={i}
-                    className={`star-icon rank${Math.min(unit.rank || 0, 3)}`}
-                    style={{
-                      backgroundImage: `url(${getStarIcon(unit.rank || 0)})`,
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
           </div>
         ))}
       </div>

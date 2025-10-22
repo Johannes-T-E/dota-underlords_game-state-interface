@@ -6,6 +6,7 @@ import { ScoreboardTable } from '../components/Scoreboard/ScoreboardTable';
 import { BoardVisualizer } from '../components/Scoreboard/BoardVisualizer';
 import '../styles/scoreboard.css';
 import '../styles/board-visualizer.css';
+import '../styles/hero-portrait.css';
 
 export const Scoreboard = () => {
   const { currentMatch } = useAppSelector((state) => state.match);

@@ -191,8 +191,8 @@ h1 {
     align-items: center;
     border-bottom: 1px solid rgba(255,255,255,0.1);
     background: var(--primary-color);
-    transition: all var(--transition-time) ease-in-out;
-    flex-shrink: 0;
+    /* transition: all var(--transition-time) ease-in-out; */
+    /* flex-shrink: 0; */
 }
 
 .player-row:nth-child(even) {
@@ -204,8 +204,8 @@ h1 {
 }
 
 .player-row.selected {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid var(--accent-color);
+    background: rgba(255, 255, 255, 0.046);
+    /* border: 0px solid var(--accent-color); */
 }
 
 /* Place number styling */
@@ -330,19 +330,18 @@ h1 {
     display: flex;
     flex-direction: row;
     align-items: center;
-    height: 100%;
-    gap: 4px;
+    height: var(--row-height);
     overflow-x: auto;
     overflow-y: hidden;
 }
 
 .roster-unit {
-    width: 56px;
+    width: 60px;
     height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    /* justify-content: center; */
     position: relative;
     transition: all var(--transition-time) ease-in-out;
 }
@@ -357,42 +356,6 @@ h1 {
     filter: saturate(0.2) brightness(0.1);
 }
 
-.hero-portrait {
-    height: 40px;
-    width: 40px;
-    border-radius: 4px;
-}
-
-.stars-container {
-    width: 100%;
-    margin-top: -8px;
-}
-
-.star-list {
-    display: flex;
-    justify-content: center;
-    gap: -4px;
-}
-
-.star-icon {
-    width: 18px;
-    height: 18px;
-    margin: 0 -2px;
-    background-size: cover;
-    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.8));
-}
-
-.star-icon.rank1 {
-    background-image: url('/static/icons/UI_icons/star_icons/star_rank1_psd.png');
-}
-
-.star-icon.rank2 {
-    background-image: url('/static/icons/UI_icons/star_icons/star_rank2_psd.png');
-}
-
-.star-icon.rank3 {
-    background-image: url('/static/icons/UI_icons/star_icons/star_rank3_psd.png');
-}
 
 /* Bench specific styling */
 .bench-container .roster-unit {
