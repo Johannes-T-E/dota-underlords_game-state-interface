@@ -1,6 +1,7 @@
-import { useAppSelector } from '../../hooks/redux';
-import { PlayerBoard } from './PlayerBoard';
-import { useHeroesData } from '../../hooks/useHeroesData';
+import { useAppSelector } from '../../../hooks/redux';
+import { PlayerBoard } from '../PlayerBoard/PlayerBoard';
+import { useHeroesData } from '../../../hooks/useHeroesData';
+import './BoardVisualizer.css';
 
 export const BoardVisualizer = () => {
   const { selectedPlayerIds, boardData } = useAppSelector((state) => state.board);

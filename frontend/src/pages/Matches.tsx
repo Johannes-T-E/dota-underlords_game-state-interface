@@ -8,7 +8,7 @@ import {
   removeMatch,
 } from '../store/matchesSlice';
 import { apiService } from '../services/api';
-import '../styles/scoreboard.css';
+import '../styles/globals.css';
 import '../styles/matches.css';
 
 export const Matches = () => {

@@ -1,12 +1,10 @@
 import { Link } from 'react-router-dom';
 import { useAppSelector } from '../hooks/redux';
-import { ConnectionStatus } from '../components/Scoreboard/ConnectionStatus';
-import { MatchInfo } from '../components/Scoreboard/MatchInfo';
-import { ScoreboardTable } from '../components/Scoreboard/ScoreboardTable';
-import { BoardVisualizer } from '../components/Scoreboard/BoardVisualizer';
-import '../styles/scoreboard.css';
-import '../styles/board-visualizer.css';
-import '../styles/hero-portrait.css';
+import { ConnectionStatus } from '../components/Scoreboard/ConnectionStatus/ConnectionStatus';
+import { MatchInfo } from '../components/Scoreboard/MatchInfo/MatchInfo';
+import { ScoreboardTable } from '../components/Scoreboard/ScoreboardTable/ScoreboardTable';
+import { BoardVisualizer } from '../components/Scoreboard/BoardVisualizer/BoardVisualizer';
+import '../styles/globals.css';
 
 export const Scoreboard = () => {
   const { currentMatch } = useAppSelector((state) => state.match);

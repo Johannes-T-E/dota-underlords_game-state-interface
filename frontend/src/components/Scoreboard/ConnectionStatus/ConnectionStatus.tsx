@@ -1,4 +1,5 @@
-import { useAppSelector } from '../../hooks/redux';
+import { useAppSelector } from '../../../hooks/redux';
+import './ConnectionStatus.css';
 
 export const ConnectionStatus = () => {
   const { status } = useAppSelector((state) => state.connection);

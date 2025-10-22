@@ -1,6 +1,7 @@
 import { memo } from 'react';
-import { getHeroIconPath, getStarIconPath } from '../../utils/heroHelpers';
-import type { HeroesData } from '../../utils/heroHelpers';
+import { getHeroIconPath, getStarIconPath } from '../../../utils/heroHelpers';
+import type { HeroesData } from '../../../utils/heroHelpers';
+import './HeroPortrait.css';
 
 interface HeroPortraitProps {
   unitId: number;

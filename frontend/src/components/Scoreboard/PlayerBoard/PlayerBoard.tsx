@@ -1,9 +1,10 @@
-import { useAppDispatch } from '../../hooks/redux';
-import { removePlayerBoard } from '../../store/boardSlice';
-import { BoardGrid } from './BoardGrid';
-import { BenchGrid } from './BenchGrid';
-import { PlayerState } from '../../types';
-import type { HeroesData } from '../../utils/heroHelpers';
+import { useAppDispatch } from '../../../hooks/redux';
+import { removePlayerBoard } from '../../../store/boardSlice';
+import { BoardGrid } from '../BoardGrid/BoardGrid';
+import { BenchGrid } from '../BenchGrid/BenchGrid';
+import { PlayerState } from '../../../types';
+import type { HeroesData } from '../../../utils/heroHelpers';
+import './PlayerBoard.css';
 
 interface PlayerBoardProps {
   player: PlayerState;

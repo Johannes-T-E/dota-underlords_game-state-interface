@@ -1,6 +1,7 @@
-import { BoardUnit } from './BoardUnit';
-import { Unit } from '../../types';
-import type { HeroesData } from '../../utils/heroHelpers';
+import { BoardUnit } from '../BoardUnit/BoardUnit';
+import { Unit } from '../../../types';
+import type { HeroesData } from '../../../utils/heroHelpers';
+import './BoardGrid.css';
 
 interface BoardGridProps {
   units: Unit[];

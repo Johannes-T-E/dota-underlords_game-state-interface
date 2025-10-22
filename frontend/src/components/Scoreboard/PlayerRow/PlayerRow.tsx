@@ -1,10 +1,11 @@
 import { memo } from 'react';
-import { useAppDispatch, useAppSelector } from '../../hooks/redux';
-import { togglePlayerBoard } from '../../store/boardSlice';
-import { useHeroesData } from '../../hooks/useHeroesData';
-import { usePlayerChanges } from '../../hooks/usePlayerChanges';
-import { HeroPortrait } from './HeroPortrait';
-import { PlayerState } from '../../types';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
+import { togglePlayerBoard } from '../../../store/boardSlice';
+import { useHeroesData } from '../../../hooks/useHeroesData';
+import { usePlayerChanges } from '../../../hooks/usePlayerChanges';
+import { HeroPortrait } from '../HeroPortrait/HeroPortrait';
+import { PlayerState } from '../../../types';
+import './PlayerRow.css';
 
 interface PlayerRowProps {
   player: PlayerState;

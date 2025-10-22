@@ -1,21 +1,4 @@
-.navigation {
-    margin-bottom: 2rem;
-}
-
-.nav-button {
-    display: inline-block;
-    padding: 10px 20px;
-    background: var(--secondary-color);
-    color: var(--accent-color);
-    text-decoration: none;
-    border-radius: 4px;
-    border: 1px solid var(--border-color);
-    transition: background-color 0.2s;
-}
-
-.nav-button:hover {
-    background: var(--border-color);
-}
+/* Navigation styles moved to globals.css */
 
 .matches-list {
     background: var(--secondary-color);

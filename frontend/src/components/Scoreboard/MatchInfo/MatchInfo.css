@@ -1,0 +1,33 @@
+/* Match Info */
+.match-info {
+    background: var(--secondary-color);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color);
+}
+
+.match-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.abandon-button {
+    background: #d32f2f;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: auto;
+    transition: background-color 0.2s;
+}
+
+.abandon-button:hover {
+    background: #b71c1c;
+}
+

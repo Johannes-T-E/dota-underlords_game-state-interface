@@ -1,8 +1,9 @@
-import { useState, useMemo } from 'react';
-import { useAppSelector, useAppDispatch } from '../../hooks/redux';
-import { updateBoardData } from '../../store/boardSlice';
-import { PlayerRow } from './PlayerRow';
-import type { PlayerState } from '../../types';
+import { useState, useMemo, useEffect } from 'react';
+import { useAppSelector, useAppDispatch } from '../../../hooks/redux';
+import { updateBoardData } from '../../../store/boardSlice';
+import { PlayerRow } from '../PlayerRow/PlayerRow';
+import type { PlayerState } from '../../../types';
+import './ScoreboardTable.css';
 
 type SortField = 'health' | 'record' | 'networth';
 type SortDirection = 'asc' | 'desc';
@@ -52,7 +53,7 @@ export const ScoreboardTable = () => {
   }, [players, sortField, sortDirection]);
 
   // Update board data for selected players
-  useMemo(() => {
+  useEffect(() => {
     selectedPlayerIds.forEach(playerId => {
       const player = players.find(p => p.player_id === playerId);
       if (player) {

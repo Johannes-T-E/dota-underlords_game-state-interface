@@ -1,5 +1,6 @@
-import { useAppSelector } from '../../hooks/redux';
-import { apiService } from '../../services/api';
+import { useAppSelector } from '../../../hooks/redux';
+import { apiService } from '../../../services/api';
+import './MatchInfo.css';
 
 export const MatchInfo = () => {
   const { currentMatch, currentRound } = useAppSelector((state) => state.match);
