@@ -9,10 +9,9 @@
   position: relative;
   --hero-size: 67%;
   --hero-margin-top: 16.67%;
-  --star-size: 30%;
-  --star-margin: 3%;
-  --star-container-margin-top: 66.67%; /* 40px out of 60px */
-  --star-container-height: 33.33%; /* 20px out of 60px */
+  --star-size: 20%;
+  --star-container-margin-top: 70% ; /* 100% - (star-size) */
+  --star-margin: -0%; /* (--star-container-margin-top) - (--hero-size)*/
 }
 
 .hero-portrait-image {
@@ -33,24 +32,24 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  height: var(--star-container-height); /* 20px out of 60px = 33.33% */
+  height: var(--star-size);
   min-height: 20px; /* Ensure minimum height for visibility */
 }
 
 .hero-portrait-star-list {
   display: flex;
   justify-content: center;
-  margin-top: 0px;
+  margin-top: var(--star-margin);
   width: 100%;
   height: 100%;
 }
 
 .hero-portrait-star {
-  width: 25%; /* 18px out of 60px = 30% */
+  width: var(--star-size); /* 18px out of 60px = 30% */
   height: 100%;
   /* min-width: 12px;  */
   /* min-height: 12px; */
-  margin: var(--star-margin) var(--star-margin); /* -2px out of 60px = -3.33% */
+  margin: 0;
   background-size: contain; /* Scale to fit within container without cropping */
   background-repeat: no-repeat;
   background-position: center;

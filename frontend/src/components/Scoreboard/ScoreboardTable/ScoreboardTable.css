@@ -7,6 +7,7 @@
     width: 100%;
     display: flex;
     flex-direction: column;
+    table-layout: fixed; /* Fixed table layout for consistent column alignment */
 }
 
 /* Header row */
@@ -41,7 +42,12 @@
 .col-health { min-width: var(--width-health); padding-left: 0px; }
 .col-record { min-width: var(--width-record); }
 .col-networth { min-width: var(--width-networth); }
-.col-roster { min-width: var(--width-roster); margin-right: 40px; }
+.col-roster { 
+    margin-right: 40px;
+    width: 800px; /* Fixed width to accommodate up to 13+ heroes */
+    max-width: none;
+    flex: 0 0 auto; /* Don't grow or shrink, size to content */
+}
 .col-bench { min-width: var(--width-bench); }
 
 /* Sortable headers */

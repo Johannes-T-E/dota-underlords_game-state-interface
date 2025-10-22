@@ -1,20 +1,22 @@
 /* Bench Grid (8x1) */
 .bench-grid {
     display: grid;
-    grid-template-columns: repeat(8, 60px);
-    grid-template-rows: 60px;
-    gap: 4px;
+    grid-template-columns: repeat(var(--cols), var(--cell-size));
+    grid-template-rows: var(--cell-size);
+    gap: var(--gap-size);
+    width: fit-content;
 }
 
 /* Bench Cells */
 .bench-cell {
-    width: 60px;
-    height: 60px;
+    width: var(--cell-size);
+    height: var(--cell-size);
     background: rgba(255,255,255,0.05);
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: 4px;
     position: relative;
     transition: all 0.2s ease;
+    box-sizing: border-box;
 }
 
 .bench-cell:hover {

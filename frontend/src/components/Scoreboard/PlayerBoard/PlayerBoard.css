@@ -1,6 +1,17 @@
 /* Individual Board Wrapper */
 .board-wrapper {
-    width: 508px; /* 8 cells * 60px + 7 gaps * 4px = 480 + 28 = 508px */
+    /* CSS Variables for flexible sizing */
+    --cell-size: 60px;
+    --gap-size: 4px;
+    --cols: 8;
+    --rows: 4;
+    --bench-rows: 1;
+    --padding: 16px;
+    
+    /* Calculated dimensions */
+    --grid-width: calc(var(--cols) * var(--cell-size) + (var(--cols) - 1) * var(--gap-size));
+    
+    width: fit-content;
     background: var(--primary-color);
     border-radius: 8px;
     border: 2px solid var(--border-color);
@@ -50,6 +61,28 @@
 
 /* Board Grid Container */
 .board-grid-container {
-    padding: 8px;
+    padding: var(--padding);
+}
+
+/* Example usage classes for different board sizes */
+.board-wrapper.compact {
+    --cell-size: 48px;
+}
+
+.board-wrapper.large {
+    --cell-size: 72px;
+}
+
+/* Responsive sizing */
+@media (max-width: 768px) {
+    .board-wrapper {
+        --cell-size: 50px;
+    }
+}
+
+@media (max-width: 480px) {
+    .board-wrapper {
+        --cell-size: 40px;
+    }
 }
 
