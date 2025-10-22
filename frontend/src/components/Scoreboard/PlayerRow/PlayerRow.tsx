@@ -39,6 +39,26 @@ export const PlayerRow = memo(({ player, rank }: PlayerRowProps) => {
     return `${wins}-${losses}`;
   };
 
+  const renderStreak = () => {
+    const winStreak = player.win_streak || 0;
+    const loseStreak = player.lose_streak || 0;
+    
+    if (winStreak > 0) {
+      return (
+        <div className="streak-display">
+          <div className="streak-label win-streak">W{winStreak}</div>
+        </div>
+      );
+    } else if (loseStreak > 0) {
+      return (
+        <div className="streak-display">
+          <div className="streak-label lose-streak">L{loseStreak}</div>
+        </div>
+      );
+    }
+    return null;
+  };
+
   const renderChangeBar = () => {
     return (
       <div className="change-bar">
@@ -126,6 +146,7 @@ export const PlayerRow = memo(({ player, rank }: PlayerRowProps) => {
               <div className="gold-icon"></div>
               <div className="gold-label">{player.gold || 0}</div>
             </div>
+            {renderStreak()}
           </div>
         </div>
       </div>

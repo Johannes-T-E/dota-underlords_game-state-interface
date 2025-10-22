@@ -97,6 +97,33 @@
     background-size: cover;
 }
 
+/* Streak display styling */
+.streak-display {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.streak-label {
+    font-size: 14px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-shadow: 0px 0px 2px rgba(0,0,0,0.8);
+}
+
+.win-streak {
+    color: var(--win-streak-color);
+    background: rgba(46, 204, 64, 0.15);
+    border: 1px solid rgba(46, 204, 64, 0.3);
+}
+
+.lose-streak {
+    color: var(--lose-streak-color);
+    background: rgba(231, 76, 60, 0.15);
+    border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
 /* Health column styling */
 .health-column {
     display: flex;

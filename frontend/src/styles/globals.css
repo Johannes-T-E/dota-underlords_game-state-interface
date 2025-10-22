@@ -10,6 +10,8 @@
     --unit-color: #BAD1FF;
     --gold-color: #F5C95C;
     --networth-color: #FFF06D;
+    --win-streak-color: #2ecc40;
+    --lose-streak-color: #e74c3c;
     --row-height: 60px;
     --transition-time: 0.4s;
     

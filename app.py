@@ -31,7 +31,7 @@ GSI_HOST = '0.0.0.0'  # Must match game's GSI config
 GSI_PORT = 3000       # Must match game's GSI config
 
 # Client owner identification (the player running this GSI client)
-CLIENT_OWNER_ACCOUNT_ID = '249722568'
+PRIVATE_PLAYER_ACCOUNT_ID = '249722568'
 
 # Determine if we're in production or development
 PRODUCTION = os.getenv('PRODUCTION', 'false').lower() == 'true'
@@ -64,7 +64,7 @@ class MatchState:
         self.round_number = 1                   # Start at round 1
         self.round_phase = 'prep'               # Start in prep phase
         self.players = {}       # player_id -> player_data
-        self.private_player = {} # private data for the human player only
+        self.private_player = {} # private data (client owner)
         self.candidates = {}    # player_id -> player_data
         self.sequences = {}     # player_id -> last_sequence_number
         self.buffer = []        # (public_state, timestamp) tuples
@@ -205,13 +205,62 @@ def db_writer_worker():
             if task is None:
                 break
             
-            match_id, player_id, player_data, timestamp = task
-            
-            # Route to correct insert method based on player_id
-            if player_id == 'private_player':
-                db.insert_private_snapshot(match_id, player_data, timestamp)
+            # Handle different task types
+            if isinstance(task, tuple) and len(task) >= 2:
+                task_type = task[0]
+                
+                if task_type == 'insert_snapshot':
+                    # Original insert task: (task_type, match_id, player_id, player_data, timestamp)
+                    _, match_id, player_id, player_data, timestamp = task
+                    if player_id == 'private_player':
+                        db.insert_private_snapshot(match_id, player_data, timestamp)
+                    else:
+                        db.insert_public_snapshot(match_id, player_id, player_data, timestamp)
+                
+                elif task_type == 'update_final_place':
+                    # Update final place task: (task_type, match_id, player_id, final_place)
+                    _, match_id, player_id, final_place = task
+                    db.update_match_player_final_place(match_id, player_id, final_place)
+                
+                elif task_type == 'update_player_final_place':
+                    # Update player final place in snapshots: (task_type, match_id, player_id, final_place, timestamp)
+                    _, match_id, player_id, final_place, timestamp = task
+                    db.update_player_final_place(match_id, player_id, final_place, timestamp)
+                
+                elif task_type == 'update_match_end':
+                    # Update match end time: (task_type, match_id, timestamp)
+                    _, match_id, timestamp = task
+                    db.update_match_end_time(match_id, timestamp)
+                
+                elif task_type == 'match_end_transaction':
+                    # Complete match end transaction: (task_type, match_id, winner_id, timestamp)
+                    _, match_id, winner_id, timestamp = task
+                    # Perform all match end operations in a single transaction
+                    try:
+                        db.update_player_final_place(match_id, winner_id, 1, timestamp)
+                        db.update_match_player_final_place(match_id, winner_id, 1)
+                        db.update_match_end_time(match_id, timestamp)
+                        print(f"[DB Writer] Match end transaction completed for {match_id}")
+                    except Exception as e:
+                        print(f"[DB Writer] Match end transaction failed: {e}")
+                        db.conn.rollback()
+                        raise
+                
+                elif task_type == 'delete_match':
+                    # Delete match: (task_type, match_id)
+                    _, match_id = task
+                    db.delete_match(match_id)
+                    print(f"[DB Writer] Match {match_id} deleted")
+                
+                else:
+                    print(f"[DB Writer] Unknown task type: {task_type}")
             else:
-                db.insert_public_snapshot(match_id, player_id, player_data, timestamp)
+                # Legacy format for backward compatibility
+                match_id, player_id, player_data, timestamp = task
+                if player_id == 'private_player':
+                    db.insert_private_snapshot(match_id, player_data, timestamp)
+                else:
+                    db.insert_public_snapshot(match_id, player_id, player_data, timestamp)
             
             db_write_queue.task_done()
         except Exception as e:
@@ -253,18 +302,17 @@ def check_match_end(match_id: str, timestamp: datetime) -> bool:
         winner_id = winner['player_id']
         print(f"[MATCH END] Player {second_place[0]['player_id']} got 2nd, marking {winner_id} as winner")
         
-        # Use a single transaction for match end operations
+        # Queue match end transaction to avoid race conditions
         try:
-            db.update_player_final_place(match_id, winner_id, 1, timestamp)
-            db.update_match_player_final_place(match_id, winner_id, 1)  # Add this line
+            # Update in-memory state immediately
             match_state.players[winner_id]['final_place'] = 1
-            db.update_match_end_time(match_id, timestamp)
-            print(f"[MATCH END] Match {match_id} ended")
+            
+            # Queue all match end operations as a single transaction
+            db_write_queue.put(('match_end_transaction', match_id, winner_id, timestamp))
+            print(f"[MATCH END] Match {match_id} ended - transaction queued")
             return True
         except Exception as e:
-            print(f"[ERROR] Failed to update match end: {e}")
-            # Rollback any partial changes
-            db.conn.rollback()
+            print(f"[ERROR] Failed to queue match end transaction: {e}")
             return False
     
     return False
@@ -273,8 +321,8 @@ def abandon_match(match_id: str, timestamp: datetime, reason: str = "Manual"):
     """Mark a match as abandoned and reset game state."""
     print(f"[MATCH ABANDONED] Match {match_id} - Reason: {reason}")
     
-    # Update database: set match end time
-    db.update_match_end_time(match_id, timestamp)
+    # Queue database update: set match end time
+    db_write_queue.put(('update_match_end', match_id, timestamp))
     
     # Reset match state to allow new game detection
     match_state.reset()
@@ -412,7 +460,7 @@ def update_private_player_state(private_state: Dict, timestamp: datetime):
         'timestamp': timestamp.isoformat()
     }
     
-    # Store in match state (only one private player - the human player)
+    # Store in match state (only one private player - client owner)
     match_state.private_player = private_player_state
 
 def emit_realtime_update():
@@ -428,7 +476,7 @@ def emit_realtime_update():
             'player_count': len(match_state.players)
         },
         'players': list(match_state.players.values()),
-        'private_player': match_state.private_player,  # Private data for the human player
+        'private_player': match_state.private_player,  # Private data for client owner
         'current_round': {
             'round_number': match_state.round_number,
             'round_phase': match_state.round_phase,
@@ -491,7 +539,7 @@ def process_buffered_data(match_id: str, confirmed_players: set, timestamp: date
             # Update memory and database
             update_public_player_state(buf_player_id, buf_state, buf_time)
             match_state.sequences[buf_player_id] = buf_sequence
-            db_write_queue.put((match_id, buf_player_id, buf_state, buf_time))
+            db_write_queue.put(('insert_snapshot', match_id, buf_player_id, buf_state, buf_time))
     
     # Process private player states
     # Find latest private sequence
@@ -507,7 +555,7 @@ def process_buffered_data(match_id: str, confirmed_players: set, timestamp: date
         if private_sequence == latest_private_sequence:
             update_private_player_state(private_state, private_time)
             match_state.sequences['private_sequence'] = private_sequence
-            db_write_queue.put((match_id, 'private_player', private_state, private_time))
+            db_write_queue.put(('insert_snapshot', match_id, 'private_player', private_state, private_time))
             break  # Only process once
     
     # Clear both buffers
@@ -532,7 +580,7 @@ def process_gsi_data(data):
                 continue
             
             for data_obj in block['data']:
-                # Process private player state (only for the human player)
+                # Process private player state
                 if 'private_player_state' in data_obj:
                     private_state = data_obj['private_player_state']
                     private_sequence_num = private_state.get('sequence_number', 0)
@@ -555,7 +603,7 @@ def process_gsi_data(data):
                         any_updates = True
                         
                         # Queue for DB write (private state)
-                        db_write_queue.put((match_state.match_id, 'private_player', private_state, timestamp))
+                        db_write_queue.put(('insert_snapshot', match_state.match_id, 'private_player', private_state, timestamp))
                 
                 if 'public_player_state' not in data_obj:
                     continue
@@ -599,7 +647,7 @@ def process_gsi_data(data):
                     # Active match - update memory and store in DB
                     
                     # Check if client owner has reset (indicates abandoned previous game)
-                    if player_id == CLIENT_OWNER_ACCOUNT_ID and player_id in match_state.players:
+                    if player_id == PRIVATE_PLAYER_ACCOUNT_ID and player_id in match_state.players:
                         old_health = match_state.players[player_id].get('health', 0)
                         old_slot = match_state.players[player_id].get('player_slot', 0)
                         new_health = public_state.get('health', 0)
@@ -621,13 +669,13 @@ def process_gsi_data(data):
                         any_updates = True
                         
                         # Queue for DB write
-                        db_write_queue.put((match_state.match_id, player_id, public_state, timestamp))
+                        db_write_queue.put(('insert_snapshot', match_state.match_id, player_id, public_state, timestamp))
                         
                         # Check for match end
                         final_place = public_state.get('final_place', 0)
                         if final_place > 0:
-                            # Update match_players table
-                            db.update_match_player_final_place(match_state.match_id, player_id, final_place)
+                            # Queue update for match_players table
+                            db_write_queue.put(('update_final_place', match_state.match_id, player_id, final_place))
                             
                             if check_match_end(match_state.match_id, timestamp):
                                 print(f"[MATCH END] Clearing game state")
@@ -729,7 +777,9 @@ def delete_match(match_id):
             'message': 'Cannot delete active match. Abandon it first.'
         }), 400
     
-    success = db.delete_match(match_id)
+    # Queue delete operation
+    db_write_queue.put(('delete_match', match_id))
+    success = True  # Assume success since it's queued
     
     if success:
         return jsonify({
