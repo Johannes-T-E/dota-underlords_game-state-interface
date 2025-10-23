@@ -1,118 +1,131 @@
 :root {
-    /* Game-accurate colors from underlords.css */
-    --primary-color: #111014;
-    --secondary-color: #1D1C23;
-    --self-row-color: #2E2B39;
-    --accent-color: #CACACA;
-    --text-color: #FFF;
-    --border-color: #444a54;
-    --health-color: #A2FF92;
-    --unit-color: #BAD1FF;
-    --gold-color: #F5C95C;
-    --networth-color: #FFF06D;
-    --win-streak-color: #2ecc40;
-    --lose-streak-color: #e74c3c;
-    --row-height: 60px;
-    --transition-time: 0.4s;
-    
-    /* Column widths matching the game */
-    --width-place: 60px;
-    --width-player: 200px;
-    --width-health: 130px;
-    --width-record: 100px;
-    --width-networth: 120px;
-    --width-roster: 440px;
-    --width-bench: 350px;
+  /* Game-accurate colors from underlords.css */
+  --primary-color: #111014;
+  --secondary-color: #1d1c23;
+  --self-row-color: #2e2b39;
+  --accent-color: #cacaca;
+  --text-color: #fff;
+  --border-color: #444a54;
+  --health-color: #a2ff92;
+  --unit-color: #bad1ff;
+  --gold-color: #f5c95c;
+  --networth-color: #fff06d;
+  --win-streak-color: #2ecc40;
+  --lose-streak-color: #e74c3c;
+  --row-height: 60px;
+  --transition-time: 0.4s;
+
+  /* Column widths matching the game */
+  --width-place: 60px;
+  --width-player: 200px;
+  --width-health: 130px;
+  --width-record: 100px;
+  --width-networth: 120px;
+  --width-roster: 440px;
+  --width-bench: 350px;
+
+  /* placeholder glow colours*/
+  --tier1-glow-color: #e8e8e8;
+  --tier2-glow-color: #31e837;
+  --tier3-glow-color: #0073ff;
+  --tier4-glow-color: #990eda;
+  --tier5-glow-color: #ffea00;
+  --underlord-glow-color: #ba1fb5;
 }
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--primary-color);
-    color: var(--text-color);
-    line-height: 1.6;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  line-height: 1.6;
 }
 
 .container {
-    width: fit-content;
-    margin: 2rem auto;
-    padding: 0 1rem;
+  width: fit-content;
+  margin: 2rem auto;
+  padding: 0 1rem;
 }
 
 h1 {
-    text-align: center;
-    margin-bottom: 2rem;
-    color: var(--accent-color);
-    font-size: 2.5rem;
-    font-weight: black;
-    letter-spacing: 1px;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: var(--accent-color);
+  font-size: 2.5rem;
+  font-weight: black;
+  letter-spacing: 1px;
 }
 
 /* Navigation */
 .navigation {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
 }
 
 .nav-button {
-    background: var(--secondary-color);
-    color: var(--accent-color);
-    text-decoration: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    border: 1px solid var(--border-color);
-    font-size: 14px;
-    font-weight: bold;
-    transition: all 0.2s ease;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+  background: var(--secondary-color);
+  color: var(--accent-color);
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .nav-button:hover {
-    background: var(--accent-color);
-    color: var(--primary-color);
-    border-color: var(--accent-color);
+  background: var(--accent-color);
+  color: var(--primary-color);
+  border-color: var(--accent-color);
 }
 
 /* Utility classes */
-.hide { display: none; }
-.dimmed { 
-    filter: brightness(0.3) grayscale(0.7);
-    opacity: 0.5;
-    transition: filter var(--transition-time), opacity var(--transition-time);
+.hide {
+  display: none;
+}
+.dimmed {
+  filter: brightness(0.3) grayscale(0.7);
+  opacity: 0.5;
+  transition: filter var(--transition-time), opacity var(--transition-time);
 }
 
 /* Loading Indicator */
 .spinner {
-    display: inline-block;
-    width: 40px;
-    height: 40px;
-    border: 4px solid var(--border-color);
-    border-top: 4px solid var(--accent-color);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-bottom: 1rem;
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--border-color);
+  border-top: 4px solid var(--accent-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Error Message */
 .error-message {
-    background: rgba(255, 0, 0, 0.1);
-    border: 1px solid rgba(255, 0, 0, 0.3);
-    color: #ff6b6b;
-    padding: 1rem;
-    border-radius: 6px;
-    margin-bottom: 2rem;
-    text-align: center;
+  background: rgba(255, 0, 0, 0.1);
+  border: 1px solid rgba(255, 0, 0, 0.3);
+  color: #ff6b6b;
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 2rem;
+  text-align: center;
 }
-

@@ -10,7 +10,7 @@
   --hero-size: 67%;
   --hero-margin-top: 16.67%;
   --star-size: 20%;
-  --star-container-margin-top: 70% ; /* 100% - (star-size) */
+  --star-container-margin-top: 70%; /* 100% - (star-size) */
   --star-margin: -0%; /* (--star-container-margin-top) - (--hero-size)*/
 }
 
@@ -19,7 +19,6 @@
   height: var(--hero-size);
   border-radius: 0px;
   margin-top: var(--hero-margin-top); /* 10px out of 60px = 16.67% */
-  filter: drop-shadow(0 0 0.2px rgba(255,255,255,0.5));
 }
 
 .hero-portrait-stars-container {
@@ -53,22 +52,21 @@
   background-size: contain; /* Scale to fit within container without cropping */
   background-repeat: no-repeat;
   background-position: center;
-  filter: 
-    drop-shadow(-1px -1px 0px rgba(0,0,0,1))
-    drop-shadow(1px -1px 0px rgba(0,0,0,1))
-    drop-shadow(-1px 1px 0px rgba(0,0,0,1))
-    drop-shadow(1px 1px 0px rgba(0,0,0,1))
-    drop-shadow(0 0 2px rgba(0,0,0,1));
+  filter: drop-shadow(-1px -1px 0px rgba(0, 0, 0, 1))
+    drop-shadow(1px -1px 0px rgba(0, 0, 0, 1))
+    drop-shadow(-1px 1px 0px rgba(0, 0, 0, 1))
+    drop-shadow(1px 1px 0px rgba(0, 0, 0, 1))
+    drop-shadow(0 0 2px rgba(0, 0, 0, 1));
 }
 
 .hero-portrait-star.rank1 {
-  background-image: url('/static/icons/UI_icons/star_icons/star_rank1_psd.png');
+  background-image: url("/static/icons/UI_icons/star_icons/star_rank1_psd.png");
 }
 
 .hero-portrait-star.rank2 {
-  background-image: url('/static/icons/UI_icons/star_icons/star_rank2_psd.png');
+  background-image: url("/static/icons/UI_icons/star_icons/star_rank2_psd.png");
 }
 
 .hero-portrait-star.rank3 {
-  background-image: url('/static/icons/UI_icons/star_icons/star_rank3_psd.png');
+  background-image: url("/static/icons/UI_icons/star_icons/star_rank3_psd.png");
 }
