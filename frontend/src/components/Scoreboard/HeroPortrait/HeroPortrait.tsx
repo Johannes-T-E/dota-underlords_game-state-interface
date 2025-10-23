@@ -25,10 +25,7 @@ export const HeroPortrait = memo(
         <img
           src={heroIconPath}
           alt={`Unit ${unitId}`}
-          className="hero-portrait-image glow"
-          style={{
-            filter: `drop-shadow(0 0 3px ${glowColor})`,
-          }}
+          className={`hero-portrait-image ${glowColor}`}
           onError={(e) => {
             (e.target as HTMLImageElement).src =
               "static/icons/hero_icons_scaled_56x56/npc_dota_hero_abaddon_png.png";

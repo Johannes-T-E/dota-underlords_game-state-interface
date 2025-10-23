@@ -71,3 +71,22 @@
 .hero-portrait-star.rank3 {
   background-image: url("/static/icons/UI_icons/star_icons/star_rank3_psd.png");
 }
+
+.glow-1 {
+  filter: drop-shadow(0 0 2px var(--tier1-glow-color));
+}
+.glow-2 {
+  filter: drop-shadow(0 0 2px var(--tier2-glow-color));
+}
+.glow-3 {
+  filter: drop-shadow(0 0 2px var(--tier3-glow-color));
+}
+.glow-4 {
+  filter: drop-shadow(0 0 2px var(--tier4-glow-color));
+}
+.glow-5 {
+  filter: drop-shadow(0 0 2px var(--tier5-glow-color));
+}
+.glow-6 {
+  filter: drop-shadow(0 0 2px var(--underlord-glow-color));
+}

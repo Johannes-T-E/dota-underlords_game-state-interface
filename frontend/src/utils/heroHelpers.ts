@@ -73,24 +73,6 @@ export const isUnderlord = (unitId: number): boolean => {
   return unitId >= 1001 && unitId <= 1004;
 };
 
-// Helper function to get tier glow color CSS variable
-export const getTierGlowColor = (tier: number): string => {
-  switch (tier) {
-    case 1:
-      return "var(--tier1-glow-color)";
-    case 2:
-      return "var(--tier2-glow-color)";
-    case 3:
-      return "var(--tier3-glow-color)";
-    case 4:
-      return "var(--tier4-glow-color)";
-    case 5:
-      return "var(--tier5-glow-color)";
-    default:
-      return "var(--tier1-glow-color)";
-  }
-};
-
 // Helper function to get hero glow color (checks for underlords first)
 export const getHeroGlowColor = (
   unitId: number,
@@ -98,10 +80,10 @@ export const getHeroGlowColor = (
 ): string => {
   // Check if unit is an underlord first
   if (isUnderlord(unitId)) {
-    return "var(--underlord-glow-color)";
+    return "glow-6";
   }
 
   // Otherwise use tier-based color
   const draftTier = getHeroDraftTier(unitId, heroesData);
-  return getTierGlowColor(draftTier);
+  return `glow-${draftTier}`;
 };
