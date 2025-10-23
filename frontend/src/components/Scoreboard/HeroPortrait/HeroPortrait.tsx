@@ -35,17 +35,15 @@ export const HeroPortrait = memo(
           }}
         />
         <div className="hero-portrait-stars-container">
-          <div className="hero-portrait-star-list">
-            {Array.from({ length: starLevel }, (_, i) => (
-              <div
-                key={i}
-                className={`hero-portrait-star rank${starLevel}`}
-                style={{
-                  backgroundImage: `url(${getStarIconPath(starLevel)})`,
-                }}
-              />
-            ))}
-          </div>
+          {Array.from({ length: starLevel }, (_, i) => (
+            <div
+              key={i}
+              className={`hero-portrait-star rank${starLevel}`}
+              style={{
+                backgroundImage: `url(${getStarIconPath(starLevel)})`,
+              }}
+            />
+          ))}
         </div>
       </div>
     );
