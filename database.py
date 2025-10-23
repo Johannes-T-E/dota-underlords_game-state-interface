@@ -267,7 +267,6 @@ class UnderlordsDatabaseManager:
             json.dumps(player_data.get('items', []))
         ))
         
-        self.conn.commit()
         return cursor.lastrowid
     
     def insert_private_snapshot(self, match_id: str, private_data: Dict, timestamp: datetime) -> int:
@@ -299,7 +298,6 @@ class UnderlordsDatabaseManager:
             private_data.get('grants_rewards')
         ))
         
-        self.conn.commit()
         return cursor.lastrowid
     
     def update_match_end_time(self, match_id: str, timestamp: datetime):
@@ -311,7 +309,6 @@ class UnderlordsDatabaseManager:
                 SET ended_at = ?
                 WHERE match_id = ?
             """, (timestamp, match_id))
-            self.conn.commit()
         except sqlite3.OperationalError as e:
             if "cannot start a transaction within a transaction" in str(e):
                 # Rollback and retry
@@ -322,7 +319,6 @@ class UnderlordsDatabaseManager:
                     SET ended_at = ?
                     WHERE match_id = ?
                 """, (timestamp, match_id))
-                self.conn.commit()
             else:
                 raise
     
@@ -339,7 +335,6 @@ class UnderlordsDatabaseManager:
                     WHERE match_id = ? AND player_id = ?
                 )
             """, (final_place, match_id, player_id, match_id, player_id))
-            self.conn.commit()
         except sqlite3.OperationalError as e:
             if "cannot start a transaction within a transaction" in str(e):
                 # Rollback and retry
@@ -354,7 +349,6 @@ class UnderlordsDatabaseManager:
                         WHERE match_id = ? AND player_id = ?
                     )
                 """, (final_place, match_id, player_id, match_id, player_id))
-                self.conn.commit()
             else:
                 raise
     
@@ -367,7 +361,6 @@ class UnderlordsDatabaseManager:
                 SET final_place = ?
                 WHERE match_id = ? AND player_id = ?
             """, (final_place, match_id, player_id))
-            self.conn.commit()
         except sqlite3.OperationalError as e:
             if "cannot start a transaction within a transaction" in str(e):
                 # Rollback and retry
@@ -378,7 +371,6 @@ class UnderlordsDatabaseManager:
                     SET final_place = ?
                     WHERE match_id = ? AND player_id = ?
                 """, (final_place, match_id, player_id))
-                self.conn.commit()
             else:
                 raise
     
@@ -388,7 +380,6 @@ class UnderlordsDatabaseManager:
             cursor = self.conn.cursor()
             for operation in operations:
                 cursor.execute(operation['sql'], operation['params'])
-            self.conn.commit()
             return True
         except Exception as e:
             self.conn.rollback()
@@ -406,7 +397,6 @@ class UnderlordsDatabaseManager:
             cursor.execute("DELETE FROM match_players WHERE match_id = ?", (match_id,))
             cursor.execute("DELETE FROM matches WHERE match_id = ?", (match_id,))
             
-            self.conn.commit()
             print(f"[DB] Deleted match {match_id} and all associated data")
             return True
         except Exception as e:

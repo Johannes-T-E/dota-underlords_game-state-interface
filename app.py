@@ -205,8 +205,8 @@ def db_writer_worker():
             if task is None:
                 break
             
-            # Handle different task types
-            if isinstance(task, tuple) and len(task) >= 2:
+            # Handle different task types - only support new format with task type
+            if isinstance(task, tuple) and len(task) >= 2 and isinstance(task[0], str):
                 task_type = task[0]
                 
                 if task_type == 'insert_snapshot':
@@ -255,16 +255,20 @@ def db_writer_worker():
                 else:
                     print(f"[DB Writer] Unknown task type: {task_type}")
             else:
-                # Legacy format for backward compatibility
-                match_id, player_id, player_data, timestamp = task
-                if player_id == 'private_player':
-                    db.insert_private_snapshot(match_id, player_data, timestamp)
-                else:
-                    db.insert_public_snapshot(match_id, player_id, player_data, timestamp)
+                print(f"[DB Writer] ERROR: Invalid task format: {task}")
+                print(f"[DB Writer] Expected format: (task_type, ...) where task_type is a string")
+                continue  # Skip invalid tasks
             
+            # Commit after each successful task
+            db.conn.commit()
             db_write_queue.task_done()
         except Exception as e:
             print(f"[DB Writer] Error: {e}")
+            # Rollback on error to ensure clean state
+            try:
+                db.conn.rollback()
+            except:
+                pass  # Ignore rollback errors
             import traceback
             traceback.print_exc()
 
@@ -295,25 +299,39 @@ def check_match_end(match_id: str, timestamp: datetime) -> bool:
     eliminated = [p for p in players.values() if p.get('final_place', 0) > 0]
     still_playing = [p for p in players.values() if p.get('final_place', 0) == 0]
     
-    # If someone got 2nd place, find and mark winner
+    # Check if someone got 2nd place
     second_place = [p for p in players.values() if p.get('final_place', 0) == 2]
-    if second_place and still_playing:
-        winner = still_playing[0]
-        winner_id = winner['player_id']
-        print(f"[MATCH END] Player {second_place[0]['player_id']} got 2nd, marking {winner_id} as winner")
+    if second_place:
+        # Check if winner (final_place = 1) already exists
+        winner = [p for p in players.values() if p.get('final_place', 0) == 1]
         
-        # Queue match end transaction to avoid race conditions
-        try:
-            # Update in-memory state immediately
-            match_state.players[winner_id]['final_place'] = 1
+        if not winner and still_playing:
+            # No winner yet, assign it to the remaining player
+            winner_player = still_playing[0]
+            winner_id = winner_player['player_id']
+            print(f"[MATCH END] Player {second_place[0]['player_id']} got 2nd, marking {winner_id} as winner")
             
-            # Queue all match end operations as a single transaction
-            db_write_queue.put(('match_end_transaction', match_id, winner_id, timestamp))
-            print(f"[MATCH END] Match {match_id} ended - transaction queued")
-            return True
-        except Exception as e:
-            print(f"[ERROR] Failed to queue match end transaction: {e}")
-            return False
+            # Queue match end transaction to avoid race conditions
+            try:
+                # Update in-memory state immediately
+                match_state.players[winner_id]['final_place'] = 1
+                
+                # Queue all match end operations as a single transaction
+                db_write_queue.put(('match_end_transaction', match_id, winner_id, timestamp))
+                print(f"[MATCH END] Match {match_id} ended - transaction queued")
+                return True
+            except Exception as e:
+                print(f"[ERROR] Failed to queue match end transaction: {e}")
+                return False
+    
+    # After any final_place update, check if ALL players have final places
+    # Recalculate still_playing in case it changed
+    still_playing = [p for p in players.values() if p.get('final_place', 0) == 0]
+    if len(still_playing) == 0 and len(players) > 0:
+        print(f"[MATCH END] All {len(players)} players have final places - ending match")
+        # All players have final places, just update match end time
+        db_write_queue.put(('update_match_end', match_id, timestamp))
+        return True
     
     return False
 
@@ -487,8 +505,8 @@ def emit_realtime_update():
     
     # Emit immediately - broadcast to ALL connected clients!
     socketio.emit('match_update', update_data, to=None)
-    print(f"[WebSocket] ⚡ Instant update BROADCASTED to {len(connected_clients)} clients (Round {match_state.round_number}.{match_state.round_phase})")
-    print(f"[WebSocket] Data sent: {len(update_data['players'])} players, private_player={'yes' if update_data['private_player'] else 'no'}, match_id={update_data['match']['match_id']}")
+    # print(f"[WebSocket] ⚡ Instant update BROADCASTED to {len(connected_clients)} clients (Round {match_state.round_number}.{match_state.round_phase})")
+    # print(f"[WebSocket] Data sent: {len(update_data['players'])} players, private_player={'yes' if update_data['private_player'] else 'no'}, match_id={update_data['match']['match_id']}")
 
 def start_new_match(players_data: List[Dict], timestamp: datetime) -> str:
     """Start a new match with the given players."""
