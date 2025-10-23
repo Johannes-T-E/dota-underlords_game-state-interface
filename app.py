@@ -697,6 +697,14 @@ def process_gsi_data(data):
                             
                             if check_match_end(match_state.match_id, timestamp):
                                 print(f"[MATCH END] Clearing game state")
+                                # Send final update to frontend before resetting
+                                emit_realtime_update()
+                                # Notify frontend that match ended
+                                socketio.emit('match_ended', {
+                                    'match_id': match_state.match_id,
+                                    'timestamp': timestamp.isoformat()
+                                }, to=None)
+                                # Now reset the state
                                 match_state.reset()
         
         # Emit WebSocket update if there were updates
