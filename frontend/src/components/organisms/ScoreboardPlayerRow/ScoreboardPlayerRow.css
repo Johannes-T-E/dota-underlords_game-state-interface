@@ -1,0 +1,155 @@
+.scoreboard-player-row {
+  height: var(--row-height);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  background: var(--primary-color);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.scoreboard-player-row:nth-child(even) {
+  background: var(--secondary-color);
+}
+
+.scoreboard-player-row:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.scoreboard-player-row--selected {
+  background: rgba(255, 255, 255, 0.046) !important;
+}
+
+/* Place column */
+.scoreboard-player-row__place {
+  width: var(--width-place);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding-left: 4px;
+}
+
+.scoreboard-player-row__rank {
+  font-size: 26px;
+  text-align: center;
+  color: white;
+  font-weight: bold;
+  flex: 1;
+}
+
+/* Player column */
+.scoreboard-player-row__player {
+  width: var(--width-player);
+  flex-shrink: 0;
+}
+
+.scoreboard-player-row__name-container {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.scoreboard-player-row__name {
+  font-size: 17px;
+  height: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scoreboard-player-row__stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+/* Health column */
+.scoreboard-player-row__health {
+  width: var(--width-health);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding-left: 0;
+  gap: 8px;
+}
+
+.scoreboard-player-row__health-value {
+  font-size: 32px;
+  font-weight: bold;
+  color: var(--health-color);
+  text-shadow: 0 0 3px #000;
+}
+
+.scoreboard-player-row__health-icon {
+  width: 20px;
+  height: 20px;
+  background-image: url('/icons/UI_icons/other_icons/icon_health_psd.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+/* Record column */
+.scoreboard-player-row__record {
+  width: var(--width-record);
+  flex-shrink: 0;
+  padding-left: 8px;
+}
+
+/* Net Worth column */
+.scoreboard-player-row__networth {
+  width: var(--width-networth);
+  flex-shrink: 0;
+  padding-left: 8px;
+}
+
+.scoreboard-player-row__networth-value {
+  font-size: 24px;
+  color: var(--networth-color);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Roster column */
+.scoreboard-player-row__roster {
+  margin-right: 40px;
+  width: 800px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: var(--row-height);
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.scoreboard-player-row__unit {
+  width: 60px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.scoreboard-player-row__unit--bench {
+  filter: saturate(0.7) brightness(0.7);
+}
+
+/* Bench column */
+.scoreboard-player-row__bench {
+  width: var(--width-bench);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: var(--row-height);
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+

@@ -1,0 +1,83 @@
+.button {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Sizes */
+.button--small {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.button--medium {
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+.button--large {
+  padding: 12px 24px;
+  font-size: 16px;
+}
+
+/* Variants */
+.button--primary {
+  background: var(--secondary-color);
+  color: var(--accent-color);
+  border: 1px solid var(--border-color);
+}
+
+.button--primary:hover:not(:disabled) {
+  background: var(--accent-color);
+  color: var(--primary-color);
+  border-color: var(--accent-color);
+}
+
+.button--secondary {
+  background: transparent;
+  color: var(--accent-color);
+  border: 1px solid var(--border-color);
+}
+
+.button--secondary:hover:not(:disabled) {
+  background: var(--secondary-color);
+  border-color: var(--accent-color);
+}
+
+.button--danger {
+  background: rgba(231, 76, 60, 0.2);
+  color: #ff6b6b;
+  border: 1px solid rgba(231, 76, 60, 0.4);
+}
+
+.button--danger:hover:not(:disabled) {
+  background: rgba(231, 76, 60, 0.4);
+  color: #fff;
+  border-color: #e74c3c;
+}
+
+.button--ghost {
+  background: transparent;
+  color: var(--accent-color);
+  border: none;
+  padding: 4px 8px;
+}
+
+.button--ghost:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+}
+

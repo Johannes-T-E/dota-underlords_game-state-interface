@@ -1,0 +1,10 @@
+.match-id-display {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.match-id-display__id {
+  font-size: 13px;
+}
+

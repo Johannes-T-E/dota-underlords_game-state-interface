@@ -1,0 +1,22 @@
+.star-icon {
+  display: inline-block;
+  object-fit: contain;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+.star-icon--small {
+  width: 10px;
+  height: 10px;
+}
+
+.star-icon--medium {
+  width: 14px;
+  height: 14px;
+}
+
+.star-icon--large {
+  width: 18px;
+  height: 18px;
+}
+

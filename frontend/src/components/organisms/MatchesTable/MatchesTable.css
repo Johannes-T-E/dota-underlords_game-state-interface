@@ -1,0 +1,85 @@
+.matches-table-wrapper {
+  background: var(--secondary-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+.matches-table-wrapper__header {
+  padding: 1rem 1.5rem;
+  background: var(--primary-color);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.matches-table-wrapper__header h3 {
+  font-size: 1rem;
+  margin: 0;
+  color: var(--accent-color);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.matches-table-wrapper__loading,
+.matches-table-wrapper__error,
+.matches-table-wrapper__empty {
+  text-align: center;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.matches-table-wrapper__content {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.matches-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.matches-table thead {
+  background: var(--primary-color);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.matches-table th {
+  padding: 0.75rem;
+  text-align: left;
+  font-size: 11px;
+  font-weight: bold;
+  color: var(--accent-color);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid var(--border-color);
+}
+
+/* Scrollbar styling */
+.matches-table-wrapper__content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.matches-table-wrapper__content::-webkit-scrollbar-track {
+  background: var(--secondary-color);
+}
+
+.matches-table-wrapper__content::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+.matches-table-wrapper__content::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+

@@ -1,0 +1,10 @@
+.main-content-template {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content-template--centered {
+  margin: 0 auto;
+}
+

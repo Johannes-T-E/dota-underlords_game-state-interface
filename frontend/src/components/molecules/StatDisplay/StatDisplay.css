@@ -1,0 +1,25 @@
+.stat-display {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-display__icon {
+  flex-shrink: 0;
+}
+
+.stat-display__value {
+  font-size: 14px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+/* Size variants */
+.stat-display--small .stat-display__value {
+  font-size: 12px;
+}
+
+.stat-display--large .stat-display__value {
+  font-size: 16px;
+}
+

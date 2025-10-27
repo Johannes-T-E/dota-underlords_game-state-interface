@@ -1,0 +1,84 @@
+.text {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Variants */
+.text--h1 {
+  font-size: 2.5rem;
+  line-height: 1.2;
+  letter-spacing: 1px;
+}
+
+.text--h2 {
+  font-size: 1.8rem;
+  line-height: 1.3;
+  letter-spacing: 0.5px;
+}
+
+.text--h3 {
+  font-size: 1.4rem;
+  line-height: 1.4;
+  letter-spacing: 0.3px;
+}
+
+.text--body {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.text--label {
+  font-size: 0.875rem;
+  line-height: 1.4;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.text--code {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.875rem;
+  padding: 2px 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  letter-spacing: 0.5px;
+}
+
+/* Weights */
+.text--normal {
+  font-weight: 400;
+}
+
+.text--bold {
+  font-weight: 700;
+}
+
+.text--black {
+  font-weight: 900;
+}
+
+/* Colors */
+.text--primary {
+  color: var(--text-color);
+}
+
+.text--secondary {
+  color: var(--accent-color);
+}
+
+.text--accent {
+  color: var(--accent-color);
+}
+
+.text--success {
+  color: var(--win-streak-color);
+}
+
+.text--danger {
+  color: var(--lose-streak-color);
+}
+
+.text--warning {
+  color: var(--gold-color);
+}
+

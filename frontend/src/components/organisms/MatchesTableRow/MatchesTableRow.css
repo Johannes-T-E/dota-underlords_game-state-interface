@@ -1,0 +1,53 @@
+.matches-table-row {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.matches-table-row:hover {
+  background: var(--primary-color);
+}
+
+.matches-table-row--selected {
+  background: var(--primary-color);
+  border-left: 3px solid var(--accent-color);
+}
+
+.matches-table-row td {
+  padding: 0.75rem;
+  font-size: 12px;
+  color: var(--accent-color);
+  border-bottom: 1px solid rgba(68, 74, 84, 0.3);
+}
+
+.matches-table-row:last-child td {
+  border-bottom: none;
+}
+
+.matches-table-row__date {
+  width: 150px;
+}
+
+.matches-table-row__duration {
+  width: 100px;
+}
+
+.matches-table-row__status {
+  width: 120px;
+}
+
+.matches-table-row__actions {
+  width: 50px;
+  text-align: center;
+}
+
+.matches-table-row__delete-btn {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  font-size: 14px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+

@@ -405,9 +405,10 @@ class UnderlordsDatabaseManager:
             return False
 
     def get_all_matches(self) -> List[Dict]:
-        """Get list of all matches with basic info."""
+        """Get list of all matches with basic info and player data."""
         try:
             cursor = self.conn.cursor()
+            # Get all matches
             cursor.execute("""
                 SELECT 
                     match_id,
@@ -421,12 +422,41 @@ class UnderlordsDatabaseManager:
             
             matches = []
             for row in cursor.fetchall():
+                match_id = row[0]
+                
+                # Get players for this match
+                cursor.execute("""
+                    SELECT 
+                        mp.player_id,
+                        mp.persona_name,
+                        mp.bot_persona_name,
+                        COALESCE(
+                            (SELECT final_place FROM public_player_snapshots 
+                             WHERE match_id = ?
+                               AND player_id = mp.player_id 
+                               AND final_place > 0 
+                             ORDER BY timestamp DESC LIMIT 1), 0
+                        ) as final_place
+                    FROM match_players mp
+                    WHERE mp.match_id = ?
+                """, (match_id, match_id))
+                
+                players = []
+                for player_row in cursor.fetchall():
+                    players.append({
+                        'player_id': player_row[0],
+                        'persona_name': player_row[1],
+                        'bot_persona_name': player_row[2],
+                        'final_place': player_row[3]
+                    })
+                
                 matches.append({
-                    'match_id': row[0],
+                    'match_id': match_id,
                     'started_at': row[1],
                     'ended_at': row[2],
                     'player_count': row[3],
-                    'created_at': row[4]
+                    'created_at': row[4],
+                    'players': players
                 })
             
             return matches

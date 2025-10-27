@@ -1,0 +1,47 @@
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  background: var(--primary-color);
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+}
+
+.app-layout__main {
+  flex: 1;
+  margin-left: 200px;
+  display: flex;
+  flex-direction: column;
+  transition: margin-left 0.3s ease;
+  overflow-x: hidden;
+  width: calc(100vw - 200px);
+}
+
+/* When nav is collapsed */
+.app-layout:has(.navigation-bar--collapsed) .app-layout__main {
+  margin-left: 60px;
+  width: calc(100vw - 60px);
+}
+
+.app-layout__content {
+  flex: 1;
+  padding: 1rem 2rem 2rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .app-layout {
+    flex-direction: column;
+  }
+
+  .app-layout__main {
+    margin-left: 0;
+  }
+
+  .app-layout__content {
+    padding: 1rem;
+  }
+}
+

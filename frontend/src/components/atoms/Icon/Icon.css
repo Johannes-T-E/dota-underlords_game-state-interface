@@ -1,0 +1,49 @@
+.icon {
+  display: inline-block;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  flex-shrink: 0;
+}
+
+/* Sizes */
+.icon--small {
+  width: 16px;
+  height: 16px;
+}
+
+.icon--medium {
+  width: 20px;
+  height: 20px;
+}
+
+.icon--large {
+  width: 24px;
+  height: 24px;
+}
+
+/* Types */
+.icon--gold {
+  background-image: url('/icons/UI_icons/other_icons/icon_gold_bevel_psd.png');
+}
+
+.icon--health {
+  background-image: url('/icons/UI_icons/other_icons/icon_health_psd.png');
+}
+
+.icon--unit {
+  width: 16px;
+  height: 16px;
+  background: var(--unit-color);
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+}
+
+.icon--level {
+  width: 16px;
+  height: 16px;
+  background: var(--unit-color);
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+}
+

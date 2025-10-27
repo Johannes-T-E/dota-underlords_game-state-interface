@@ -1,0 +1,9 @@
+.change-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
+  min-width: 50px;
+  margin-right: 8px;
+}
+

@@ -1,0 +1,15 @@
+.phase-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.phase-icon--small {
+  font-size: 1rem;
+}
+
+.phase-icon--medium {
+  font-size: 1.5rem;
+}
+

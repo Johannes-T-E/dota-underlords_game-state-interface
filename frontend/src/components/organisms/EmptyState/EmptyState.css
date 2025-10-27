@@ -1,0 +1,35 @@
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  padding: 2rem;
+}
+
+.empty-state__content {
+  text-align: center;
+  max-width: 400px;
+}
+
+.empty-state__icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.empty-state__title {
+  color: var(--accent-color);
+  margin-bottom: 0.5rem;
+}
+
+.empty-state__message {
+  color: #999;
+  font-size: 14px;
+  margin-bottom: 1rem;
+}
+
+.empty-state__spinner {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}
+

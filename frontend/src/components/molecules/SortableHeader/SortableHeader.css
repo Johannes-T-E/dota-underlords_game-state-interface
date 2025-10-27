@@ -1,0 +1,21 @@
+.sortable-header {
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.sortable-header:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.sortable-header--active {
+  color: var(--accent-color);
+}
+
+.sortable-header__label {
+  font-size: 14px;
+  font-weight: bold;
+}
+

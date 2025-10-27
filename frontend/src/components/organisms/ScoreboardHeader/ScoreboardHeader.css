@@ -1,0 +1,57 @@
+.scoreboard-header {
+  height: 25px;
+  padding: 4px 8px;
+  color: var(--accent-color);
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: bold;
+  background: var(--primary-color);
+  border-bottom: 2px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.scoreboard-header__col {
+  display: flex;
+  align-items: center;
+}
+
+.scoreboard-header__col--place {
+  width: var(--width-place);
+  flex-shrink: 0;
+}
+
+.scoreboard-header__col--player {
+  width: var(--width-player);
+  flex-shrink: 0;
+}
+
+.scoreboard-header__col--health {
+  width: var(--width-health);
+  flex-shrink: 0;
+  padding-left: 0;
+}
+
+.scoreboard-header__col--record {
+  width: var(--width-record);
+  flex-shrink: 0;
+}
+
+.scoreboard-header__col--networth {
+  width: var(--width-networth);
+  flex-shrink: 0;
+}
+
+.scoreboard-header__col--roster {
+  margin-right: 40px;
+  width: 800px;
+  flex-shrink: 0;
+}
+
+.scoreboard-header__col--bench {
+  width: var(--width-bench);
+  flex-shrink: 0;
+}
+

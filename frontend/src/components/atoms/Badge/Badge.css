@@ -1,0 +1,43 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.badge--bot {
+  background: rgba(186, 209, 255, 0.2);
+  color: var(--unit-color);
+  border: 1px solid rgba(186, 209, 255, 0.3);
+}
+
+.badge--completed {
+  background: rgba(46, 204, 64, 0.2);
+  color: var(--win-streak-color);
+  border: 1px solid rgba(46, 204, 64, 0.3);
+}
+
+.badge--in-progress {
+  background: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
+  border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.badge--win {
+  background: rgba(46, 204, 64, 0.2);
+  color: var(--win-streak-color);
+  border: 1px solid rgba(46, 204, 64, 0.3);
+}
+
+.badge--loss {
+  background: rgba(231, 76, 60, 0.2);
+  color: var(--lose-streak-color);
+  border: 1px solid rgba(231, 76, 60, 0.3);
+}
+

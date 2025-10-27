@@ -1,0 +1,39 @@
+.status-indicator {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-indicator--connected {
+  background: var(--win-streak-color);
+  box-shadow: 0 0 8px rgba(46, 204, 64, 0.6);
+}
+
+.status-indicator--disconnected {
+  background: var(--lose-streak-color);
+  box-shadow: 0 0 8px rgba(231, 76, 60, 0.6);
+}
+
+.status-indicator--connecting {
+  background: var(--gold-color);
+  box-shadow: 0 0 8px rgba(245, 201, 92, 0.6);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.status-indicator--error {
+  background: var(--lose-streak-color);
+  box-shadow: 0 0 8px rgba(231, 76, 60, 0.8);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+

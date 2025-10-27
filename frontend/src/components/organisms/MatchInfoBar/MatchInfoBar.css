@@ -1,0 +1,34 @@
+.match-info-bar {
+  background: var(--secondary-color);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--border-color);
+}
+
+.match-info-bar__content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  font-size: 18px;
+  font-weight: bold;
+  flex-wrap: wrap;
+}
+
+.match-info-bar__abandon-btn {
+  margin-left: auto;
+}
+
+@media (max-width: 768px) {
+  .match-info-bar__content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .match-info-bar__abandon-btn {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+

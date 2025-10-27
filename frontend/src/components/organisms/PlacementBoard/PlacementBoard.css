@@ -1,0 +1,66 @@
+.placement-board {
+  background: var(--primary-color);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.placement-board__title {
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--accent-color);
+  margin: 0;
+  padding: 1rem 1rem 0.5rem 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.placement-board__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.placement-board__table thead {
+  background: var(--secondary-color);
+}
+
+.placement-board__table th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 11px;
+  font-weight: bold;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.placement-board__table td {
+  padding: 0.75rem 1rem;
+  font-size: 13px;
+  color: var(--accent-color);
+  border-bottom: 1px solid rgba(68, 74, 84, 0.3);
+}
+
+.placement-board__table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.placement-board__table tbody tr:hover {
+  background: rgba(202, 202, 202, 0.05);
+}
+
+.placement-board__place {
+  width: 80px;
+  font-weight: bold;
+  color: var(--gold-color);
+}
+
+.placement-board__player {
+  min-width: 200px;
+}
+
+.placement-board__type {
+  width: 100px;
+}
+

@@ -1,0 +1,77 @@
+.match-detail-panel {
+  height: 100%;
+  overflow-y: auto;
+  padding: 1.5rem;
+}
+
+.match-detail-panel__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.match-detail-panel__header h2 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.25rem;
+  color: var(--accent-color);
+}
+
+.match-detail-panel__close-btn {
+  width: 32px;
+  height: 32px;
+  font-size: 16px;
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.match-detail-panel__close-btn:hover {
+  background: var(--border-color);
+}
+
+.match-detail-panel__info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding: 1rem;
+  background: var(--primary-color);
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--border-color);
+}
+
+.match-detail-panel__info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.match-detail-panel__info-value {
+  font-size: 13px;
+  color: var(--accent-color);
+  font-weight: 500;
+}
+
+/* Scrollbar styling */
+.match-detail-panel::-webkit-scrollbar {
+  width: 8px;
+}
+
+.match-detail-panel::-webkit-scrollbar-track {
+  background: var(--secondary-color);
+}
+
+.match-detail-panel::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+.match-detail-panel::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+

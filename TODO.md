@@ -37,3 +37,4 @@
 # Hero pool analytics
 - Which heroes are people buying? (and not buying)
 
+# Rydd opp i frontend.

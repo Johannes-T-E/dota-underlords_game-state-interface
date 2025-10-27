@@ -1,0 +1,22 @@
+.hero-image {
+  display: block;
+  object-fit: cover;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+.hero-image--small {
+  width: 32px;
+  height: 32px;
+}
+
+.hero-image--medium {
+  width: 48px;
+  height: 48px;
+}
+
+.hero-image--large {
+  width: 64px;
+  height: 64px;
+}
+

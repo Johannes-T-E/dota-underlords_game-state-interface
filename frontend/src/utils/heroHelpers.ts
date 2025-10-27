@@ -1,10 +1,50 @@
 // Hero data structure types
 export interface HeroData {
+  // Core identification
   id: number;
   dota_unit_name: string;
-  name?: string;
-  cost?: number;
-  keywords?: string[];
+  displayName: string;
+  texturename: string;
+  
+  // Stats that scale with star level (arrays)
+  damageMin: number[];
+  damageMax: number[];
+  health: number[];
+  armor: number | number[];
+  magicResist: number | number[];
+  
+  // Combat stats
+  attackAnimationPoint: number;
+  attackRange: number;
+  attackRate: number;
+  movespeed: number;
+  maxmana: number;
+  
+  // Game mechanics
+  draftTier: number;
+  goldCost: number;
+  keywords: string;
+  
+  // Abilities and hints
+  abilities: string[];
+  hintWords: string[];
+  
+  // Visual and audio
+  model: string;
+  model_scale: number;
+  soundSet: string;
+  healthBarOffset: number;
+  
+  // Optional fields that some heroes have
+  projectile_speed?: number;
+  projectile_model?: string;
+  baseclass?: string | null;
+  assassin_modifier?: string | null;
+  aiAura?: boolean;
+  aiPassiveAbility?: boolean;
+  prevent_mana_items?: number;
+  precache?: string[];
+  content_enable_group?: string | null;
 }
 
 export interface HeroesData {
@@ -33,13 +73,4 @@ export const getHeroIconPath = (unitId: number, heroesData: HeroesData | null): 
 export const getStarIconPath = (rank: number): string => {
   const starRank = Math.min(rank, 3);
   return `/icons/UI_icons/star_icons/star_rank${starRank}_psd.png`;
-};
-
-// Helper function to create star icons HTML
-export const createStarIcons = (starLevel: number): string => {
-  let stars = '';
-  for (let i = 0; i < starLevel; i++) {
-    stars += `<div class="star-icon rank${Math.min(starLevel, 3)}"></div>`;
-  }
-  return stars;
 };
