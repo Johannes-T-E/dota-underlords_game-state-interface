@@ -6,17 +6,17 @@
 }
 
 .star-icon--small {
-  width: 10px;
-  height: 10px;
-}
-
-.star-icon--medium {
   width: 14px;
   height: 14px;
 }
 
-.star-icon--large {
+.star-icon--medium {
   width: 18px;
   height: 18px;
+}
+
+.star-icon--large {
+  width: 22px;
+  height: 22px;
 }
 

@@ -90,3 +90,9 @@ export const getHeroTier = (unitId: number, heroesData: HeroesData | null): numb
   
   return 1; // Default tier if hero not found
 };
+
+// Helper function to get tier glow CSS class
+export const getTierGlowClass = (tier: number): string => {
+  const tierNumber = Math.min(Math.max(tier, 1), 5); // Clamp between 1-5
+  return `hero-image--tier-${tierNumber}`;
+};

@@ -12,9 +12,21 @@ export interface ScoreboardSettings {
   sortDirection: 'asc' | 'desc';
 }
 
+export interface TierGlowConfig {
+  enableBorder: boolean;
+  enableDropShadow: boolean;
+  borderOpacity: number; // 0-1
+  dropShadowOpacity: number; // 0-1
+}
+
+export interface HeroPortraitSettings {
+  enableTierGlow: boolean;
+  tierGlowConfig: TierGlowConfig;
+}
+
 export interface GeneralSettings {
   theme?: string;
-  // Future global settings
+  heroPortrait: HeroPortraitSettings;
 }
 
 export interface SettingsState {
@@ -45,11 +57,25 @@ const defaultScoreboardSettings: ScoreboardSettings = {
   sortDirection: 'desc'
 };
 
+const defaultTierGlowConfig: TierGlowConfig = {
+  enableBorder: true,
+  enableDropShadow: true,
+  borderOpacity: 1.0,
+  dropShadowOpacity: 0.8
+};
+
+const defaultHeroPortraitSettings: HeroPortraitSettings = {
+  enableTierGlow: false,
+  tierGlowConfig: defaultTierGlowConfig
+};
+
 const initialState: SettingsState = {
   version: SETTINGS_VERSION,
   health: DEFAULT_HEALTH_DISPLAY_SETTINGS,
   scoreboard: defaultScoreboardSettings,
-  general: {}
+  general: {
+    heroPortrait: defaultHeroPortraitSettings
+  }
 };
 
 // Migration function for settings versions
@@ -87,6 +113,19 @@ const migrateSettings = (settings: any): SettingsState => {
     }
     
     settings.version = SETTINGS_VERSION;
+  }
+
+  // Ensure heroPortrait settings exist
+  if (!settings.general) {
+    settings.general = {};
+  }
+  if (!settings.general.heroPortrait) {
+    settings.general.heroPortrait = defaultHeroPortraitSettings;
+  } else {
+    // Migrate existing heroPortrait settings to new structure
+    if (settings.general.heroPortrait.enableTierGlow !== undefined && !settings.general.heroPortrait.tierGlowConfig) {
+      settings.general.heroPortrait.tierGlowConfig = defaultTierGlowConfig;
+    }
   }
 
   return settings;
@@ -156,11 +195,32 @@ const settingsSlice = createSlice({
       };
     },
 
+    // Hero Portrait Settings
+    updateHeroPortraitSettings: (state, action: PayloadAction<Partial<HeroPortraitSettings>>) => {
+      state.general.heroPortrait = {
+        ...state.general.heroPortrait,
+        ...action.payload
+      };
+    },
+
+    updateTierGlowConfig: (state, action: PayloadAction<Partial<TierGlowConfig>>) => {
+      state.general.heroPortrait.tierGlowConfig = {
+        ...state.general.heroPortrait.tierGlowConfig,
+        ...action.payload
+      };
+    },
+
+    resetHeroPortraitSettings: (state) => {
+      state.general.heroPortrait = defaultHeroPortraitSettings;
+    },
+
     // Global Actions
     resetAllSettings: (state) => {
       state.health = DEFAULT_HEALTH_DISPLAY_SETTINGS;
       state.scoreboard = defaultScoreboardSettings;
-      state.general = {};
+      state.general = {
+        heroPortrait: defaultHeroPortraitSettings
+      };
       state.version = SETTINGS_VERSION;
     },
 
@@ -195,6 +255,9 @@ export const {
   updateScoreboardSort,
   resetScoreboardSettings,
   updateGeneralSettings,
+  updateHeroPortraitSettings,
+  updateTierGlowConfig,
+  resetHeroPortraitSettings,
   resetAllSettings,
   loadSettings,
   importSettings
@@ -206,4 +269,5 @@ export default settingsSlice.reducer;
 export const selectHealthSettings = (state: { settings: SettingsState }) => state.settings.health;
 export const selectScoreboardSettings = (state: { settings: SettingsState }) => state.settings.scoreboard;
 export const selectGeneralSettings = (state: { settings: SettingsState }) => state.settings.general;
+export const selectHeroPortraitSettings = (state: { settings: SettingsState }) => state.settings.general.heroPortrait;
 

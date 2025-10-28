@@ -20,3 +20,58 @@
   height: 64px;
 }
 
+/* Tier Glow Effects */
+.hero-image--tier-1 {
+  --tier-color-primary: #595959;
+  --tier-color-secondary: #c8c8c8;
+  --border-opacity: 1;
+  --dropshadow-opacity: 1;
+  filter: drop-shadow(0 0 3px var(--tier-color-primary)) drop-shadow(0 0 6px var(--tier-color-secondary));
+  border: 1px solid var(--tier-color-secondary);
+}
+
+.hero-image--tier-2 {
+  --tier-color-primary: #3b9208;
+  --tier-color-secondary: #65f013;
+  --border-opacity: 1;
+  --dropshadow-opacity: 1;
+  filter: drop-shadow(0 0 3px var(--tier-color-primary)) drop-shadow(0 0 6px var(--tier-color-secondary));
+  border: 1px solid var(--tier-color-secondary);
+}
+
+.hero-image--tier-3 {
+  --tier-color-primary: #0c6583;
+  --tier-color-secondary: #14b4eb;
+  --border-opacity: 1;
+  --dropshadow-opacity: 1;
+  filter: drop-shadow(0 0 3px var(--tier-color-primary)) drop-shadow(0 0 6px var(--tier-color-secondary));
+  border: 1px solid var(--tier-color-secondary);
+}
+
+.hero-image--tier-4 {
+  --tier-color-primary: #6a1e88;
+  --tier-color-secondary: #c151ec;
+  --border-opacity: 1;
+  --dropshadow-opacity: 1;
+  filter: drop-shadow(0 0 3px var(--tier-color-primary)) drop-shadow(0 0 6px var(--tier-color-secondary));
+  border: 1px solid var(--tier-color-secondary);
+}
+
+.hero-image--tier-5 {
+  --tier-color-primary: #9b6714;
+  --tier-color-secondary: #f8ad33;
+  --border-opacity: 1;
+  --dropshadow-opacity: 1;
+  filter: drop-shadow(0 0 3px var(--tier-color-primary)) drop-shadow(0 0 6px var(--tier-color-secondary));
+  border: 1px solid var(--tier-color-secondary);
+}
+
+/* Tier Glow Modifiers */
+.hero-image--no-border {
+  border: none !important;
+}
+
+.hero-image--no-dropshadow {
+  filter: none !important;
+}
+

@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { Button } from '../../atoms';
 import { HealthDisplay } from '../../molecules/HealthDisplay/HealthDisplay';
-import { useHealthSettings, useScoreboardSettings, useGlobalSettings } from '../../../hooks/useSettings';
+import { useHealthSettings, useScoreboardSettings, useGlobalSettings, useHeroPortraitSettings } from '../../../hooks/useSettings';
 import { websocketService } from '../../../services/websocket';
 import type { HealthColorConfig, ColorStop, InterpolationConfig } from '../../molecules/HealthDisplay/HealthDisplaySettings';
 import type { MatchData } from '../../../types';
@@ -493,6 +493,8 @@ const ScoreboardSettingsTab = () => {
 
 // General Settings Tab Component
 const GeneralSettingsTab = () => {
+  const { settings: heroPortraitSettings, updateSettings: updateHeroPortraitSettings, updateTierGlowConfig } = useHeroPortraitSettings();
+  
   const handleSaveNextUpdate = () => {
     websocketService.enableCaptureNextUpdate();
   };
@@ -508,8 +510,93 @@ const GeneralSettingsTab = () => {
     }
   };
 
+  const handleTierGlowToggle = (enabled: boolean) => {
+    updateHeroPortraitSettings({ enableTierGlow: enabled });
+  };
+
+  const handleTierGlowConfigChange = (key: string, value: boolean | number) => {
+    updateTierGlowConfig({ [key]: value });
+  };
+
   return (
     <div className="settings-tab-content">
+      <div className="settings-section">
+        <h3>Hero Portrait Display</h3>
+        <p>Visual enhancements for hero portraits throughout the application.</p>
+        
+        <div className="setting-item">
+          <label>
+            <input
+              type="checkbox"
+              checked={heroPortraitSettings?.enableTierGlow || false}
+              onChange={(e) => handleTierGlowToggle(e.target.checked)}
+            />
+            Enable Tier Glow
+          </label>
+          <div className="setting-description">
+            <small>Show colored outlines on hero portraits based on their tier (1-5). Colors match the original game's tier system.</small>
+          </div>
+        </div>
+
+        {heroPortraitSettings?.enableTierGlow && (
+          <>
+            <div className="setting-item">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={heroPortraitSettings?.tierGlowConfig?.enableBorder || false}
+                  onChange={(e) => handleTierGlowConfigChange('enableBorder', e.target.checked)}
+                />
+                Enable Border Effect
+              </label>
+            </div>
+
+            <div className="setting-item">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={heroPortraitSettings?.tierGlowConfig?.enableDropShadow || false}
+                  onChange={(e) => handleTierGlowConfigChange('enableDropShadow', e.target.checked)}
+                />
+                Enable Drop Shadow Effect
+              </label>
+            </div>
+
+            {heroPortraitSettings?.tierGlowConfig?.enableBorder && (
+              <div className="setting-item">
+                <label>
+                  Border Opacity: {Math.round((heroPortraitSettings?.tierGlowConfig?.borderOpacity || 1) * 100)}%
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.1"
+                    value={heroPortraitSettings?.tierGlowConfig?.borderOpacity || 1}
+                    onChange={(e) => handleTierGlowConfigChange('borderOpacity', parseFloat(e.target.value))}
+                  />
+                </label>
+              </div>
+            )}
+
+            {heroPortraitSettings?.tierGlowConfig?.enableDropShadow && (
+              <div className="setting-item">
+                <label>
+                  Drop Shadow Opacity: {Math.round((heroPortraitSettings?.tierGlowConfig?.dropShadowOpacity || 1) * 100)}%
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.1"
+                    value={heroPortraitSettings?.tierGlowConfig?.dropShadowOpacity || 1}
+                    onChange={(e) => handleTierGlowConfigChange('dropShadowOpacity', parseFloat(e.target.value))}
+                  />
+                </label>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+
       <div className="settings-section">
         <h3>Debug Tools</h3>
         <p>Tools for capturing and replaying match data for development and debugging.</p>
