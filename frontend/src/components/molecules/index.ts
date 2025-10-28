@@ -7,6 +7,18 @@ export type { HeroPortraitProps } from './HeroPortrait/HeroPortrait';
 export { StatDisplay } from './StatDisplay/StatDisplay';
 export type { StatDisplayProps } from './StatDisplay/StatDisplay';
 
+export { SettingsSection } from './SettingsSection/SettingsSection';
+export type { SettingsSectionProps } from './SettingsSection/SettingsSection';
+
+export { SettingsGroup } from './SettingsGroup/SettingsGroup';
+export type { SettingsGroupProps } from './SettingsGroup/SettingsGroup';
+
+export { SettingsRow } from './SettingsRow/SettingsRow';
+export type { SettingsRowProps } from './SettingsRow/SettingsRow';
+
+export { GradientEditor } from './GradientEditor/GradientEditor';
+export type { GradientEditorProps } from './GradientEditor/GradientEditor';
+
 export { StreakBadge } from './StreakBadge/StreakBadge';
 export type { StreakBadgeProps } from './StreakBadge/StreakBadge';
 
