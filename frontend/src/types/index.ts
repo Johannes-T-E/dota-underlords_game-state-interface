@@ -202,3 +202,18 @@ export interface WebSocketEvents {
 
 export type ConnectionStatus = 'connecting' | 'connected' | 'disconnected' | 'error';
 
+export interface ScoreboardColumnConfig {
+  place: boolean;
+  player: boolean;          // KEEP: Combined name + level + gold (compact mode)
+  playerName: boolean;      // NEW: Just the player name
+  level: boolean;           // NEW: Level/XP indicator
+  gold: boolean;            // NEW: Gold amount
+  streak: boolean;          // NEW: Win/lose streak
+  health: boolean;
+  record: boolean;
+  networth: boolean;
+  roster: boolean;
+  bench: boolean;
+  columnOrder?: string[];  // NEW: Array of column keys in display order
+}
+

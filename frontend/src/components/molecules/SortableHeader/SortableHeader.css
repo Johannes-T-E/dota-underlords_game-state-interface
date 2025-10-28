@@ -4,6 +4,9 @@
   transition: all 0.2s ease;
   padding: 4px;
   border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .sortable-header:hover {

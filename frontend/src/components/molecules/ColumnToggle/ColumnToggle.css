@@ -1,0 +1,28 @@
+.column-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.column-toggle:hover:not(.column-toggle--disabled) {
+  background: var(--secondary-color);
+}
+
+.column-toggle input[type="checkbox"] {
+  cursor: pointer;
+  accent-color: var(--accent-color);
+}
+
+.column-toggle--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.column-toggle--disabled input[type="checkbox"] {
+  cursor: not-allowed;
+}
+

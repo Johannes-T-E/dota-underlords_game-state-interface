@@ -12,17 +12,25 @@
     --networth-color: #FFF06D;
     --win-streak-color: #2ecc40;
     --lose-streak-color: #e74c3c;
-    --row-height: 60px;
+    --row-height: 80px;
+    --unit-icon-box: 60px;
     --transition-time: 0.4s;
+    
+    /* Typography */
+    --scoreboard-font-size: 24px;
     
     /* Column widths matching the game */
     --width-place: 60px;
     --width-player: 200px;
-    --width-health: 130px;
+    --width-player-name: 200px;
+    --width-level: 80px;
+    --width-gold: 80px;
+    --width-streak: 80px;
+    --width-health: 100px;
     --width-record: 100px;
-    --width-networth: 120px;
-    --width-roster: 440px;
-    --width-bench: 350px;
+    --width-networth: 100px;
+    --width-roster: calc(val(--unit-icon)*10);
+    --width-bench: calc(val(--unit-icon)*8);
 }
 
 * {

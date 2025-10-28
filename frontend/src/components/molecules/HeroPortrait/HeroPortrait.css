@@ -1,7 +1,11 @@
 .hero-portrait {
   position: relative;
-  display: inline-block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   flex-shrink: 0;
+  height: 56px;
+  margin-top: 10px;
 }
 
 .hero-portrait__image {
@@ -9,33 +13,18 @@
 }
 
 .hero-portrait__stars {
-  position: absolute;
-  bottom: 2px;
-  left: 50%;
-  transform: translateX(-50%);
   display: flex;
-  gap: 2px;
-  align-items: center;
+  flex-direction: row;
   justify-content: center;
+  align-items: center;
+  margin-top: 0px;
 }
 
 .hero-portrait__star {
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8));
 }
 
-/* Size variants */
-.hero-portrait--small .hero-portrait__stars {
-  bottom: 1px;
-  gap: 1px;
-}
-
-.hero-portrait--medium .hero-portrait__stars {
-  bottom: 2px;
-  gap: 2px;
-}
-
-.hero-portrait--large .hero-portrait__stars {
-  bottom: 3px;
-  gap: 3px;
+.hero-portrait__star:not(:first-child) {
+  margin-left: -2px;
 }
 

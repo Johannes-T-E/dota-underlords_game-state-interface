@@ -16,9 +16,11 @@ export const RecordDisplay = ({ wins, losses, className = '' }: RecordDisplayPro
   const lossesValue = losses || 0;
 
   return (
-    <Text className={`record-display ${className}`}>
-      {winsValue}-{lossesValue}
-    </Text>
+    <div className={`record-display ${className}`}>
+      <span className="record-display__wins">{winsValue}</span>
+      <span className="record-display__separator">-</span>
+      <span className="record-display__losses">{lossesValue}</span>
+    </div>
   );
 };
 

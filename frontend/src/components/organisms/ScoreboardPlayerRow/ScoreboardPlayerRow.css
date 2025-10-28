@@ -27,11 +27,11 @@
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  padding-left: 4px;
+  padding-left: 0px;
 }
 
 .scoreboard-player-row__rank {
-  font-size: 26px;
+  font-size: 1.2rem;
   text-align: center;
   color: white;
   font-weight: bold;
@@ -44,6 +44,42 @@
   flex-shrink: 0;
 }
 
+/* Separate player info columns */
+.scoreboard-player-row__player-name {
+  width: var(--width-player-name);
+  height: 100%;
+  flex-shrink: 0;
+  padding: 0px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.scoreboard-player-row__level {
+  width: var(--width-level);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scoreboard-player-row__gold {
+  width: var(--width-gold);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  padding-right: 10px;
+}
+
+.scoreboard-player-row__streak {
+  width: var(--width-streak);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .scoreboard-player-row__name-container {
   padding: 10px;
   display: flex;
@@ -52,11 +88,8 @@
 }
 
 .scoreboard-player-row__name {
-  font-size: 17px;
-  height: 20px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  display: block;
+  align-items: center;
 }
 
 .scoreboard-player-row__stats {
@@ -72,45 +105,26 @@
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  padding-left: 0;
-  gap: 8px;
-}
-
-.scoreboard-player-row__health-value {
-  font-size: 32px;
-  font-weight: bold;
-  color: var(--health-color);
-  text-shadow: 0 0 3px #000;
-}
-
-.scoreboard-player-row__health-icon {
-  width: 20px;
-  height: 20px;
-  background-image: url('/icons/UI_icons/other_icons/icon_health_psd.png');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
+  justify-content: end;
+  padding-right: 16px;
 }
 
 /* Record column */
 .scoreboard-player-row__record {
   width: var(--width-record);
   flex-shrink: 0;
-  padding-left: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Net Worth column */
 .scoreboard-player-row__networth {
   width: var(--width-networth);
   flex-shrink: 0;
-  padding-left: 8px;
-}
-
-.scoreboard-player-row__networth-value {
-  font-size: 24px;
-  color: var(--networth-color);
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Roster column */
@@ -127,12 +141,12 @@
 }
 
 .scoreboard-player-row__unit {
-  width: 60px;
+  width: var(--unit-icon-box);
   height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   position: relative;
   flex-shrink: 0;
 }
@@ -149,7 +163,7 @@
   flex-direction: row;
   align-items: center;
   height: var(--row-height);
-  overflow-x: auto;
+  overflow-x: hidden;
   overflow-y: hidden;
 }
 

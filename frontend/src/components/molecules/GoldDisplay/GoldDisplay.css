@@ -1,0 +1,20 @@
+.gold-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gold-display__value {
+  font-size: var(--scoreboard-font-size);
+  font-weight: bold;
+  color: var(--gold-color, #ffd700);
+  text-shadow: 0 0 3px #000;
+}
+
+.gold-display__icon {
+  font-size: calc(var(--scoreboard-font-size)*0.6);
+  color: var(--gold-color, #ffd700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

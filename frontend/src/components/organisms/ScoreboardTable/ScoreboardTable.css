@@ -3,10 +3,22 @@
   border-radius: 0;
   overflow: hidden;
   box-shadow: 0 6px 24px rgba(0,0,0,0.25);
-  width: 1760px;
+  width: fit-content;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
+}
+
+.scoreboard-table__controls {
+  padding: 0.5rem 1rem;
+  display: flex;
+  justify-content: flex-end;
+  background: var(--primary-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.scoreboard-table__controls-spacer {
+  flex: 1;
 }
 
 .scoreboard-table__players {
@@ -18,27 +30,4 @@
   padding-bottom: 12px;
 }
 
-/* Responsive adjustments */
-@media (max-width: 1400px) {
-  .scoreboard-table {
-    transform: scale(0.8);
-    transform-origin: top left;
-  }
-}
-
-@media (max-width: 1200px) {
-  .scoreboard-table {
-    transform: scale(0.7);
-  }
-}
-
-@media (max-width: 768px) {
-  .scoreboard-table {
-    transform: scale(0.6);
-  }
-  
-  .scoreboard-table__players {
-    overflow-x: auto;
-  }
-}
 

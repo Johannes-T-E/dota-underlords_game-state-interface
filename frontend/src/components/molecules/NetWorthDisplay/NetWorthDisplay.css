@@ -1,0 +1,7 @@
+.networth-display {
+  font-size: var(--scoreboard-font-size);
+  color: var(--accent-color);
+  /* color: var(--networth-color); */
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}

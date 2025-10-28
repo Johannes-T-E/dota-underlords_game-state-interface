@@ -7,7 +7,6 @@ export interface HeroPortraitProps {
   unitId: number;
   rank: number;
   heroesData: HeroesData | null;
-  size?: 'small' | 'medium' | 'large';
   className?: string;
 }
 
@@ -15,7 +14,6 @@ export const HeroPortrait = memo(({
   unitId, 
   rank, 
   heroesData, 
-  size = 'medium',
   className = '' 
 }: HeroPortraitProps) => {
   // Find hero by unit ID
@@ -37,11 +35,11 @@ export const HeroPortrait = memo(({
   const starLevel = Math.min(Math.max(rank, 0), 3);
 
   return (
-    <div className={`hero-portrait hero-portrait--${size} ${className}`}>
+    <div className={`hero-portrait ${className}`}>
       <HeroImage
         dotaUnitName={dotaUnitName}
         alt={`Unit ${unitId}`}
-        size={size}
+        size="medium"
         className="hero-portrait__image"
       />
       {starLevel > 0 && (
@@ -50,7 +48,7 @@ export const HeroPortrait = memo(({
             <StarIcon
               key={i}
               rank={starLevel as 1 | 2 | 3}
-              size={size === 'large' ? 'large' : size === 'small' ? 'small' : 'medium'}
+              size="medium"
               className="hero-portrait__star"
             />
           ))}

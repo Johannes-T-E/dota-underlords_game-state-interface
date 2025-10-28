@@ -5,6 +5,9 @@ export type { ScoreboardHeaderProps, SortField, SortDirection } from './Scoreboa
 export { ScoreboardPlayerRow } from './ScoreboardPlayerRow/ScoreboardPlayerRow';
 export type { ScoreboardPlayerRowProps } from './ScoreboardPlayerRow/ScoreboardPlayerRow';
 
+export { ScoreboardSettings } from './ScoreboardSettings/ScoreboardSettings';
+export type { ScoreboardSettingsProps } from './ScoreboardSettings/ScoreboardSettings';
+
 export { ScoreboardTable } from './ScoreboardTable/ScoreboardTable';
 export type { ScoreboardTableProps } from './ScoreboardTable/ScoreboardTable';
 
@@ -45,4 +48,7 @@ export type { MatchInfoBarProps } from './MatchInfoBar/MatchInfoBar';
 
 export { EmptyState } from './EmptyState/EmptyState';
 export type { EmptyStateProps } from './EmptyState/EmptyState';
+
+export { SettingsDrawer } from './SettingsDrawer/SettingsDrawer';
+export type { SettingsDrawerProps } from './SettingsDrawer/SettingsDrawer';
 

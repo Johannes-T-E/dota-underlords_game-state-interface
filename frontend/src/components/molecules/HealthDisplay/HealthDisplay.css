@@ -1,0 +1,61 @@
+.health-display {
+  display: flex;
+  align-items: center;
+  gap: 0px;
+}
+
+.health-display__value {
+  /* Defaults - overridden by inline styles from Redux settings */
+  font-size: var(--scoreboard-font-size);
+  font-weight: bold;
+  color: var(--health-color);
+  text-shadow: 0 0 3px #000;
+}
+
+.health-display__icon {
+  /* Defaults - overridden by inline styles from Redux settings */
+  font-size: var(--scoreboard-font-size);
+  color: var(--health-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Animation for health changes */
+.health-display--animating {
+  animation: health-pulse var(--animation-duration, 0.6s) var(--animation-easing, ease-in-out);
+}
+
+@keyframes health-pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(var(--pulse-scale, 1.2));
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.health-display--animating .health-display__icon {
+  animation: heart-beat var(--animation-duration, 0.6s) var(--animation-easing, ease-in-out);
+}
+
+@keyframes heart-beat {
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(calc(var(--pulse-scale, 1.2) * 1.1));
+  }
+  50% {
+    transform: scale(var(--pulse-scale, 1.2));
+  }
+  75% {
+    transform: scale(calc(var(--pulse-scale, 1.2) * 1.1));
+  }
+  100% {
+    transform: scale(1);
+  }
+}

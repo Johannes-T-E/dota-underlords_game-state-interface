@@ -1,0 +1,184 @@
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import type { HealthDisplaySettings } from '../components/molecules/HealthDisplay/HealthDisplaySettings';
+import type { ScoreboardColumnConfig } from '../types';
+import { DEFAULT_HEALTH_DISPLAY_SETTINGS } from '../components/molecules/HealthDisplay/HealthDisplaySettings';
+
+// Current settings version for migration purposes
+const SETTINGS_VERSION = 1;
+
+export interface ScoreboardSettings {
+  columns: ScoreboardColumnConfig;
+  sortField: 'health' | 'record' | 'networth';
+  sortDirection: 'asc' | 'desc';
+}
+
+export interface GeneralSettings {
+  theme?: string;
+  // Future global settings
+}
+
+export interface SettingsState {
+  version: number;
+  health: HealthDisplaySettings;
+  scoreboard: ScoreboardSettings;
+  general: GeneralSettings;
+}
+
+const defaultScoreboardSettings: ScoreboardSettings = {
+  columns: {
+    place: true,
+    player: false,
+    playerName: true,
+    level: true,
+    gold: true,
+    streak: true,
+    health: true,
+    record: true,
+    networth: true,
+    roster: true,
+    bench: true,
+    columnOrder: undefined
+  },
+  sortField: 'health',
+  sortDirection: 'desc'
+};
+
+const initialState: SettingsState = {
+  version: SETTINGS_VERSION,
+  health: DEFAULT_HEALTH_DISPLAY_SETTINGS,
+  scoreboard: defaultScoreboardSettings,
+  general: {}
+};
+
+// Migration function for settings versions
+const migrateSettings = (settings: any): SettingsState => {
+  if (!settings || !settings.version) {
+    // No version or invalid data, return defaults
+    return initialState;
+  }
+
+  // Handle future migrations here
+  if (settings.version < SETTINGS_VERSION) {
+    // Perform migrations based on version
+    // For now, just update version
+    settings.version = SETTINGS_VERSION;
+  }
+
+  return settings;
+};
+
+// Load settings from localStorage
+const loadPersistedSettings = (): SettingsState => {
+  try {
+    const saved = localStorage.getItem('appSettings');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return migrateSettings(parsed);
+    }
+  } catch (error) {
+    console.warn('Failed to load persisted settings:', error);
+  }
+  return initialState;
+};
+
+const settingsSlice = createSlice({
+  name: 'settings',
+  initialState: loadPersistedSettings(),
+  reducers: {
+    // Health Display Settings
+    updateHealthSettings: (state, action: PayloadAction<Partial<HealthDisplaySettings>>) => {
+      state.health = {
+        ...state.health,
+        ...action.payload,
+        styling: {
+          ...state.health.styling,
+          ...action.payload.styling
+        },
+        colorConfig: action.payload.colorConfig ?? state.health.colorConfig
+      };
+    },
+
+    resetHealthSettings: (state) => {
+      state.health = DEFAULT_HEALTH_DISPLAY_SETTINGS;
+    },
+
+    // Scoreboard Settings
+    updateScoreboardColumns: (state, action: PayloadAction<Partial<ScoreboardColumnConfig>>) => {
+      state.scoreboard.columns = {
+        ...state.scoreboard.columns,
+        ...action.payload
+      };
+    },
+
+    updateScoreboardSort: (state, action: PayloadAction<{ field?: 'health' | 'record' | 'networth'; direction?: 'asc' | 'desc' }>) => {
+      if (action.payload.field) {
+        state.scoreboard.sortField = action.payload.field;
+      }
+      if (action.payload.direction) {
+        state.scoreboard.sortDirection = action.payload.direction;
+      }
+    },
+
+    resetScoreboardSettings: (state) => {
+      state.scoreboard = defaultScoreboardSettings;
+    },
+
+    // General Settings
+    updateGeneralSettings: (state, action: PayloadAction<Partial<GeneralSettings>>) => {
+      state.general = {
+        ...state.general,
+        ...action.payload
+      };
+    },
+
+    // Global Actions
+    resetAllSettings: (state) => {
+      state.health = DEFAULT_HEALTH_DISPLAY_SETTINGS;
+      state.scoreboard = defaultScoreboardSettings;
+      state.general = {};
+      state.version = SETTINGS_VERSION;
+    },
+
+    loadSettings: (state, action: PayloadAction<SettingsState>) => {
+      const migrated = migrateSettings(action.payload);
+      state.health = migrated.health;
+      state.scoreboard = migrated.scoreboard;
+      state.general = migrated.general;
+      state.version = migrated.version;
+    },
+
+    // Import/Export
+    importSettings: (state, action: PayloadAction<string>) => {
+      try {
+        const parsed = JSON.parse(action.payload);
+        const migrated = migrateSettings(parsed);
+        state.health = migrated.health;
+        state.scoreboard = migrated.scoreboard;
+        state.general = migrated.general;
+        state.version = migrated.version;
+      } catch (error) {
+        console.error('Failed to import settings:', error);
+      }
+    }
+  }
+});
+
+export const {
+  updateHealthSettings,
+  resetHealthSettings,
+  updateScoreboardColumns,
+  updateScoreboardSort,
+  resetScoreboardSettings,
+  updateGeneralSettings,
+  resetAllSettings,
+  loadSettings,
+  importSettings
+} = settingsSlice.actions;
+
+export default settingsSlice.reducer;
+
+// Selector helpers
+export const selectHealthSettings = (state: { settings: SettingsState }) => state.settings.health;
+export const selectScoreboardSettings = (state: { settings: SettingsState }) => state.settings.scoreboard;
+export const selectGeneralSettings = (state: { settings: SettingsState }) => state.settings.general;
+

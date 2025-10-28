@@ -1,0 +1,26 @@
+.scoreboard-settings {
+  position: relative;
+}
+
+.scoreboard-settings__dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: var(--primary-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.scoreboard-settings__reset-btn {
+  width: 100%;
+  margin-bottom: 0.25rem;
+}
+

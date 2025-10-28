@@ -1,6 +1,29 @@
 .record-display {
-  font-size: 18px;
-  font-weight: bold;
+  font-size: var(--scoreboard-font-size);
+  font-weight: normal;
+  color: var(--accent-color);
   letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+}
+
+.record-display__wins {
+  text-align: right;
+  width: 40px;
+  padding-right: 0px;
+}
+
+.record-display__separator {
+  text-align: center;
+  width: 20px;
+  flex-shrink: 0;
+}
+
+.record-display__losses {
+  text-align: left;
+  width: 40px;
+  padding-left: 0px;
 }
 

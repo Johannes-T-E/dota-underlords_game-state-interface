@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button, Text, StatusIndicator, PhaseIcon } from '../../atoms';
+import { RoundStatus } from '../../molecules';
 import { useAppSelector } from '../../../hooks/redux';
 import './NavigationBar.css';
 
 export interface NavigationBarProps {
   className?: string;
+  onSettingsClick?: () => void;
 }
 
-export const NavigationBar = ({ className = '' }: NavigationBarProps) => {
+export const NavigationBar = ({ className = '', onSettingsClick }: NavigationBarProps) => {
   const location = useLocation();
   const { status } = useAppSelector((state) => state.connection);
   const { currentRound } = useAppSelector((state) => state.match);
@@ -81,16 +83,13 @@ export const NavigationBar = ({ className = '' }: NavigationBarProps) => {
 
       {currentRound && (
         <div className="navigation-bar__round-info">
-          <PhaseIcon phase={currentRound.round_phase} size="small" />
-          {!collapsed && (
-            <div className="navigation-bar__round-text">
-              <Text variant="label" weight="bold">
-                Round {currentRound.round_number}
-              </Text>
-              <Text variant="label" weight="normal">
-                {currentRound.round_phase}
-              </Text>
-            </div>
+          {collapsed ? (
+            <PhaseIcon phase={currentRound.round_phase} size="small" />
+          ) : (
+            <RoundStatus
+              roundNumber={currentRound.round_number}
+              roundPhase={currentRound.round_phase}
+            />
           )}
         </div>
       )}
@@ -98,6 +97,19 @@ export const NavigationBar = ({ className = '' }: NavigationBarProps) => {
       <div className="navigation-bar__status">
         <StatusIndicator status={status} />
         {!collapsed && <Text variant="label">{getStatusText()}</Text>}
+      </div>
+
+      <div className="navigation-bar__actions">
+        <Button
+          variant="ghost"
+          size="small"
+          onClick={onSettingsClick}
+          className="navigation-bar__settings-btn"
+          aria-label="Open settings"
+          title="Settings"
+        >
+          ⚙
+        </Button>
       </div>
     </nav>
   );
