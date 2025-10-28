@@ -18,6 +18,24 @@ export const ScoreboardSettings = ({
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  // Ensure config has all required properties to prevent controlled/uncontrolled input issues
+  const safeConfig: ScoreboardColumnConfig = {
+    place: config.place ?? true,
+    player: config.player ?? false,
+    playerName: config.playerName ?? true,
+    level: config.level ?? true,
+    gold: config.gold ?? true,
+    streak: config.streak ?? true,
+    health: config.health ?? true,
+    record: config.record ?? true,
+    networth: config.networth ?? true,
+    roster: config.roster ?? true,
+    underlord: config.underlord ?? true,
+    contraptions: config.contraptions ?? true,
+    bench: config.bench ?? true,
+    columnOrder: config.columnOrder
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -35,7 +53,7 @@ export const ScoreboardSettings = ({
   }, [isOpen]);
 
   const updateConfig = (key: keyof ScoreboardColumnConfig, value: boolean) => {
-    onChange({ [key]: value });
+    onChange({ ...safeConfig, [key]: value });
   };
 
   const handleReset = () => {
@@ -50,6 +68,8 @@ export const ScoreboardSettings = ({
       record: true,
       networth: true,
       roster: true,
+      underlord: true,
+      contraptions: true,
       bench: true,
       columnOrder: undefined
     };
@@ -80,57 +100,67 @@ export const ScoreboardSettings = ({
           <hr style={{ margin: '0.5rem 0', borderColor: 'var(--border-color)' }} />
           <ColumnToggle
             label="Place"
-            enabled={config.place}
+            enabled={safeConfig.place}
             onChange={(enabled) => updateConfig('place', enabled)}
           />
           <ColumnToggle
             label="Player (Compact)"
-            enabled={config.player}
+            enabled={safeConfig.player}
             onChange={(enabled) => updateConfig('player', enabled)}
           />
           <ColumnToggle
             label="Player Name"
-            enabled={config.playerName}
+            enabled={safeConfig.playerName}
             onChange={(enabled) => updateConfig('playerName', enabled)}
           />
           <ColumnToggle
             label="Level"
-            enabled={config.level}
+            enabled={safeConfig.level}
             onChange={(enabled) => updateConfig('level', enabled)}
           />
           <ColumnToggle
             label="Gold"
-            enabled={config.gold}
+            enabled={safeConfig.gold}
             onChange={(enabled) => updateConfig('gold', enabled)}
           />
           <ColumnToggle
             label="Streak"
-            enabled={config.streak}
+            enabled={safeConfig.streak}
             onChange={(enabled) => updateConfig('streak', enabled)}
           />
           <ColumnToggle
             label="Health"
-            enabled={config.health}
+            enabled={safeConfig.health}
             onChange={(enabled) => updateConfig('health', enabled)}
           />
           <ColumnToggle
             label="Record"
-            enabled={config.record}
+            enabled={safeConfig.record}
             onChange={(enabled) => updateConfig('record', enabled)}
           />
           <ColumnToggle
             label="Net Worth"
-            enabled={config.networth}
+            enabled={safeConfig.networth}
             onChange={(enabled) => updateConfig('networth', enabled)}
           />
           <ColumnToggle
             label="Roster"
-            enabled={config.roster}
+            enabled={safeConfig.roster}
             onChange={(enabled) => updateConfig('roster', enabled)}
           />
           <ColumnToggle
+            label="Underlord"
+            enabled={safeConfig.underlord}
+            onChange={(enabled) => updateConfig('underlord', enabled)}
+          />
+          <ColumnToggle
+            label="Contraptions"
+            enabled={safeConfig.contraptions}
+            onChange={(enabled) => updateConfig('contraptions', enabled)}
+          />
+          <ColumnToggle
             label="Bench"
-            enabled={config.bench}
+            enabled={safeConfig.bench}
             onChange={(enabled) => updateConfig('bench', enabled)}
           />
         </div>

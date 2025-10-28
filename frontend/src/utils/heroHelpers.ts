@@ -74,3 +74,19 @@ export const getStarIconPath = (rank: number): string => {
   const starRank = Math.min(rank, 3);
   return `/icons/UI_icons/star_icons/star_rank${starRank}_psd.png`;
 };
+
+// Helper function to get hero tier from unit ID
+export const getHeroTier = (unitId: number, heroesData: HeroesData | null): number => {
+  if (!heroesData || !heroesData.heroes) {
+    return 1; // Default tier if no data available
+  }
+  
+  // Find hero by ID and return draftTier
+  for (const [, heroData] of Object.entries(heroesData.heroes)) {
+    if (heroData.id === unitId) {
+      return heroData.draftTier;
+    }
+  }
+  
+  return 1; // Default tier if hero not found
+};

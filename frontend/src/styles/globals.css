@@ -29,6 +29,8 @@
     --width-record: 100px;
     --width-networth: 100px;
     --width-roster: calc(var(--unit-icon-box)*10);
+    --width-underlord: calc(var(--unit-icon-box)*2);
+    --width-contraptions: calc(var(--unit-icon-box)*3);
     --width-bench: calc(var(--unit-icon-box)*8);
     --unit-icon-box: 60px;
 }

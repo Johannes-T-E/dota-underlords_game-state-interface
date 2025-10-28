@@ -7,6 +7,7 @@ import type { MatchData, WebSocketEvents } from '../types';
 class WebSocketService {
   private socket: Socket | null = null;
   private store: Store | null = null;
+  private captureNextUpdate: boolean = false;
 
   initialize(store: Store) {
     this.store = store;
@@ -53,6 +54,13 @@ class WebSocketService {
 
     this.socket.on('match_update', (data: MatchData) => {
       console.log('[WebSocket] Match update received:', data);
+      
+      // Debug capture functionality
+      if (this.captureNextUpdate) {
+        this.captureNextUpdate = false;
+        this.downloadDebugData(data);
+      }
+      
       this.store?.dispatch(updateMatch(data));
     });
 
@@ -81,6 +89,38 @@ class WebSocketService {
 
   getConnectionStatus(): boolean {
     return this.socket?.connected ?? false;
+  }
+
+  // Debug functionality
+  enableCaptureNextUpdate() {
+    this.captureNextUpdate = true;
+  }
+
+  isCaptureEnabled(): boolean {
+    return this.captureNextUpdate;
+  }
+
+  private downloadDebugData(data: MatchData) {
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const filename = `underlords_debug_${timestamp}.json`;
+    
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    console.log(`[Debug] Downloaded match data as ${filename}`);
+  }
+
+  injectDebugData(data: MatchData) {
+    console.log('[Debug] Injecting debug data:', data);
+    this.store?.dispatch(updateMatch(data));
   }
 }
 

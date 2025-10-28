@@ -18,6 +18,8 @@ const COLUMN_METADATA = {
   record: { label: 'Record', sortable: true },
   networth: { label: 'Net Worth', sortable: true },
   roster: { label: 'Roster', sortable: false },
+  underlord: { label: 'Underlord', sortable: false },
+  contraptions: { label: 'Contraptions', sortable: false },
   bench: { label: 'Bench', sortable: false }
 } as const;
 
@@ -54,13 +56,15 @@ export const ScoreboardHeader = ({
     record: true,
     networth: true,
     roster: true,
+    underlord: true,
+    contraptions: true,
     bench: true
   };
   
   const config = visibleColumns || defaultVisible;
   
   // Use provided columnOrder or default order
-  const DEFAULT_COLUMN_ORDER = ['place', 'playerName', 'level', 'gold', 'streak', 'health', 'record', 'networth', 'roster', 'bench'];
+  const DEFAULT_COLUMN_ORDER = ['place', 'playerName', 'level', 'gold', 'streak', 'health', 'record', 'networth', 'roster', 'underlord', 'contraptions', 'bench'];
   const currentOrder = columnOrder || DEFAULT_COLUMN_ORDER;
   
   // Filter visible columns in the specified order

@@ -121,6 +121,16 @@
   flex-shrink: 0;
 }
 
+.scoreboard-header__col--underlord {
+  width: var(--width-underlord);
+  flex-shrink: 0;
+}
+
+.scoreboard-header__col--contraptions {
+  width: var(--width-contraptions);
+  flex-shrink: 0;
+}
+
 .scoreboard-header__col--bench {
   width: var(--width-bench);
   flex-shrink: 0;

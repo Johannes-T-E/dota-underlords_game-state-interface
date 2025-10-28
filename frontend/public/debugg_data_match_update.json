@@ -1,0 +1,4098 @@
+{
+  "match": {
+    "match_id": "68b3ece4cd70114f",
+    "started_at": "2025-10-28T14:07:27.267567",
+    "player_count": 8
+  },
+  "players": [
+    {
+      "player_id": "#DAC_BotName_31",
+      "account_id": 0,
+      "persona_name": null,
+      "bot_persona_name": "#DAC_BotName_31",
+      "player_slot": 3,
+      "is_human_player": false,
+      "health": 23,
+      "gold": 11,
+      "level": 8,
+      "xp": 3,
+      "next_level_xp": 40,
+      "wins": 5,
+      "losses": 15,
+      "win_streak": 0,
+      "lose_streak": 1,
+      "net_worth": 169,
+      "final_place": 0,
+      "combat_type": 0,
+      "combat_result": 2,
+      "combat_duration": 39.35,
+      "opponent_player_slot": null,
+      "board_unit_limit": 8,
+      "units": [
+        {
+          "entindex": 10,
+          "unit_id": 20,
+          "position": {
+            "x": 4,
+            "y": 3
+          },
+          "rank": 1,
+          "gold_value": 1,
+          "kill_count": 5,
+          "kill_streak": 0,
+          "keywords": [
+            9,
+            24
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 5
+        },
+        {
+          "entindex": 118,
+          "unit_id": 132,
+          "position": {
+            "x": 2,
+            "y": -1
+          },
+          "rank": 2,
+          "gold_value": 4,
+          "kill_count": 1,
+          "kill_streak": 0,
+          "keywords": [
+            47,
+            39
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 1
+        },
+        {
+          "entindex": 120,
+          "unit_id": 4,
+          "position": {
+            "x": 3,
+            "y": 3
+          },
+          "rank": 1,
+          "gold_value": 1,
+          "kill_count": 1,
+          "kill_streak": 0,
+          "keywords": [
+            35,
+            24
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 1.5
+        },
+        {
+          "entindex": 222,
+          "unit_id": 15,
+          "position": {
+            "x": 5,
+            "y": 3
+          },
+          "rank": 1,
+          "gold_value": 2,
+          "kill_count": 4,
+          "kill_streak": 0,
+          "keywords": [
+            34,
+            45
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 4
+        },
+        {
+          "entindex": 266,
+          "unit_id": 52,
+          "position": {
+            "x": 1,
+            "y": -1
+          },
+          "rank": 2,
+          "gold_value": 3,
+          "kill_count": 2,
+          "kill_streak": 0,
+          "keywords": [
+            42,
+            20
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 2
+        },
+        {
+          "entindex": 282,
+          "unit_id": 1004,
+          "position": {
+            "x": 4,
+            "y": 2
+          },
+          "rank": 3,
+          "gold_value": 0,
+          "kill_count": 22,
+          "kill_streak": 0,
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 0,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 22.25
+        },
+        {
+          "entindex": 322,
+          "unit_id": 97,
+          "position": {
+            "x": 2,
+            "y": 3
+          },
+          "rank": 2,
+          "gold_value": 4,
+          "kill_count": 8,
+          "kill_streak": 0,
+          "keywords": [
+            8,
+            50
+          ],
+          "duel_bonus_damage": 58,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 8.25
+        },
+        {
+          "entindex": 344,
+          "unit_id": 97,
+          "position": {
+            "x": 3,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 2,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            8,
+            50
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 362,
+          "unit_id": 125,
+          "position": {
+            "x": 5,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 1,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            34,
+            3
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 406,
+          "unit_id": 109,
+          "position": {
+            "x": 7,
+            "y": 3
+          },
+          "rank": 2,
+          "gold_value": 4,
+          "kill_count": 8,
+          "kill_streak": 0,
+          "keywords": [
+            34,
+            35
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 8.75
+        },
+        {
+          "entindex": 410,
+          "unit_id": 14,
+          "position": {
+            "x": 6,
+            "y": 3
+          },
+          "rank": 2,
+          "gold_value": 5,
+          "kill_count": 17,
+          "kill_streak": 0,
+          "keywords": [
+            34,
+            18,
+            44
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 17.25
+        },
+        {
+          "entindex": 434,
+          "unit_id": 41,
+          "position": {
+            "x": 1,
+            "y": 3
+          },
+          "rank": 2,
+          "gold_value": 4,
+          "kill_count": 6,
+          "kill_streak": 0,
+          "keywords": [
+            8,
+            24,
+            45
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 6.5
+        },
+        {
+          "entindex": 446,
+          "unit_id": 41,
+          "position": {
+            "x": 0,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 2,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            8,
+            24,
+            45
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 448,
+          "unit_id": 125,
+          "position": {
+            "x": 4,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 1,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            34,
+            3
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 472,
+          "unit_id": 135,
+          "position": {
+            "x": 0,
+            "y": 3
+          },
+          "rank": 1,
+          "gold_value": 4,
+          "kill_count": 1,
+          "kill_streak": 0,
+          "keywords": [
+            35,
+            45
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 1.75
+        },
+        {
+          "entindex": 500,
+          "unit_id": 14,
+          "position": {
+            "x": 6,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 3,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            34,
+            18,
+            44
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        }
+      ],
+      "items": [
+        {
+          "slot_index": 0,
+          "item_id": 10201,
+          "assigned_unit_entindex": 434
+        },
+        {
+          "slot_index": 1,
+          "item_id": 10116,
+          "assigned_unit_entindex": 222
+        },
+        {
+          "slot_index": 2,
+          "item_id": 10174,
+          "assigned_unit_entindex": 362
+        },
+        {
+          "slot_index": 3,
+          "item_id": 10162,
+          "assigned_unit_entindex": 322
+        },
+        {
+          "slot_index": 4,
+          "item_id": 10127,
+          "assigned_unit_entindex": 406
+        },
+        {
+          "slot_index": 5,
+          "item_id": 10145,
+          "assigned_unit_entindex": 410
+        }
+      ],
+      "synergies": [
+        {
+          "keyword": 3,
+          "unique_unit_count": 0,
+          "bench_additional_unique_unit_count": 1
+        },
+        {
+          "keyword": 8,
+          "unique_unit_count": 2
+        },
+        {
+          "keyword": 9,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 18,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 20,
+          "unique_unit_count": 0,
+          "bench_additional_unique_unit_count": 1
+        },
+        {
+          "keyword": 24,
+          "unique_unit_count": 3
+        },
+        {
+          "keyword": 34,
+          "unique_unit_count": 3,
+          "bench_additional_unique_unit_count": 1
+        },
+        {
+          "keyword": 35,
+          "unique_unit_count": 3
+        },
+        {
+          "keyword": 39,
+          "unique_unit_count": 0,
+          "bench_additional_unique_unit_count": 1
+        },
+        {
+          "keyword": 42,
+          "unique_unit_count": 0,
+          "bench_additional_unique_unit_count": 1
+        },
+        {
+          "keyword": 44,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 45,
+          "unique_unit_count": 3
+        },
+        {
+          "keyword": 47,
+          "unique_unit_count": 0,
+          "bench_additional_unique_unit_count": 1
+        },
+        {
+          "keyword": 50,
+          "unique_unit_count": 1
+        }
+      ],
+      "underlord": 4,
+      "underlord_selected_talents": [
+        100071,
+        100087
+      ],
+      "event_tier": 0,
+      "owns_event": false,
+      "is_mirrored_match": false,
+      "connection_status": 1,
+      "disconnected_time": 0,
+      "vs_opponent_wins": 0,
+      "vs_opponent_losses": 0,
+      "vs_opponent_draws": 0,
+      "brawny_kills_float": 35.25,
+      "city_prestige_level": 0,
+      "rank_tier": null,
+      "platform": 0,
+      "board_buddy": {
+        "desired_pos_x": 0,
+        "desired_pos_y": 0
+      },
+      "lobby_team": 2,
+      "sequence_number": 13837,
+      "timestamp": "2025-10-28T14:48:56.127262"
+    },
+    {
+      "player_id": "#DAC_BotName_47",
+      "account_id": 0,
+      "persona_name": null,
+      "bot_persona_name": "#DAC_BotName_47",
+      "player_slot": 4,
+      "is_human_player": false,
+      "health": 98,
+      "gold": 29,
+      "level": 9,
+      "xp": 3,
+      "next_level_xp": 45,
+      "wins": 18,
+      "losses": 2,
+      "win_streak": 6,
+      "lose_streak": 0,
+      "net_worth": 224,
+      "final_place": 0,
+      "combat_type": 0,
+      "combat_result": 1,
+      "combat_duration": 26.25,
+      "opponent_player_slot": null,
+      "board_unit_limit": 9,
+      "units": [
+        {
+          "entindex": 124,
+          "unit_id": 4,
+          "position": {
+            "x": 3,
+            "y": 3
+          },
+          "rank": 2,
+          "gold_value": 3,
+          "kill_count": 36,
+          "kill_streak": 0,
+          "keywords": [
+            35,
+            24
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 36.5
+        },
+        {
+          "entindex": 228,
+          "unit_id": 26,
+          "position": {
+            "x": 5,
+            "y": 3
+          },
+          "rank": 1,
+          "gold_value": 3,
+          "kill_count": 8,
+          "kill_streak": 0,
+          "keywords": [
+            8,
+            35,
+            39
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 8
+        },
+        {
+          "entindex": 234,
+          "unit_id": 4,
+          "position": {
+            "x": 0,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 1,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            35,
+            24
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 284,
+          "unit_id": 1001,
+          "position": {
+            "x": 4,
+            "y": 2
+          },
+          "rank": 3,
+          "gold_value": 0,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 0,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 390,
+          "unit_id": 14,
+          "position": {
+            "x": 7,
+            "y": 3
+          },
+          "rank": 2,
+          "gold_value": 5,
+          "kill_count": 10,
+          "kill_streak": 4,
+          "keywords": [
+            34,
+            18,
+            44
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 10.25
+        },
+        {
+          "entindex": 412,
+          "unit_id": 50,
+          "position": {
+            "x": 4,
+            "y": 3
+          },
+          "rank": 1,
+          "gold_value": 4,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            35,
+            44,
+            39
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 474,
+          "unit_id": 8,
+          "position": {
+            "x": 3,
+            "y": 2
+          },
+          "rank": 1,
+          "gold_value": 3,
+          "kill_count": 2,
+          "kill_streak": 0,
+          "keywords": [
+            12,
+            39
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 2.25
+        },
+        {
+          "entindex": 478,
+          "unit_id": 111,
+          "position": {
+            "x": 2,
+            "y": 3
+          },
+          "rank": 2,
+          "gold_value": 3,
+          "kill_count": 3,
+          "kill_streak": 0,
+          "keywords": [
+            35,
+            44
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 3
+        },
+        {
+          "entindex": 482,
+          "unit_id": 109,
+          "position": {
+            "x": 0,
+            "y": 3
+          },
+          "rank": 2,
+          "gold_value": 4,
+          "kill_count": 4,
+          "kill_streak": 2,
+          "keywords": [
+            34,
+            35
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 4.25
+        },
+        {
+          "entindex": 484,
+          "unit_id": 135,
+          "position": {
+            "x": 6,
+            "y": 3
+          },
+          "rank": 1,
+          "gold_value": 4,
+          "kill_count": 2,
+          "kill_streak": 0,
+          "keywords": [
+            35,
+            45
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 2
+        },
+        {
+          "entindex": 502,
+          "unit_id": 135,
+          "position": {
+            "x": 1,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 4,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            35,
+            45
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 504,
+          "unit_id": 25,
+          "position": {
+            "x": 4,
+            "y": 1
+          },
+          "rank": 1,
+          "gold_value": 2,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            44,
+            39
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 506,
+          "unit_id": 14,
+          "position": {
+            "x": 3,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 3,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            34,
+            18,
+            44
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 508,
+          "unit_id": 109,
+          "position": {
+            "x": 4,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 2,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            34,
+            35
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 564,
+          "unit_id": 26,
+          "position": {
+            "x": 2,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 3,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            8,
+            35,
+            39
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        }
+      ],
+      "items": [
+        {
+          "slot_index": 0,
+          "item_id": 10109,
+          "assigned_unit_entindex": 484
+        },
+        {
+          "slot_index": 1,
+          "item_id": 10176,
+          "assigned_unit_entindex": 124
+        },
+        {
+          "slot_index": 2,
+          "item_id": 10115,
+          "assigned_unit_entindex": 412
+        },
+        {
+          "slot_index": 3,
+          "item_id": 10162,
+          "assigned_unit_entindex": 390
+        },
+        {
+          "slot_index": 4,
+          "item_id": 10142,
+          "assigned_unit_entindex": 482
+        },
+        {
+          "slot_index": 5,
+          "item_id": 10212,
+          "assigned_unit_entindex": 228
+        }
+      ],
+      "synergies": [
+        {
+          "keyword": 8,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 12,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 18,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 24,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 34,
+          "unique_unit_count": 2
+        },
+        {
+          "keyword": 35,
+          "unique_unit_count": 6
+        },
+        {
+          "keyword": 39,
+          "unique_unit_count": 4
+        },
+        {
+          "keyword": 44,
+          "unique_unit_count": 4
+        },
+        {
+          "keyword": 45,
+          "unique_unit_count": 1
+        }
+      ],
+      "underlord": 1,
+      "underlord_selected_talents": [
+        100064,
+        100058
+      ],
+      "event_tier": 0,
+      "owns_event": false,
+      "is_mirrored_match": false,
+      "connection_status": 1,
+      "disconnected_time": 0,
+      "vs_opponent_wins": 0,
+      "vs_opponent_losses": 0,
+      "vs_opponent_draws": 0,
+      "brawny_kills_float": 15.5,
+      "city_prestige_level": 0,
+      "rank_tier": null,
+      "platform": 0,
+      "board_buddy": {
+        "desired_pos_x": 0,
+        "desired_pos_y": 0
+      },
+      "lobby_team": 3,
+      "sequence_number": 5583,
+      "timestamp": "2025-10-28T14:48:56.127262"
+    },
+    {
+      "player_id": "#DAC_BotName_63",
+      "account_id": 0,
+      "persona_name": null,
+      "bot_persona_name": "#DAC_BotName_63",
+      "player_slot": 6,
+      "is_human_player": false,
+      "health": 45,
+      "gold": 28,
+      "level": 8,
+      "xp": 33,
+      "next_level_xp": 40,
+      "wins": 9,
+      "losses": 11,
+      "win_streak": 1,
+      "lose_streak": 0,
+      "net_worth": 211,
+      "final_place": 0,
+      "combat_type": 0,
+      "combat_result": 1,
+      "combat_duration": 33.3,
+      "opponent_player_slot": null,
+      "board_unit_limit": 8,
+      "units": [
+        {
+          "entindex": 28,
+          "unit_id": 9,
+          "position": {
+            "x": 0,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 1,
+          "kill_count": 0,
+          "kill_streak": 2,
+          "keywords": [
+            12,
+            19
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0.5
+        },
+        {
+          "entindex": 32,
+          "unit_id": 13,
+          "position": {
+            "x": 3,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 1,
+          "kill_count": 1,
+          "kill_streak": 0,
+          "keywords": [
+            8,
+            20
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 1
+        },
+        {
+          "entindex": 64,
+          "unit_id": 113,
+          "position": {
+            "x": 4,
+            "y": 2
+          },
+          "rank": 1,
+          "gold_value": 1,
+          "kill_count": 7,
+          "kill_streak": 0,
+          "keywords": [
+            13,
+            2
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 7.25
+        },
+        {
+          "entindex": 246,
+          "unit_id": 9,
+          "position": {
+            "x": 4,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 1,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            12,
+            19
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 272,
+          "unit_id": 125,
+          "position": {
+            "x": 7,
+            "y": -1
+          },
+          "rank": 2,
+          "gold_value": 3,
+          "kill_count": 9,
+          "kill_streak": 0,
+          "keywords": [
+            34,
+            3
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 9.5
+        },
+        {
+          "entindex": 288,
+          "unit_id": 1004,
+          "position": {
+            "x": 3,
+            "y": 2
+          },
+          "rank": 3,
+          "gold_value": 0,
+          "kill_count": 27,
+          "kill_streak": 2,
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 0,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 27
+        },
+        {
+          "entindex": 374,
+          "unit_id": 40,
+          "position": {
+            "x": 4,
+            "y": 3
+          },
+          "rank": 1,
+          "gold_value": 4,
+          "kill_count": 10,
+          "kill_streak": 0,
+          "keywords": [
+            2,
+            52
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 10.75
+        },
+        {
+          "entindex": 394,
+          "unit_id": 111,
+          "position": {
+            "x": 3,
+            "y": 3
+          },
+          "rank": 2,
+          "gold_value": 3,
+          "kill_count": 4,
+          "kill_streak": 0,
+          "keywords": [
+            35,
+            44
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 4.75
+        },
+        {
+          "entindex": 438,
+          "unit_id": 111,
+          "position": {
+            "x": 6,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 1,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            35,
+            44
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 462,
+          "unit_id": 1,
+          "position": {
+            "x": 5,
+            "y": 3
+          },
+          "rank": 1,
+          "gold_value": 5,
+          "kill_count": 5,
+          "kill_streak": 3,
+          "keywords": [
+            34,
+            52
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 5.75
+        },
+        {
+          "entindex": 488,
+          "unit_id": 133,
+          "position": {
+            "x": 2,
+            "y": 3
+          },
+          "rank": 2,
+          "gold_value": 4,
+          "kill_count": 10,
+          "kill_streak": 1,
+          "keywords": [
+            35,
+            52
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 10
+        },
+        {
+          "entindex": 512,
+          "unit_id": 4,
+          "position": {
+            "x": 0,
+            "y": 3
+          },
+          "rank": 2,
+          "gold_value": 3,
+          "kill_count": 10,
+          "kill_streak": 0,
+          "keywords": [
+            35,
+            24
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 10
+        },
+        {
+          "entindex": 568,
+          "unit_id": 114,
+          "position": {
+            "x": 1,
+            "y": 3
+          },
+          "rank": 2,
+          "gold_value": 5,
+          "kill_count": 6,
+          "kill_streak": 0,
+          "keywords": [
+            13,
+            52
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 6.25
+        },
+        {
+          "entindex": 572,
+          "unit_id": 22,
+          "position": {
+            "x": 6,
+            "y": 3
+          },
+          "rank": 2,
+          "gold_value": 5,
+          "kill_count": 2,
+          "kill_streak": 2,
+          "keywords": [
+            44,
+            53
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 2
+        },
+        {
+          "entindex": 574,
+          "unit_id": 13,
+          "position": {
+            "x": 1,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 1,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            8,
+            20
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        }
+      ],
+      "items": [
+        {
+          "slot_index": 0,
+          "item_id": 10106,
+          "assigned_unit_entindex": 488
+        },
+        {
+          "slot_index": 1,
+          "item_id": 10117,
+          "assigned_unit_entindex": 568
+        },
+        {
+          "slot_index": 2,
+          "item_id": 10206,
+          "assigned_unit_entindex": 572
+        },
+        {
+          "slot_index": 3,
+          "item_id": 10142,
+          "assigned_unit_entindex": 512
+        },
+        {
+          "slot_index": 4,
+          "item_id": 10126,
+          "assigned_unit_entindex": 462
+        },
+        {
+          "slot_index": 5,
+          "item_id": 10175,
+          "assigned_unit_entindex": 374
+        }
+      ],
+      "synergies": [
+        {
+          "keyword": 2,
+          "unique_unit_count": 2
+        },
+        {
+          "keyword": 3,
+          "unique_unit_count": 0,
+          "bench_additional_unique_unit_count": 1
+        },
+        {
+          "keyword": 8,
+          "unique_unit_count": 0,
+          "bench_additional_unique_unit_count": 1
+        },
+        {
+          "keyword": 12,
+          "unique_unit_count": 0,
+          "bench_additional_unique_unit_count": 1
+        },
+        {
+          "keyword": 13,
+          "unique_unit_count": 2
+        },
+        {
+          "keyword": 19,
+          "unique_unit_count": 0,
+          "bench_additional_unique_unit_count": 1
+        },
+        {
+          "keyword": 20,
+          "unique_unit_count": 0,
+          "bench_additional_unique_unit_count": 1
+        },
+        {
+          "keyword": 24,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 34,
+          "unique_unit_count": 1,
+          "bench_additional_unique_unit_count": 1
+        },
+        {
+          "keyword": 35,
+          "unique_unit_count": 3
+        },
+        {
+          "keyword": 44,
+          "unique_unit_count": 2
+        },
+        {
+          "keyword": 52,
+          "unique_unit_count": 4
+        },
+        {
+          "keyword": 53,
+          "unique_unit_count": 1
+        }
+      ],
+      "underlord": 4,
+      "underlord_selected_talents": [
+        100071,
+        100087
+      ],
+      "event_tier": 0,
+      "owns_event": false,
+      "is_mirrored_match": false,
+      "connection_status": 1,
+      "disconnected_time": 0,
+      "vs_opponent_wins": 0,
+      "vs_opponent_losses": 0,
+      "vs_opponent_draws": 0,
+      "brawny_kills_float": 15.25,
+      "city_prestige_level": 0,
+      "rank_tier": null,
+      "platform": 0,
+      "board_buddy": {
+        "desired_pos_x": 0,
+        "desired_pos_y": 0
+      },
+      "lobby_team": 5,
+      "sequence_number": 13755,
+      "timestamp": "2025-10-28T14:48:56.127262"
+    },
+    {
+      "player_id": "#DAC_BotName_33",
+      "account_id": 0,
+      "persona_name": null,
+      "bot_persona_name": "#DAC_BotName_33",
+      "player_slot": 2,
+      "is_human_player": false,
+      "health": 70,
+      "gold": 33,
+      "level": 9,
+      "xp": 13,
+      "next_level_xp": 45,
+      "wins": 14,
+      "losses": 6,
+      "win_streak": 1,
+      "lose_streak": 0,
+      "net_worth": 224,
+      "final_place": 0,
+      "combat_type": 0,
+      "combat_result": 1,
+      "combat_duration": 37.65,
+      "opponent_player_slot": null,
+      "board_unit_limit": 9,
+      "units": [
+        {
+          "entindex": 132,
+          "unit_id": 117,
+          "position": {
+            "x": 2,
+            "y": 3
+          },
+          "rank": 0,
+          "gold_value": 0,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 0,
+          "is_placeable_item": true,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 138,
+          "unit_id": 4,
+          "position": {
+            "x": 3,
+            "y": 3
+          },
+          "rank": 1,
+          "gold_value": 1,
+          "kill_count": 6,
+          "kill_streak": 0,
+          "keywords": [
+            35,
+            24
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 6.25
+        },
+        {
+          "entindex": 168,
+          "unit_id": 25,
+          "position": {
+            "x": 3,
+            "y": 2
+          },
+          "rank": 1,
+          "gold_value": 2,
+          "kill_count": 2,
+          "kill_streak": 0,
+          "keywords": [
+            44,
+            39
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 2
+        },
+        {
+          "entindex": 198,
+          "unit_id": 20,
+          "position": {
+            "x": 1,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 1,
+          "kill_count": 1,
+          "kill_streak": 0,
+          "keywords": [
+            9,
+            24
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 1
+        },
+        {
+          "entindex": 218,
+          "unit_id": 26,
+          "position": {
+            "x": 0,
+            "y": 3
+          },
+          "rank": 1,
+          "gold_value": 3,
+          "kill_count": 1,
+          "kill_streak": 0,
+          "keywords": [
+            8,
+            35,
+            39
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 1
+        },
+        {
+          "entindex": 220,
+          "unit_id": 27,
+          "position": {
+            "x": 3,
+            "y": 1
+          },
+          "rank": 1,
+          "gold_value": 1,
+          "kill_count": 1,
+          "kill_streak": 0,
+          "keywords": [
+            9,
+            39,
+            48
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 1
+        },
+        {
+          "entindex": 260,
+          "unit_id": 111,
+          "position": {
+            "x": 1,
+            "y": 3
+          },
+          "rank": 2,
+          "gold_value": 3,
+          "kill_count": 14,
+          "kill_streak": 0,
+          "keywords": [
+            35,
+            44
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 14.25
+        },
+        {
+          "entindex": 280,
+          "unit_id": 1002,
+          "position": {
+            "x": 5,
+            "y": 3
+          },
+          "rank": 3,
+          "gold_value": 0,
+          "kill_count": 9,
+          "kill_streak": 1,
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 0,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 9.75
+        },
+        {
+          "entindex": 296,
+          "unit_id": 22,
+          "position": {
+            "x": 4,
+            "y": 3
+          },
+          "rank": 1,
+          "gold_value": 3,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            44,
+            53
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 316,
+          "unit_id": 109,
+          "position": {
+            "x": 0,
+            "y": 1
+          },
+          "rank": 2,
+          "gold_value": 4,
+          "kill_count": 32,
+          "kill_streak": 0,
+          "keywords": [
+            34,
+            35
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 32
+        },
+        {
+          "entindex": 318,
+          "unit_id": 111,
+          "position": {
+            "x": 2,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 1,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            35,
+            44
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 342,
+          "unit_id": 22,
+          "position": {
+            "x": 4,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 3,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            44,
+            53
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 442,
+          "unit_id": 50,
+          "position": {
+            "x": 6,
+            "y": 3
+          },
+          "rank": 1,
+          "gold_value": 4,
+          "kill_count": 1,
+          "kill_streak": 0,
+          "keywords": [
+            35,
+            44,
+            39
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 1
+        },
+        {
+          "entindex": 444,
+          "unit_id": 14,
+          "position": {
+            "x": 0,
+            "y": 2
+          },
+          "rank": 1,
+          "gold_value": 3,
+          "kill_count": 2,
+          "kill_streak": 1,
+          "keywords": [
+            34,
+            18,
+            44
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 2.25
+        },
+        {
+          "entindex": 496,
+          "unit_id": 25,
+          "position": {
+            "x": 0,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 2,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            44,
+            39
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 498,
+          "unit_id": 14,
+          "position": {
+            "x": 3,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 3,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            34,
+            18,
+            44
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        }
+      ],
+      "items": [
+        {
+          "slot_index": 0,
+          "item_id": 10200,
+          "assigned_unit_entindex": 296
+        },
+        {
+          "slot_index": 1,
+          "item_id": 10169
+        },
+        {
+          "slot_index": 2,
+          "item_id": 10114,
+          "assigned_unit_entindex": 260
+        },
+        {
+          "slot_index": 3,
+          "item_id": 10162,
+          "assigned_unit_entindex": 442
+        },
+        {
+          "slot_index": 4,
+          "item_id": 10209,
+          "assigned_unit_entindex": 218
+        },
+        {
+          "slot_index": 5,
+          "item_id": 10175,
+          "assigned_unit_entindex": 316
+        }
+      ],
+      "synergies": [
+        {
+          "keyword": 8,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 9,
+          "unique_unit_count": 1,
+          "bench_additional_unique_unit_count": 1
+        },
+        {
+          "keyword": 18,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 24,
+          "unique_unit_count": 1,
+          "bench_additional_unique_unit_count": 1
+        },
+        {
+          "keyword": 34,
+          "unique_unit_count": 2
+        },
+        {
+          "keyword": 35,
+          "unique_unit_count": 5
+        },
+        {
+          "keyword": 39,
+          "unique_unit_count": 4
+        },
+        {
+          "keyword": 44,
+          "unique_unit_count": 5
+        },
+        {
+          "keyword": 48,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 53,
+          "unique_unit_count": 1
+        }
+      ],
+      "underlord": 2,
+      "underlord_selected_talents": [
+        100101,
+        100110
+      ],
+      "event_tier": 0,
+      "owns_event": false,
+      "is_mirrored_match": false,
+      "connection_status": 1,
+      "disconnected_time": 0,
+      "vs_opponent_wins": 0,
+      "vs_opponent_losses": 0,
+      "vs_opponent_draws": 0,
+      "brawny_kills_float": 34.25,
+      "city_prestige_level": 0,
+      "rank_tier": null,
+      "platform": 0,
+      "board_buddy": {
+        "desired_pos_x": 0,
+        "desired_pos_y": 0
+      },
+      "lobby_team": 1,
+      "sequence_number": 4771,
+      "timestamp": "2025-10-28T14:48:56.127262"
+    },
+    {
+      "player_id": "249722568",
+      "account_id": 249722568,
+      "persona_name": "Kælle",
+      "bot_persona_name": null,
+      "player_slot": 1,
+      "is_human_player": true,
+      "health": 1,
+      "gold": 1,
+      "level": 5,
+      "xp": 3,
+      "next_level_xp": 20,
+      "wins": 5,
+      "losses": 15,
+      "win_streak": 0,
+      "lose_streak": 6,
+      "net_worth": 93,
+      "final_place": 0,
+      "combat_type": 0,
+      "combat_result": 2,
+      "combat_duration": 37.65,
+      "opponent_player_slot": null,
+      "board_unit_limit": 5,
+      "units": [
+        {
+          "entindex": 254,
+          "unit_id": 5,
+          "position": {
+            "x": 3,
+            "y": 0
+          },
+          "rank": 2,
+          "gold_value": 3,
+          "kill_count": 21,
+          "kill_streak": 0,
+          "keywords": [
+            13,
+            54,
+            18
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 21
+        },
+        {
+          "entindex": 294,
+          "unit_id": 1002,
+          "position": {
+            "x": 2,
+            "y": 2
+          },
+          "rank": 3,
+          "gold_value": 0,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 0,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 340,
+          "unit_id": 14,
+          "position": {
+            "x": 5,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 3,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            34,
+            18,
+            44
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 562,
+          "unit_id": 30,
+          "position": {
+            "x": 3,
+            "y": -1
+          },
+          "rank": 2,
+          "gold_value": 4,
+          "kill_count": 10,
+          "kill_streak": 0,
+          "keywords": [
+            54,
+            18
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 10.25
+        },
+        {
+          "entindex": 584,
+          "unit_id": 14,
+          "position": {
+            "x": 6,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 3,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            34,
+            18,
+            44
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 590,
+          "unit_id": 36,
+          "position": {
+            "x": 7,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 3,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            2,
+            18,
+            42
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 594,
+          "unit_id": 5,
+          "position": {
+            "x": 0,
+            "y": -1
+          },
+          "rank": 2,
+          "gold_value": 3,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            13,
+            54,
+            18
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 600,
+          "unit_id": 24,
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "rank": 3,
+          "gold_value": 6,
+          "kill_count": 13,
+          "kill_streak": 0,
+          "keywords": [
+            54,
+            19
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 13.25
+        },
+        {
+          "entindex": 602,
+          "unit_id": 5,
+          "position": {
+            "x": 2,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 1,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            13,
+            54,
+            18
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 614,
+          "unit_id": 11,
+          "position": {
+            "x": 0,
+            "y": 1
+          },
+          "rank": 3,
+          "gold_value": 5,
+          "kill_count": 15,
+          "kill_streak": 0,
+          "keywords": [
+            47,
+            18
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 15
+        },
+        {
+          "entindex": 618,
+          "unit_id": 30,
+          "position": {
+            "x": 1,
+            "y": 0
+          },
+          "rank": 2,
+          "gold_value": 4,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            54,
+            18
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 620,
+          "unit_id": 5,
+          "position": {
+            "x": 1,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 1,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            13,
+            54,
+            18
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 628,
+          "unit_id": 125,
+          "position": {
+            "x": 1,
+            "y": 1
+          },
+          "rank": 3,
+          "gold_value": 5,
+          "kill_count": 2,
+          "kill_streak": 0,
+          "keywords": [
+            34,
+            3
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 2
+        },
+        {
+          "entindex": 630,
+          "unit_id": 30,
+          "position": {
+            "x": 4,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 2,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            54,
+            18
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        }
+      ],
+      "items": [
+        {
+          "slot_index": 0,
+          "item_id": 10106,
+          "assigned_unit_entindex": 618
+        },
+        {
+          "slot_index": 1,
+          "item_id": 10112,
+          "assigned_unit_entindex": 628
+        },
+        {
+          "slot_index": 2,
+          "item_id": 10203
+        },
+        {
+          "slot_index": 3,
+          "item_id": 10142,
+          "assigned_unit_entindex": 614
+        },
+        {
+          "slot_index": 4,
+          "item_id": 10151,
+          "assigned_unit_entindex": 254
+        },
+        {
+          "slot_index": 5,
+          "item_id": 10175,
+          "assigned_unit_entindex": 600
+        }
+      ],
+      "synergies": [
+        {
+          "keyword": 2,
+          "unique_unit_count": 0,
+          "bench_additional_unique_unit_count": 1
+        },
+        {
+          "keyword": 3,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 13,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 18,
+          "unique_unit_count": 3,
+          "bench_additional_unique_unit_count": 2
+        },
+        {
+          "keyword": 19,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 34,
+          "unique_unit_count": 1,
+          "bench_additional_unique_unit_count": 1
+        },
+        {
+          "keyword": 42,
+          "unique_unit_count": 0,
+          "bench_additional_unique_unit_count": 1
+        },
+        {
+          "keyword": 44,
+          "unique_unit_count": 0,
+          "bench_additional_unique_unit_count": 1
+        },
+        {
+          "keyword": 47,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 54,
+          "unique_unit_count": 3
+        }
+      ],
+      "underlord": 2,
+      "underlord_selected_talents": [
+        100100,
+        100111
+      ],
+      "event_tier": 229,
+      "owns_event": true,
+      "is_mirrored_match": false,
+      "connection_status": 1,
+      "disconnected_time": 0,
+      "vs_opponent_wins": 0,
+      "vs_opponent_losses": 0,
+      "vs_opponent_draws": 0,
+      "brawny_kills_float": 2,
+      "city_prestige_level": 0,
+      "rank_tier": 70,
+      "platform": 1,
+      "board_buddy": {
+        "desired_pos_x": 0,
+        "desired_pos_y": 0
+      },
+      "lobby_team": 0,
+      "sequence_number": 2696,
+      "timestamp": "2025-10-28T20:09:54.410797"
+    },
+    {
+      "player_id": "#DAC_BotName_24",
+      "account_id": 0,
+      "persona_name": null,
+      "bot_persona_name": "#DAC_BotName_24",
+      "player_slot": 8,
+      "is_human_player": false,
+      "health": 41,
+      "gold": 30,
+      "level": 8,
+      "xp": 28,
+      "next_level_xp": 40,
+      "wins": 10,
+      "losses": 10,
+      "win_streak": 0,
+      "lose_streak": 1,
+      "net_worth": 203,
+      "final_place": 0,
+      "combat_type": 0,
+      "combat_result": 2,
+      "combat_duration": 26.25,
+      "opponent_player_slot": null,
+      "board_unit_limit": 8,
+      "units": [
+        {
+          "entindex": 70,
+          "unit_id": 13,
+          "position": {
+            "x": 3,
+            "y": 2
+          },
+          "rank": 2,
+          "gold_value": 3,
+          "kill_count": 20,
+          "kill_streak": 0,
+          "keywords": [
+            8,
+            20
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 20.75
+        },
+        {
+          "entindex": 152,
+          "unit_id": 13,
+          "position": {
+            "x": 1,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 1,
+          "kill_count": 1,
+          "kill_streak": 0,
+          "keywords": [
+            8,
+            20
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 1
+        },
+        {
+          "entindex": 212,
+          "unit_id": 4,
+          "position": {
+            "x": 3,
+            "y": 3
+          },
+          "rank": 2,
+          "gold_value": 3,
+          "kill_count": 10,
+          "kill_streak": 0,
+          "keywords": [
+            35,
+            24
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 10.25
+        },
+        {
+          "entindex": 292,
+          "unit_id": 1004,
+          "position": {
+            "x": 3,
+            "y": 1
+          },
+          "rank": 3,
+          "gold_value": 0,
+          "kill_count": 24,
+          "kill_streak": 10,
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 0,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 24
+        },
+        {
+          "entindex": 312,
+          "unit_id": 4,
+          "position": {
+            "x": 3,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 1,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            35,
+            24
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 360,
+          "unit_id": 127,
+          "position": {
+            "x": 4,
+            "y": 2
+          },
+          "rank": 0,
+          "gold_value": 0,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 0,
+          "is_placeable_item": true,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 384,
+          "unit_id": 132,
+          "position": {
+            "x": 4,
+            "y": 3
+          },
+          "rank": 2,
+          "gold_value": 4,
+          "kill_count": 7,
+          "kill_streak": 0,
+          "keywords": [
+            47,
+            39
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 7.25
+        },
+        {
+          "entindex": 386,
+          "unit_id": 13,
+          "position": {
+            "x": 0,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 1,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            8,
+            20
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 398,
+          "unit_id": 50,
+          "position": {
+            "x": 5,
+            "y": 3
+          },
+          "rank": 1,
+          "gold_value": 4,
+          "kill_count": 1,
+          "kill_streak": 0,
+          "keywords": [
+            35,
+            44,
+            39
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 1
+        },
+        {
+          "entindex": 402,
+          "unit_id": 18,
+          "position": {
+            "x": 4,
+            "y": 1
+          },
+          "rank": 1,
+          "gold_value": 3,
+          "kill_count": 2,
+          "kill_streak": 0,
+          "keywords": [
+            3,
+            20
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 2
+        },
+        {
+          "entindex": 430,
+          "unit_id": 132,
+          "position": {
+            "x": 2,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 2,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            47,
+            39
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 524,
+          "unit_id": 25,
+          "position": {
+            "x": 3,
+            "y": 0
+          },
+          "rank": 2,
+          "gold_value": 4,
+          "kill_count": 5,
+          "kill_streak": 0,
+          "keywords": [
+            44,
+            39
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 5.25
+        },
+        {
+          "entindex": 530,
+          "unit_id": 22,
+          "position": {
+            "x": 2,
+            "y": 3
+          },
+          "rank": 2,
+          "gold_value": 5,
+          "kill_count": 3,
+          "kill_streak": 0,
+          "keywords": [
+            44,
+            53
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 3.25
+        },
+        {
+          "entindex": 532,
+          "unit_id": 135,
+          "position": {
+            "x": 0,
+            "y": 3
+          },
+          "rank": 1,
+          "gold_value": 4,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            35,
+            45
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        }
+      ],
+      "items": [
+        {
+          "slot_index": 0,
+          "item_id": 10201,
+          "assigned_unit_entindex": 524
+        },
+        {
+          "slot_index": 1,
+          "item_id": 10117,
+          "assigned_unit_entindex": 530
+        },
+        {
+          "slot_index": 2,
+          "item_id": 10178,
+          "assigned_unit_entindex": 398
+        },
+        {
+          "slot_index": 3,
+          "item_id": 10177
+        },
+        {
+          "slot_index": 4,
+          "item_id": 10125,
+          "assigned_unit_entindex": 532
+        },
+        {
+          "slot_index": 5,
+          "item_id": 10145,
+          "assigned_unit_entindex": 384
+        }
+      ],
+      "synergies": [
+        {
+          "keyword": 3,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 8,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 20,
+          "unique_unit_count": 2
+        },
+        {
+          "keyword": 24,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 35,
+          "unique_unit_count": 3
+        },
+        {
+          "keyword": 39,
+          "unique_unit_count": 3
+        },
+        {
+          "keyword": 44,
+          "unique_unit_count": 3
+        },
+        {
+          "keyword": 45,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 47,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 53,
+          "unique_unit_count": 1
+        }
+      ],
+      "underlord": 4,
+      "underlord_selected_talents": [
+        100071,
+        100087
+      ],
+      "event_tier": 0,
+      "owns_event": false,
+      "is_mirrored_match": false,
+      "connection_status": 1,
+      "disconnected_time": 0,
+      "vs_opponent_wins": 0,
+      "vs_opponent_losses": 0,
+      "vs_opponent_draws": 0,
+      "brawny_kills_float": 0,
+      "city_prestige_level": 0,
+      "rank_tier": null,
+      "platform": 0,
+      "board_buddy": {
+        "desired_pos_x": 0,
+        "desired_pos_y": 0
+      },
+      "lobby_team": 7,
+      "sequence_number": 11311,
+      "timestamp": "2025-10-28T14:48:56.127262"
+    },
+    {
+      "player_id": "#DAC_BotName_45",
+      "account_id": 0,
+      "persona_name": null,
+      "bot_persona_name": "#DAC_BotName_45",
+      "player_slot": 5,
+      "is_human_player": false,
+      "health": 50,
+      "gold": 33,
+      "level": 8,
+      "xp": 23,
+      "next_level_xp": 40,
+      "wins": 11,
+      "losses": 9,
+      "win_streak": 3,
+      "lose_streak": 0,
+      "net_worth": 202,
+      "final_place": 0,
+      "combat_type": 0,
+      "combat_result": 1,
+      "combat_duration": 39.35,
+      "opponent_player_slot": null,
+      "board_unit_limit": 8,
+      "units": [
+        {
+          "entindex": 134,
+          "unit_id": 143,
+          "position": {
+            "x": 4,
+            "y": 3
+          },
+          "rank": 0,
+          "gold_value": 0,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 0,
+          "is_placeable_item": true,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 136,
+          "unit_id": 143,
+          "position": {
+            "x": 7,
+            "y": 3
+          },
+          "rank": 0,
+          "gold_value": 0,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 0,
+          "is_placeable_item": true,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 142,
+          "unit_id": 112,
+          "position": {
+            "x": 4,
+            "y": 2
+          },
+          "rank": 1,
+          "gold_value": 1,
+          "kill_count": 11,
+          "kill_streak": 1,
+          "keywords": [
+            12,
+            53,
+            48
+          ],
+          "duel_bonus_damage": 5,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 11.25
+        },
+        {
+          "entindex": 144,
+          "unit_id": 20,
+          "position": {
+            "x": 2,
+            "y": 3
+          },
+          "rank": 1,
+          "gold_value": 1,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            9,
+            24
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 182,
+          "unit_id": 20,
+          "position": {
+            "x": 4,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 1,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            9,
+            24
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 206,
+          "unit_id": 9,
+          "position": {
+            "x": 3,
+            "y": 2
+          },
+          "rank": 1,
+          "gold_value": 1,
+          "kill_count": 9,
+          "kill_streak": 0,
+          "keywords": [
+            12,
+            19
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 9.5
+        },
+        {
+          "entindex": 238,
+          "unit_id": 81,
+          "position": {
+            "x": 5,
+            "y": 3
+          },
+          "rank": 2,
+          "gold_value": 4,
+          "kill_count": 4,
+          "kill_streak": 0,
+          "keywords": [
+            13,
+            24
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 4
+        },
+        {
+          "entindex": 240,
+          "unit_id": 2,
+          "position": {
+            "x": 3,
+            "y": 1
+          },
+          "rank": 1,
+          "gold_value": 1,
+          "kill_count": 2,
+          "kill_streak": 0,
+          "keywords": [
+            44,
+            53
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 2.25
+        },
+        {
+          "entindex": 286,
+          "unit_id": 1002,
+          "position": {
+            "x": 6,
+            "y": 3
+          },
+          "rank": 3,
+          "gold_value": 0,
+          "kill_count": 15,
+          "kill_streak": 0,
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 0,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 15.5
+        },
+        {
+          "entindex": 370,
+          "unit_id": 123,
+          "position": {
+            "x": 2,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 2,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            40,
+            24
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 372,
+          "unit_id": 2,
+          "position": {
+            "x": 3,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 1,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            44,
+            53
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 416,
+          "unit_id": 28,
+          "position": {
+            "x": 3,
+            "y": 3
+          },
+          "rank": 2,
+          "gold_value": 5,
+          "kill_count": 6,
+          "kill_streak": 2,
+          "keywords": [
+            8,
+            19,
+            53
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 6.5
+        },
+        {
+          "entindex": 428,
+          "unit_id": 123,
+          "position": {
+            "x": 0,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 2,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            40,
+            24
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 452,
+          "unit_id": 22,
+          "position": {
+            "x": 0,
+            "y": 3
+          },
+          "rank": 2,
+          "gold_value": 5,
+          "kill_count": 7,
+          "kill_streak": 11,
+          "keywords": [
+            44,
+            53
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 7.25
+        },
+        {
+          "entindex": 454,
+          "unit_id": 112,
+          "position": {
+            "x": 6,
+            "y": -1
+          },
+          "rank": 1,
+          "gold_value": 1,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            12,
+            53,
+            48
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 460,
+          "unit_id": 8,
+          "position": {
+            "x": 4,
+            "y": 1
+          },
+          "rank": 2,
+          "gold_value": 5,
+          "kill_count": 12,
+          "kill_streak": 7,
+          "keywords": [
+            12,
+            39
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 12.25
+        }
+      ],
+      "items": [
+        {
+          "slot_index": 0,
+          "item_id": 10101,
+          "assigned_unit_entindex": 238
+        },
+        {
+          "slot_index": 1,
+          "item_id": 10205
+        },
+        {
+          "slot_index": 2,
+          "item_id": 10203,
+          "assigned_unit_entindex": 144
+        },
+        {
+          "slot_index": 3,
+          "item_id": 10126,
+          "assigned_unit_entindex": 452
+        },
+        {
+          "slot_index": 4,
+          "item_id": 10210,
+          "assigned_unit_entindex": 460
+        },
+        {
+          "slot_index": 5,
+          "item_id": 10123,
+          "assigned_unit_entindex": 416
+        }
+      ],
+      "synergies": [
+        {
+          "keyword": 8,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 9,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 12,
+          "unique_unit_count": 3
+        },
+        {
+          "keyword": 13,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 19,
+          "unique_unit_count": 2
+        },
+        {
+          "keyword": 24,
+          "unique_unit_count": 2,
+          "bench_additional_unique_unit_count": 1
+        },
+        {
+          "keyword": 39,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 40,
+          "unique_unit_count": 0,
+          "bench_additional_unique_unit_count": 1
+        },
+        {
+          "keyword": 44,
+          "unique_unit_count": 2
+        },
+        {
+          "keyword": 48,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 53,
+          "unique_unit_count": 4
+        }
+      ],
+      "underlord": 2,
+      "underlord_selected_talents": [
+        100101,
+        100110
+      ],
+      "event_tier": 0,
+      "owns_event": false,
+      "is_mirrored_match": false,
+      "connection_status": 1,
+      "disconnected_time": 0,
+      "vs_opponent_wins": 0,
+      "vs_opponent_losses": 0,
+      "vs_opponent_draws": 0,
+      "brawny_kills_float": 0,
+      "city_prestige_level": 0,
+      "rank_tier": null,
+      "platform": 0,
+      "board_buddy": {
+        "desired_pos_x": 0,
+        "desired_pos_y": 0
+      },
+      "lobby_team": 4,
+      "sequence_number": 3782,
+      "timestamp": "2025-10-28T14:48:56.127262"
+    },
+    {
+      "player_id": "#DAC_BotName_15",
+      "account_id": 0,
+      "persona_name": null,
+      "bot_persona_name": "#DAC_BotName_15",
+      "player_slot": 7,
+      "is_human_player": false,
+      "health": 36,
+      "gold": 13,
+      "level": 9,
+      "xp": 3,
+      "next_level_xp": 45,
+      "wins": 8,
+      "losses": 12,
+      "win_streak": 0,
+      "lose_streak": 7,
+      "net_worth": 206,
+      "final_place": 0,
+      "combat_type": 0,
+      "combat_result": 2,
+      "combat_duration": 33.3,
+      "opponent_player_slot": null,
+      "board_unit_limit": 9,
+      "units": [
+        {
+          "entindex": 290,
+          "unit_id": 1003,
+          "position": {
+            "x": 4,
+            "y": 2
+          },
+          "rank": 3,
+          "gold_value": 0,
+          "kill_count": 29,
+          "kill_streak": 1,
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 0,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 29.75
+        },
+        {
+          "entindex": 354,
+          "unit_id": 32,
+          "position": {
+            "x": 4,
+            "y": 3
+          },
+          "rank": 2,
+          "gold_value": 5,
+          "kill_count": 4,
+          "kill_streak": 0,
+          "keywords": [
+            42,
+            19
+          ],
+          "duel_bonus_damage": 5,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 4
+        },
+        {
+          "entindex": 466,
+          "unit_id": 86,
+          "position": {
+            "x": 3,
+            "y": 2
+          },
+          "rank": 1,
+          "gold_value": 4,
+          "kill_count": 1,
+          "kill_streak": 0,
+          "keywords": [
+            54,
+            18
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 1
+        },
+        {
+          "entindex": 468,
+          "unit_id": 135,
+          "position": {
+            "x": 2,
+            "y": 3
+          },
+          "rank": 1,
+          "gold_value": 4,
+          "kill_count": 1,
+          "kill_streak": 0,
+          "keywords": [
+            35,
+            45
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 1.25
+        },
+        {
+          "entindex": 492,
+          "unit_id": 114,
+          "position": {
+            "x": 5,
+            "y": 3
+          },
+          "rank": 2,
+          "gold_value": 5,
+          "kill_count": 1,
+          "kill_streak": 0,
+          "keywords": [
+            13,
+            52
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 1
+        },
+        {
+          "entindex": 494,
+          "unit_id": 124,
+          "position": {
+            "x": 1,
+            "y": 3
+          },
+          "rank": 1,
+          "gold_value": 4,
+          "kill_count": 1,
+          "kill_streak": 0,
+          "keywords": [
+            55,
+            40
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 1
+        },
+        {
+          "entindex": 520,
+          "unit_id": 49,
+          "position": {
+            "x": 3,
+            "y": 3
+          },
+          "rank": 1,
+          "gold_value": 5,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            8,
+            3,
+            19
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 576,
+          "unit_id": 39,
+          "position": {
+            "x": 3,
+            "y": 1
+          },
+          "rank": 1,
+          "gold_value": 4,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            8,
+            20
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 578,
+          "unit_id": 39,
+          "position": {
+            "x": 3,
+            "y": 0
+          },
+          "rank": 1,
+          "gold_value": 4,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            8,
+            20
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        },
+        {
+          "entindex": 580,
+          "unit_id": 48,
+          "position": {
+            "x": 1,
+            "y": 1
+          },
+          "rank": 1,
+          "gold_value": 5,
+          "kill_count": 0,
+          "kill_streak": 0,
+          "keywords": [
+            9,
+            18
+          ],
+          "duel_bonus_damage": 0,
+          "unit_cap_cost": 1,
+          "can_move_to_bench": true,
+          "can_be_sold": true,
+          "recommended_for_placement": false,
+          "float_kill_count": 0
+        }
+      ],
+      "items": [
+        {
+          "slot_index": 0,
+          "item_id": 10100,
+          "assigned_unit_entindex": 494
+        },
+        {
+          "slot_index": 1,
+          "item_id": 10117,
+          "assigned_unit_entindex": 580
+        },
+        {
+          "slot_index": 2,
+          "item_id": 10116,
+          "assigned_unit_entindex": 466
+        },
+        {
+          "slot_index": 3,
+          "item_id": 10126,
+          "assigned_unit_entindex": 354
+        },
+        {
+          "slot_index": 4,
+          "item_id": 10151,
+          "assigned_unit_entindex": 520
+        },
+        {
+          "slot_index": 5,
+          "item_id": 10175,
+          "assigned_unit_entindex": 492
+        }
+      ],
+      "synergies": [
+        {
+          "keyword": 3,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 8,
+          "unique_unit_count": 2
+        },
+        {
+          "keyword": 9,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 13,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 18,
+          "unique_unit_count": 2
+        },
+        {
+          "keyword": 19,
+          "unique_unit_count": 2
+        },
+        {
+          "keyword": 20,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 35,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 40,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 42,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 45,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 52,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 54,
+          "unique_unit_count": 1
+        },
+        {
+          "keyword": 55,
+          "unique_unit_count": 1
+        }
+      ],
+      "underlord": 3,
+      "underlord_selected_talents": [
+        100119,
+        100117
+      ],
+      "event_tier": 0,
+      "owns_event": false,
+      "is_mirrored_match": false,
+      "connection_status": 1,
+      "disconnected_time": 0,
+      "vs_opponent_wins": 0,
+      "vs_opponent_losses": 0,
+      "vs_opponent_draws": 0,
+      "brawny_kills_float": 9.5,
+      "city_prestige_level": 0,
+      "rank_tier": null,
+      "platform": 0,
+      "board_buddy": {
+        "desired_pos_x": 0,
+        "desired_pos_y": 0
+      },
+      "lobby_team": 6,
+      "sequence_number": 29716,
+      "timestamp": "2025-10-28T14:48:56.127262"
+    }
+  ],
+  "private_player": {
+    "player_slot": 1,
+    "sequence_number": 2696,
+    "shop_units": [
+      {
+        "unit_id": 41,
+        "will_combine_two_stars": false,
+        "gold_cost": 2,
+        "wanted_legendary": false,
+        "will_combine_three_stars": false,
+        "keywords": [
+          8,
+          24,
+          45
+        ]
+      },
+      {
+        "unit_id": 32,
+        "will_combine_two_stars": false,
+        "gold_cost": 3,
+        "wanted_legendary": false,
+        "will_combine_three_stars": false,
+        "keywords": [
+          42,
+          19
+        ]
+      },
+      {
+        "unit_id": 20,
+        "will_combine_two_stars": false,
+        "gold_cost": 1,
+        "wanted_legendary": false,
+        "will_combine_three_stars": false,
+        "keywords": [
+          9,
+          24
+        ]
+      },
+      {
+        "unit_id": 14,
+        "will_combine_two_stars": true,
+        "gold_cost": 3,
+        "wanted_legendary": false,
+        "will_combine_three_stars": false,
+        "keywords": [
+          34,
+          18,
+          44
+        ]
+      },
+      {
+        "unit_id": 121,
+        "will_combine_two_stars": false,
+        "gold_cost": 2,
+        "wanted_legendary": false,
+        "will_combine_three_stars": false,
+        "keywords": [
+          40,
+          20
+        ]
+      }
+    ],
+    "shop_locked": true,
+    "reroll_cost": 2,
+    "gold_earned_this_round": 0,
+    "shop_generation_id": 59,
+    "can_select_underlord": false,
+    "underlord_picker_offering": [],
+    "challenges": [
+      {
+        "slot_id": 1,
+        "sequence_id": 165,
+        "progress": 51,
+        "initial_progress": 1,
+        "claimed": 0
+      },
+      {
+        "slot_id": 2,
+        "sequence_id": 159,
+        "progress": 9664,
+        "initial_progress": 97420,
+        "claimed": 0
+      },
+      {
+        "slot_id": 17,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 322,
+        "claimed": 0
+      },
+      {
+        "slot_id": 20,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 87,
+        "claimed": 0
+      },
+      {
+        "slot_id": 21,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 69,
+        "claimed": 0
+      },
+      {
+        "slot_id": 22,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 67,
+        "claimed": 0
+      },
+      {
+        "slot_id": 23,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 698,
+        "claimed": 0
+      },
+      {
+        "slot_id": 24,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 869947,
+        "claimed": 0
+      },
+      {
+        "slot_id": 25,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 328,
+        "claimed": 0
+      },
+      {
+        "slot_id": 26,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 38,
+        "claimed": 0
+      },
+      {
+        "slot_id": 27,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 28,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 476,
+        "claimed": 0
+      },
+      {
+        "slot_id": 29,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 1225,
+        "claimed": 0
+      },
+      {
+        "slot_id": 30,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 1064,
+        "claimed": 0
+      },
+      {
+        "slot_id": 31,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 569,
+        "claimed": 0
+      },
+      {
+        "slot_id": 32,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 88,
+        "claimed": 0
+      },
+      {
+        "slot_id": 33,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 246,
+        "claimed": 0
+      },
+      {
+        "slot_id": 34,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 232,
+        "claimed": 0
+      },
+      {
+        "slot_id": 35,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 115,
+        "claimed": 0
+      },
+      {
+        "slot_id": 61,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 75,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 85,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 86,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 88,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 89,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 91,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 92,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 94,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 95,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 97,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 98,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 100,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 101,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 106,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 107,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 109,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 110,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 112,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 113,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 115,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 116,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 118,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 119,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 121,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 122,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 1003,
+        "sequence_id": 1,
+        "progress": 2,
+        "initial_progress": 39,
+        "claimed": 0
+      },
+      {
+        "slot_id": 1009,
+        "sequence_id": 1,
+        "progress": 2909,
+        "initial_progress": 6042,
+        "claimed": 0
+      },
+      {
+        "slot_id": 1014,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 1016,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 1021,
+        "sequence_id": 1,
+        "progress": 184,
+        "initial_progress": 1789,
+        "claimed": 0
+      },
+      {
+        "slot_id": 1024,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 1028,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 1029,
+        "sequence_id": 1,
+        "progress": 5,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 1032,
+        "sequence_id": 1,
+        "progress": 14,
+        "initial_progress": 60,
+        "claimed": 0
+      },
+      {
+        "slot_id": 1035,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 2015,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 9,
+        "claimed": 0
+      },
+      {
+        "slot_id": 2027,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 0,
+        "claimed": 0
+      },
+      {
+        "slot_id": 2029,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 4081,
+        "claimed": 0
+      },
+      {
+        "slot_id": 3017,
+        "sequence_id": 1,
+        "progress": 0,
+        "initial_progress": 4,
+        "claimed": 0
+      },
+      {
+        "slot_id": 3025,
+        "sequence_id": 1,
+        "progress": 5,
+        "initial_progress": 23,
+        "claimed": 0
+      }
+    ],
+    "unclaimed_reward_count": 0,
+    "oldest_unclaimed_reward": null,
+    "used_item_reward_reroll_this_round": false,
+    "grants_rewards": 1,
+    "timestamp": "2025-10-28T20:09:54.410797"
+  },
+  "current_round": {
+    "round_number": 21,
+    "round_phase": "prep",
+    "is_combat_phase": false
+  },
+  "timestamp": 1761678594.4107974
+}

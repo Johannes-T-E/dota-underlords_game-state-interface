@@ -213,6 +213,8 @@ export interface ScoreboardColumnConfig {
   record: boolean;
   networth: boolean;
   roster: boolean;
+  underlord: boolean;       // NEW: Underlord units
+  contraptions: boolean;    // NEW: Contraption units
   bench: boolean;
   columnOrder?: string[];  // NEW: Array of column keys in display order
 }

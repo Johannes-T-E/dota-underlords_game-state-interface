@@ -36,8 +36,10 @@ const defaultScoreboardSettings: ScoreboardSettings = {
     record: true,
     networth: true,
     roster: true,
+    underlord: true,
+    contraptions: true,
     bench: true,
-    columnOrder: ['place', 'playerName', 'level', 'gold', 'streak', 'health', 'record', 'networth', 'roster', 'bench']
+    columnOrder: ['place', 'playerName', 'level', 'gold', 'streak', 'health', 'record', 'networth', 'roster', 'underlord', 'contraptions', 'bench']
   },
   sortField: 'health',
   sortDirection: 'desc'
@@ -60,7 +62,30 @@ const migrateSettings = (settings: any): SettingsState => {
   // Handle future migrations here
   if (settings.version < SETTINGS_VERSION) {
     // Perform migrations based on version
-    // For now, just update version
+    // Migration for version 1: Add new column properties
+    if (settings.scoreboard && settings.scoreboard.columns) {
+      // Ensure new column properties exist with default values
+      if (settings.scoreboard.columns.underlord === undefined) {
+        settings.scoreboard.columns.underlord = true;
+      }
+      if (settings.scoreboard.columns.contraptions === undefined) {
+        settings.scoreboard.columns.contraptions = true;
+      }
+      
+      // Update column order if it doesn't include new columns
+      if (settings.scoreboard.columns.columnOrder) {
+        const currentOrder = settings.scoreboard.columns.columnOrder;
+        const rosterIndex = currentOrder.indexOf('roster');
+        const benchIndex = currentOrder.indexOf('bench');
+        
+        if (rosterIndex !== -1 && benchIndex !== -1 && 
+            !currentOrder.includes('underlord') && !currentOrder.includes('contraptions')) {
+          // Insert new columns between roster and bench
+          currentOrder.splice(rosterIndex + 1, 0, 'underlord', 'contraptions');
+        }
+      }
+    }
+    
     settings.version = SETTINGS_VERSION;
   }
 

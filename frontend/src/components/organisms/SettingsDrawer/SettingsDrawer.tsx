@@ -2,7 +2,9 @@ import { useState, useCallback } from 'react';
 import { Button } from '../../atoms';
 import { HealthDisplay } from '../../molecules/HealthDisplay/HealthDisplay';
 import { useHealthSettings, useScoreboardSettings, useGlobalSettings } from '../../../hooks/useSettings';
+import { websocketService } from '../../../services/websocket';
 import type { HealthColorConfig, ColorStop, InterpolationConfig } from '../../molecules/HealthDisplay/HealthDisplaySettings';
+import type { MatchData } from '../../../types';
 import './SettingsDrawer.css';
 
 export interface SettingsDrawerProps {
@@ -491,11 +493,56 @@ const ScoreboardSettingsTab = () => {
 
 // General Settings Tab Component
 const GeneralSettingsTab = () => {
+  const handleSaveNextUpdate = () => {
+    websocketService.enableCaptureNextUpdate();
+  };
+
+  const handleLoadDebugData = async () => {
+    try {
+      const response = await fetch('/debugg_data_match_update.json');
+      const data: MatchData = await response.json();
+      websocketService.injectDebugData(data);
+    } catch (error) {
+      console.error('[Debug] Failed to load debug data:', error);
+      alert('Failed to load debug data. Please ensure the file exists and is valid JSON.');
+    }
+  };
+
   return (
     <div className="settings-tab-content">
       <div className="settings-section">
-        <h3>General Settings</h3>
-        <p>General settings will be available in future updates.</p>
+        <h3>Debug Tools</h3>
+        <p>Tools for capturing and replaying match data for development and debugging.</p>
+        
+        <div className="setting-item">
+          <Button
+            variant="secondary"
+            size="small"
+            onClick={handleSaveNextUpdate}
+            className={websocketService.isCaptureEnabled() ? 'debug-button--active' : ''}
+            title={websocketService.isCaptureEnabled() ? 'Capture mode enabled - next update will be saved' : 'Save next WebSocket update as JSON file'}
+          >
+            {websocketService.isCaptureEnabled() ? '⏳ Capturing...' : '💾 Save Next Update'}
+          </Button>
+        </div>
+        
+        <div className="setting-item">
+          <Button
+            variant="secondary"
+            size="small"
+            onClick={handleLoadDebugData}
+            title="Load debug data from debugg_data_match_update.json"
+          >
+            📁 Load Debug Data
+          </Button>
+        </div>
+        
+        <div className="setting-description">
+          <small>
+            <strong>Save Next Update:</strong> Captures the next WebSocket match update and downloads it as a JSON file.<br/>
+            <strong>Load Debug Data:</strong> Loads the saved debug data file to simulate a live match update.
+          </small>
+        </div>
       </div>
     </div>
   );

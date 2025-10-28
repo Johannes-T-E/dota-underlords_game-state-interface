@@ -4,7 +4,7 @@ import { useHeroesData } from '../../hooks/useHeroesData';
 import { 
   ScoreboardTable, 
   BoardVisualizer, 
-  EmptyState 
+  EmptyState
 } from '../../components/organisms';
 import type { PlayerState } from '../../types';
 

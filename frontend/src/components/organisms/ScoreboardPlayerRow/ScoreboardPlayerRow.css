@@ -130,7 +130,31 @@
 /* Roster column */
 .scoreboard-player-row__roster {
   margin-right: 40px;
-  width: 800px;
+  width: var(--width-roster);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: var(--row-height);
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* Underlord column */
+.scoreboard-player-row__underlord {
+  width: var(--width-underlord);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: var(--row-height);
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* Contraptions column */
+.scoreboard-player-row__contraptions {
+  width: var(--width-contraptions);
   flex-shrink: 0;
   display: flex;
   flex-direction: row;
