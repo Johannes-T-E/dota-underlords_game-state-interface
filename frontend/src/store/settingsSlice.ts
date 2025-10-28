@@ -37,7 +37,7 @@ const defaultScoreboardSettings: ScoreboardSettings = {
     networth: true,
     roster: true,
     bench: true,
-    columnOrder: undefined
+    columnOrder: ['place', 'playerName', 'level', 'gold', 'streak', 'health', 'record', 'networth', 'roster', 'bench']
   },
   sortField: 'health',
   sortDirection: 'desc'

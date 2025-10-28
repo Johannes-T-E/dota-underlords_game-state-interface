@@ -24,6 +24,7 @@ export interface ScoreboardPlayerRowProps {
   changeEvents: ChangeEventData[];
   heroesData: HeroesData | null;
   visibleColumns?: ScoreboardColumnConfig;
+  columnOrder?: string[];
   className?: string;
 }
 
@@ -35,6 +36,7 @@ export const ScoreboardPlayerRow = memo(({
   changeEvents,
   heroesData,
   visibleColumns,
+  columnOrder,
   className = ''
 }: ScoreboardPlayerRowProps) => {
   const defaultVisible: ScoreboardColumnConfig = {
@@ -52,9 +54,146 @@ export const ScoreboardPlayerRow = memo(({
   };
   
   const config = visibleColumns || defaultVisible;
+  
+  // Use provided columnOrder or default order
+  const DEFAULT_COLUMN_ORDER = ['place', 'playerName', 'level', 'gold', 'streak', 'health', 'record', 'networth', 'roster', 'bench'];
+  const currentOrder = columnOrder || DEFAULT_COLUMN_ORDER;
+  
+  // Filter visible columns in the specified order
+  const visibleOrderedColumns = currentOrder.filter(columnKey => 
+    config[columnKey as keyof ScoreboardColumnConfig] === true
+  );
+  
   const units = player.units || [];
   const rosterUnits = units.filter(unit => unit.position && unit.position.y >= 0);
   const benchUnits = units.filter(unit => unit.position && unit.position.y === -1);
+
+  const renderCell = (columnKey: string) => {
+    switch (columnKey) {
+      case 'place':
+        return (
+          <div key={columnKey} className="scoreboard-player-row__place">
+            <ChangeBar events={changeEvents} />
+            <div className="scoreboard-player-row__rank">{rank}</div>
+          </div>
+        );
+      
+      case 'player':
+        return (
+          <div key={columnKey} className="scoreboard-player-row__player">
+            <div className="scoreboard-player-row__name-container">
+              <PlayerNameDisplay
+                personaName={player.persona_name}
+                botPersonaName={player.bot_persona_name}
+                className="scoreboard-player-row__name"
+              />
+              <div className="scoreboard-player-row__stats">
+                <StatDisplay type="level" value={player.level || 0} size="small" />
+                <StatDisplay type="gold" value={player.gold || 0} size="small" />
+                <StreakBadge 
+                  winStreak={player.win_streak} 
+                  loseStreak={player.lose_streak} 
+                />
+              </div>
+            </div>
+          </div>
+        );
+      
+      case 'playerName':
+        return (
+          <div key={columnKey} className="scoreboard-player-row__player-name">
+            <PlayerNameDisplay
+              personaName={player.persona_name}
+              botPersonaName={player.bot_persona_name}
+              className="scoreboard-player-row__name"
+            />
+          </div>
+        );
+      
+      case 'level':
+        return (
+          <div key={columnKey} className="scoreboard-player-row__level">
+            <LevelXpIndicator 
+              level={player.level || 0} 
+              xp={player.xp || 0} 
+              nextLevelXp={player.next_level_xp || 1} 
+              showXpText={false}
+            />
+          </div>
+        );
+      
+      case 'gold':
+        return (
+          <div key={columnKey} className="scoreboard-player-row__gold">
+            <GoldDisplay gold={player.gold} />
+          </div>
+        );
+      
+      case 'streak':
+        return (
+          <div key={columnKey} className="scoreboard-player-row__streak">
+            <StreakBadge 
+              winStreak={player.win_streak} 
+              loseStreak={player.lose_streak} 
+            />
+          </div>
+        );
+      
+      case 'health':
+        return (
+          <div key={columnKey} className="scoreboard-player-row__health">
+            <HealthDisplay health={player.health} />
+          </div>
+        );
+      
+      case 'record':
+        return (
+          <div key={columnKey} className="scoreboard-player-row__record">
+            <RecordDisplay wins={player.wins} losses={player.losses} />
+          </div>
+        );
+      
+      case 'networth':
+        return (
+          <div key={columnKey} className="scoreboard-player-row__networth">
+            <NetWorthDisplay netWorth={player.net_worth} />
+          </div>
+        );
+      
+      case 'roster':
+        return (
+          <div key={columnKey} className="scoreboard-player-row__roster">
+            {rosterUnits.map((unit, idx) => (
+              <div key={idx} className="scoreboard-player-row__unit">
+                <HeroPortrait 
+                  unitId={unit.unit_id}
+                  rank={unit.rank || 0}
+                  heroesData={heroesData}
+                />
+              </div>
+            ))}
+          </div>
+        );
+      
+      case 'bench':
+        return (
+          <div key={columnKey} className="scoreboard-player-row__bench">
+            {benchUnits.map((unit, idx) => (
+              <div key={idx} className="scoreboard-player-row__unit scoreboard-player-row__unit--bench">
+                <HeroPortrait 
+                  unitId={unit.unit_id}
+                  rank={unit.rank || 0}
+                  heroesData={heroesData}
+                />
+              </div>
+            ))}
+          </div>
+        );
+      
+      default:
+        return null;
+    }
+  };
 
   return (
     <div 
@@ -62,123 +201,7 @@ export const ScoreboardPlayerRow = memo(({
       id={`player-${player.player_id}`}
       onClick={onClick}
     >
-      {/* Place */}
-      {config.place && (
-        <div className="scoreboard-player-row__place">
-          <ChangeBar events={changeEvents} />
-          <div className="scoreboard-player-row__rank">{rank}</div>
-        </div>
-      )}
-
-      {/* Compact Player Name with Stats*/}
-      {config.player && <div className="scoreboard-player-row__player">
-        <div className="scoreboard-player-row__name-container">
-          <PlayerNameDisplay
-            personaName={player.persona_name}
-            botPersonaName={player.bot_persona_name}
-            className="scoreboard-player-row__name"
-          />
-          <div className="scoreboard-player-row__stats">
-            <StatDisplay type="level" value={player.level || 0} size="small" />
-            <StatDisplay type="gold" value={player.gold || 0} size="small" />
-            <StreakBadge 
-              winStreak={player.win_streak} 
-              loseStreak={player.lose_streak} 
-            />
-          </div>
-        </div>
-      </div>}
-
-      {/* Player Name */}
-      {config.playerName && (
-        <div className="scoreboard-player-row__player-name">
-          <PlayerNameDisplay
-            personaName={player.persona_name}
-            botPersonaName={player.bot_persona_name}
-            className="scoreboard-player-row__name"
-          />
-        </div>
-      )}
-
-      {/* Level */}
-      {config.level && (
-        <div className="scoreboard-player-row__level">
-          <LevelXpIndicator 
-            level={player.level || 0} 
-            xp={player.xp || 0} 
-            nextLevelXp={player.next_level_xp || 1} 
-            showXpText={false}
-          />
-        </div>
-      )}
-
-      {/* Gold */}
-      {config.gold && (
-        <div className="scoreboard-player-row__gold">
-          <GoldDisplay gold={player.gold} />
-        </div>
-      )}
-
-      {/* Streak */}
-      {config.streak && (
-        <div className="scoreboard-player-row__streak">
-          <StreakBadge 
-            winStreak={player.win_streak} 
-            loseStreak={player.lose_streak} 
-          />
-        </div>
-      )}
-
-      {/* Health */}
-      {config.health && (
-        <div className="scoreboard-player-row__health">
-          <HealthDisplay health={player.health} />
-        </div>
-      )}
-
-      {/* Record */}
-      {config.record && (
-        <div className="scoreboard-player-row__record">
-          <RecordDisplay wins={player.wins} losses={player.losses} />
-        </div>
-      )}
-
-      {/* Net Worth */}
-      {config.networth && (
-        <div className="scoreboard-player-row__networth">
-          <NetWorthDisplay netWorth={player.net_worth} />
-        </div>
-      )}
-
-      {/* Roster */}
-      {config.roster && (
-        <div className="scoreboard-player-row__roster">
-          {rosterUnits.map((unit, idx) => (
-            <div key={idx} className="scoreboard-player-row__unit">
-              <HeroPortrait 
-                unitId={unit.unit_id}
-                rank={unit.rank || 0}
-                heroesData={heroesData}
-              />
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Bench */}
-      {config.bench && (
-        <div className="scoreboard-player-row__bench">
-          {benchUnits.map((unit, idx) => (
-            <div key={idx} className="scoreboard-player-row__unit scoreboard-player-row__unit--bench">
-              <HeroPortrait 
-                unitId={unit.unit_id}
-                rank={unit.rank || 0}
-                heroesData={heroesData}
-              />
-            </div>
-          ))}
-        </div>
-      )}
+      {visibleOrderedColumns.map(renderCell)}
     </div>
   );
 });

@@ -13,7 +13,6 @@
     --win-streak-color: #2ecc40;
     --lose-streak-color: #e74c3c;
     --row-height: 80px;
-    --unit-icon-box: 60px;
     --transition-time: 0.4s;
     
     /* Typography */
@@ -29,8 +28,9 @@
     --width-health: 100px;
     --width-record: 100px;
     --width-networth: 100px;
-    --width-roster: calc(val(--unit-icon)*10);
-    --width-bench: calc(val(--unit-icon)*8);
+    --width-roster: calc(var(--unit-icon-box)*10);
+    --width-bench: calc(var(--unit-icon-box)*8);
+    --unit-icon-box: 60px;
 }
 
 * {

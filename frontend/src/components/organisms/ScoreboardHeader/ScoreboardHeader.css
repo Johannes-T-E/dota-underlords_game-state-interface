@@ -17,6 +17,34 @@
 .scoreboard-header__col {
   display: flex;
   align-items: center;
+  cursor: grab;
+  transition: all 0.2s ease;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.scoreboard-header__col:active {
+  cursor: grabbing;
+}
+
+.scoreboard-header__col--dragging {
+  opacity: 0.5;
+  z-index: 1000;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.scoreboard-header__col--drop-target {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  padding: 4px;
+}
+
+.scoreboard-header__col:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 4px;
+  border-radius: 4px;
 }
 
 .scoreboard-header__col--place {
@@ -35,6 +63,9 @@
 .scoreboard-header__col--player-name {
   width: var(--width-player-name);
   flex-shrink: 0;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
 }
 
 .scoreboard-header__col--level {
@@ -86,7 +117,7 @@
 
 .scoreboard-header__col--roster {
   margin-right: 40px;
-  width: 800px;
+  width: var(--width-roster);
   flex-shrink: 0;
 }
 

@@ -16,7 +16,8 @@ const PlayerRowWithChanges = ({
   isSelected, 
   onClick, 
   heroesData, 
-  visibleColumns 
+  visibleColumns,
+  columnOrder
 }: {
   player: PlayerState;
   rank: number;
@@ -24,6 +25,7 @@ const PlayerRowWithChanges = ({
   onClick: () => void;
   heroesData: any;
   visibleColumns: ScoreboardColumnConfig;
+  columnOrder?: string[];
 }) => {
   const changeEvents = usePlayerChanges(player.player_id, player);
   
@@ -36,6 +38,7 @@ const PlayerRowWithChanges = ({
       changeEvents={changeEvents}
       heroesData={heroesData}
       visibleColumns={visibleColumns}
+      columnOrder={columnOrder}
     />
   );
 };
@@ -92,6 +95,10 @@ export const ScoreboardTable = ({
     } else {
       updateSort({ field, direction: 'desc' });
     }
+  };
+
+  const handleColumnReorder = (newOrder: string[]) => {
+    updateColumns({ columnOrder: newOrder });
   };
 
   const sortedPlayers = useMemo(() => {
@@ -156,6 +163,8 @@ export const ScoreboardTable = ({
         sortDirection={sortDirection}
         onSort={handleSort}
         visibleColumns={visibleColumns}
+        columnOrder={visibleColumns.columnOrder}
+        onColumnReorder={handleColumnReorder}
       />
 
       <div className="scoreboard-table__players">
@@ -168,6 +177,7 @@ export const ScoreboardTable = ({
             onClick={() => onPlayerSelect(player.player_id)}
             heroesData={heroesData}
             visibleColumns={visibleColumns}
+            columnOrder={visibleColumns.columnOrder}
           />
         ))}
       </div>
