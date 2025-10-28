@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { getHeroIconPath } from '../../../utils/heroHelpers';
 import './HeroImage.css';
 
 export type HeroImageSize = 'small' | 'medium' | 'large';
@@ -20,6 +21,8 @@ export interface HeroImageProps {
     secondary: string;
   };
   onError?: () => void;
+  unitId?: number; // Add unitId prop for contraption detection
+  heroesData?: any; // Add heroesData prop for contraption detection
 }
 
 export const HeroImage = ({ 
@@ -30,13 +33,16 @@ export const HeroImage = ({
   tierGlowClass = '',
   tierGlowConfig,
   tierColors,
-  onError
+  onError,
+  unitId,
+  heroesData
 }: HeroImageProps) => {
   const [hasError, setHasError] = useState(false);
   
+  // Use the helper function to get the correct image path
   const imagePath = hasError 
     ? '/icons/hero_icons_scaled_56x56/npc_dota_hero_abaddon_png.png'
-    : `/icons/hero_icons_scaled_56x56/${dotaUnitName}_png.png`;
+    : (unitId && heroesData ? getHeroIconPath(unitId, heroesData) : `/icons/hero_icons_scaled_56x56/${dotaUnitName}_png.png`);
 
   const handleError = () => {
     if (!hasError) {

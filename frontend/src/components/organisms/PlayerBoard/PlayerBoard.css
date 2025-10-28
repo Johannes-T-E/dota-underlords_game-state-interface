@@ -1,6 +1,6 @@
 .player-board {
   /* CSS Variables for flexible sizing */
-  --cell-size: 60px;
+  --cell-size: var(--row-height);
   --gap-size: 4px;
   --cols: 8;
   --rows: 4;

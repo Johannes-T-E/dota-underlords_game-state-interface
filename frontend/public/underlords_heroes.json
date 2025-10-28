@@ -2231,6 +2231,87 @@
         "texturename": "skeleton_king",
         "movespeed": 310,
         "healthBarOffset": 20
+      },
+      "build_target_dummy": {
+        "abilities": [],
+        "armor": 0,
+        "attackAnimationPoint": 0,
+        "attackRange": 0,
+        "attackRate": 0,
+        "damageMin": [0, 0, 0],
+        "damageMax": [0, 0, 0],
+        "displayName": "#dac_contraption_name_target_dummy",
+        "dota_unit_name": "build_target_dummy",
+        "draftTier": 1,
+        "goldCost": 0,
+        "health": [500, 1000, 2000],
+        "id": 117,
+        "hintWords": [
+          "#dac_contraption_hint_defensive"
+        ],
+        "keywords": "contraption defensive",
+        "magicResist": 0,
+        "maxmana": 0,
+        "model": "models/contraptions/target_dummy.vmdl",
+        "model_scale": 1.0,
+        "texturename": "target_dummy",
+        "soundSet": "Contraption_TargetDummy",
+        "movespeed": 0,
+        "healthBarOffset": 0
+      },
+      "build_barricade": {
+        "abilities": [],
+        "armor": 5,
+        "attackAnimationPoint": 0,
+        "attackRange": 0,
+        "attackRate": 0,
+        "damageMin": [0, 0, 0],
+        "damageMax": [0, 0, 0],
+        "displayName": "#dac_contraption_name_barricade",
+        "dota_unit_name": "build_barricade",
+        "draftTier": 1,
+        "goldCost": 0,
+        "health": [800, 1600, 3200],
+        "id": 143,
+        "hintWords": [
+          "#dac_contraption_hint_defensive"
+        ],
+        "keywords": "contraption defensive",
+        "magicResist": 0,
+        "maxmana": 0,
+        "model": "models/contraptions/barricade.vmdl",
+        "model_scale": 1.0,
+        "texturename": "barricade",
+        "soundSet": "Contraption_Barricade",
+        "movespeed": 0,
+        "healthBarOffset": 0
+      },
+      "build_mango_tree": {
+        "abilities": [],
+        "armor": 0,
+        "attackAnimationPoint": 0,
+        "attackRange": 0,
+        "attackRate": 0,
+        "damageMin": [0, 0, 0],
+        "damageMax": [0, 0, 0],
+        "displayName": "#dac_contraption_name_mango_tree",
+        "dota_unit_name": "build_mango_tree",
+        "draftTier": 1,
+        "goldCost": 0,
+        "health": [600, 1200, 2400],
+        "id": 127,
+        "hintWords": [
+          "#dac_contraption_hint_support"
+        ],
+        "keywords": "contraption support",
+        "magicResist": 0,
+        "maxmana": 0,
+        "model": "models/contraptions/mango_tree.vmdl",
+        "model_scale": 1.0,
+        "texturename": "mango_tree",
+        "soundSet": "Contraption_MangoTree",
+        "movespeed": 0,
+        "healthBarOffset": 0
       }
     }
 }

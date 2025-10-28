@@ -59,6 +59,18 @@ export const getHeroIconPath = (unitId: number, heroesData: HeroesData | null): 
     return '/icons/hero_icons_scaled_56x56/npc_dota_hero_abaddon_png.png';
   }
   
+  // Check if this is a contraption unit
+  const contraptionIds = [117, 143, 127];
+  if (contraptionIds.includes(unitId)) {
+    // Map contraption IDs to their image files
+    const contraptionImageMap: { [key: number]: string } = {
+      117: 'build_target_dummy_psd.png',
+      143: 'build_barricade_psd.png',
+      127: 'build_mango_tree_psd.png'
+    };
+    return `/icons/items/${contraptionImageMap[unitId]}`;
+  }
+  
   // Find hero by ID and return dota_unit_name
   for (const [, heroData] of Object.entries(heroesData.heroes)) {
     if (heroData.id === unitId) {

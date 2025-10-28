@@ -69,6 +69,8 @@ export const HeroPortrait = memo(({
         tierGlowClass={tierGlowClass}
         tierGlowConfig={settings?.tierGlowConfig}
         tierColors={tierColors}
+        unitId={unitId}
+        heroesData={heroesData}
       />
       {starLevel > 0 && (
         <div className="hero-portrait__stars">
