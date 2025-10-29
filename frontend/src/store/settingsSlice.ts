@@ -24,9 +24,22 @@ export interface HeroPortraitSettings {
   tierGlowConfig: TierGlowConfig;
 }
 
+export interface UnitAnimationSettings {
+  enablePositionAnimation: boolean;
+  animationDuration: number; // in ms
+  enableNewUnitFade: boolean;
+  enableMovementTrail: boolean;
+  trailLength: number;
+  trailColor: string; // Trail color (hex or rgba)
+  trailOpacity: number; // Trail opacity (0-1)
+  trailThickness: number; // Trail line thickness (1-5)
+  useTierColor: boolean; // Use hero tier color for trail
+}
+
 export interface GeneralSettings {
   theme?: string;
   heroPortrait: HeroPortraitSettings;
+  unitAnimation: UnitAnimationSettings;
 }
 
 export interface SettingsState {
@@ -69,12 +82,25 @@ const defaultHeroPortraitSettings: HeroPortraitSettings = {
   tierGlowConfig: defaultTierGlowConfig
 };
 
+const defaultUnitAnimationSettings: UnitAnimationSettings = {
+  enablePositionAnimation: true,
+  animationDuration: 300,
+  enableNewUnitFade: true,
+  enableMovementTrail: true,
+  trailLength: 3,
+  trailColor: '#ffffff',
+  trailOpacity: 0.6,
+  trailThickness: 2,
+  useTierColor: false
+};
+
 const initialState: SettingsState = {
   version: SETTINGS_VERSION,
   health: DEFAULT_HEALTH_DISPLAY_SETTINGS,
   scoreboard: defaultScoreboardSettings,
   general: {
-    heroPortrait: defaultHeroPortraitSettings
+    heroPortrait: defaultHeroPortraitSettings,
+    unitAnimation: defaultUnitAnimationSettings
   }
 };
 
@@ -126,6 +152,11 @@ const migrateSettings = (settings: any): SettingsState => {
     if (settings.general.heroPortrait.enableTierGlow !== undefined && !settings.general.heroPortrait.tierGlowConfig) {
       settings.general.heroPortrait.tierGlowConfig = defaultTierGlowConfig;
     }
+  }
+
+  // Ensure unitAnimation settings exist
+  if (!settings.general.unitAnimation) {
+    settings.general.unitAnimation = defaultUnitAnimationSettings;
   }
 
   return settings;
@@ -214,12 +245,25 @@ const settingsSlice = createSlice({
       state.general.heroPortrait = defaultHeroPortraitSettings;
     },
 
+    // Unit Animation Settings
+    updateUnitAnimationSettings: (state, action: PayloadAction<Partial<UnitAnimationSettings>>) => {
+      state.general.unitAnimation = {
+        ...state.general.unitAnimation,
+        ...action.payload
+      };
+    },
+
+    resetUnitAnimationSettings: (state) => {
+      state.general.unitAnimation = defaultUnitAnimationSettings;
+    },
+
     // Global Actions
     resetAllSettings: (state) => {
       state.health = DEFAULT_HEALTH_DISPLAY_SETTINGS;
       state.scoreboard = defaultScoreboardSettings;
       state.general = {
-        heroPortrait: defaultHeroPortraitSettings
+        heroPortrait: defaultHeroPortraitSettings,
+        unitAnimation: defaultUnitAnimationSettings
       };
       state.version = SETTINGS_VERSION;
     },
@@ -258,6 +302,8 @@ export const {
   updateHeroPortraitSettings,
   updateTierGlowConfig,
   resetHeroPortraitSettings,
+  updateUnitAnimationSettings,
+  resetUnitAnimationSettings,
   resetAllSettings,
   loadSettings,
   importSettings
@@ -270,4 +316,5 @@ export const selectHealthSettings = (state: { settings: SettingsState }) => stat
 export const selectScoreboardSettings = (state: { settings: SettingsState }) => state.settings.scoreboard;
 export const selectGeneralSettings = (state: { settings: SettingsState }) => state.settings.general;
 export const selectHeroPortraitSettings = (state: { settings: SettingsState }) => state.settings.general.heroPortrait;
+export const selectUnitAnimationSettings = (state: { settings: SettingsState }) => state.settings.general.unitAnimation;
 

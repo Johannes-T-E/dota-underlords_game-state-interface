@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { ToggleSwitch, SliderInput, PresetButton, GradientBar } from '../../../atoms';
+import { ToggleSwitch, SliderInput, PresetButton, GradientBar, Text } from '../../../atoms';
 import { SettingsSection, SettingsGroup, SettingsRow, GradientEditor } from '../../../molecules';
 import { HealthDisplay } from '../../../molecules/HealthDisplay/HealthDisplay';
-import { useHealthSettings, useHeroPortraitSettings } from '../../../../hooks/useSettings';
+import { useHealthSettings, useHeroPortraitSettings, useUnitAnimationSettings } from '../../../../hooks/useSettings';
 import { Button } from '../../../atoms/Button/Button';
 import type { HealthColorConfig } from '../../../molecules/HealthDisplay/HealthDisplaySettings';
 
@@ -65,6 +65,7 @@ const TYPOGRAPHY_PRESETS = {
 export const AppearanceSettings = () => {
   const { settings: healthSettings, updateSettings: updateHealthSettings, resetSettings: resetHealthSettings } = useHealthSettings();
   const { settings: heroSettings, updateSettings: updateHeroSettings, updateTierGlowConfig } = useHeroPortraitSettings();
+  const { settings: animationSettings, updateSettings: updateAnimationSettings, resetSettings: resetAnimationSettings } = useUnitAnimationSettings();
   
   const [gradientPreset, setGradientPreset] = useState<string>('custom');
   const [typographyPreset, setTypographyPreset] = useState<string>('custom');
@@ -381,6 +382,133 @@ export const AppearanceSettings = () => {
             </>
           )}
         </SettingsGroup>
+      </SettingsSection>
+
+      {/* Unit Animation Section */}
+      <SettingsSection 
+        title="Unit Animations" 
+        description="Control how units move and appear on the board"
+        defaultOpen={true}
+      >
+        <SettingsGroup variant="card" title="Movement Animation">
+          <SettingsRow 
+            label="Enable Position Animation" 
+            description="Animate units when they move between positions"
+          >
+            <ToggleSwitch
+              checked={animationSettings?.enablePositionAnimation || true}
+              onChange={(checked) => updateAnimationSettings({ enablePositionAnimation: checked })}
+            />
+          </SettingsRow>
+
+          {animationSettings?.enablePositionAnimation && (
+            <>
+              <SettingsRow label="Animation Speed" layout="vertical">
+                <SliderInput
+                  value={animationSettings?.animationDuration || 300}
+                  onChange={(value) => updateAnimationSettings({ animationDuration: value })}
+                  min={100}
+                  max={1000}
+                  step={50}
+                  unit="ms"
+                  leftLabel="Slow"
+                  rightLabel="Fast"
+                />
+              </SettingsRow>
+
+              <SettingsRow 
+                label="Show Movement Trail" 
+                description="Display a visual trail behind moving units"
+              >
+                <ToggleSwitch
+                  checked={animationSettings?.enableMovementTrail || true}
+                  onChange={(checked) => updateAnimationSettings({ enableMovementTrail: checked })}
+                />
+              </SettingsRow>
+
+              {animationSettings?.enableMovementTrail && (
+                <>
+                  <SettingsRow label="Trail Length" layout="vertical">
+                    <SliderInput
+                      value={animationSettings?.trailLength || 3}
+                      onChange={(value) => updateAnimationSettings({ trailLength: value })}
+                      min={1}
+                      max={5}
+                      step={1}
+                      leftLabel="Short"
+                      rightLabel="Long"
+                    />
+                  </SettingsRow>
+
+                  <SettingsRow label="Trail Color" layout="vertical">
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <input
+                        type="color"
+                        value={animationSettings?.trailColor || '#ffffff'}
+                        onChange={(e) => updateAnimationSettings({ trailColor: e.target.value })}
+                        style={{ width: '40px', height: '32px', border: 'none', borderRadius: '4px' }}
+                      />
+                      <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                        {animationSettings?.trailColor || '#ffffff'}
+                      </span>
+                    </div>
+                  </SettingsRow>
+
+                  <SettingsRow label="Trail Opacity" layout="vertical">
+                    <SliderInput
+                      value={Math.round((animationSettings?.trailOpacity || 0.6) * 100)}
+                      onChange={(value) => updateAnimationSettings({ trailOpacity: value / 100 })}
+                      min={10}
+                      max={100}
+                      step={5}
+                      unit="%"
+                      leftLabel="Faint"
+                      rightLabel="Bright"
+                    />
+                  </SettingsRow>
+
+        <SettingsRow label="Trail Thickness" layout="vertical">
+          <SliderInput
+            value={animationSettings?.trailThickness || 2}
+            onChange={(value) => updateAnimationSettings({ trailThickness: value })}
+            min={1}
+            max={5}
+            step={1}
+            leftLabel="Thin"
+            rightLabel="Thick"
+          />
+        </SettingsRow>
+
+        <SettingsRow label="Use Tier Color" layout="horizontal">
+          <ToggleSwitch
+            checked={animationSettings?.useTierColor || false}
+            onChange={(checked) => updateAnimationSettings({ useTierColor: checked })}
+          />
+          <Text color="secondary">
+            Use hero tier color for trail instead of custom color
+          </Text>
+        </SettingsRow>
+      </>
+    )}
+            </>
+          )}
+        </SettingsGroup>
+
+        <SettingsGroup variant="card" title="New Unit Effects">
+          <SettingsRow 
+            label="Fade In New Units" 
+            description="Animate units when they first appear on the board"
+          >
+            <ToggleSwitch
+              checked={animationSettings?.enableNewUnitFade || true}
+              onChange={(checked) => updateAnimationSettings({ enableNewUnitFade: checked })}
+            />
+          </SettingsRow>
+        </SettingsGroup>
+
+        <Button variant="secondary" onClick={resetAnimationSettings}>
+          Reset Animation Settings
+        </Button>
       </SettingsSection>
     </div>
   );

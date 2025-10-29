@@ -1,4 +1,5 @@
 import { HeroPortrait } from '../../molecules';
+import { useUnitPositions } from '../../../hooks/useUnitPositions';
 import type { Unit } from '../../../types';
 import type { HeroesData } from '../../../utils/heroHelpers';
 import './RosterGrid.css';
@@ -10,7 +11,9 @@ export interface RosterGridProps {
 }
 
 export const RosterGrid = ({ units, heroesData, className = '' }: RosterGridProps) => {
-  // Create 8x4 grid (y: 0-3, x: 0-7)
+  const animationStates = useUnitPositions(units);
+
+  // Create 8x4 grid (y: 0-3, x: 0-7) - keep original structure
   const gridCells = [];
   for (let y = 3; y >= 0; y--) { // Top to bottom (y=3 to y=0)
     for (let x = 0; x < 8; x++) {
@@ -20,14 +23,21 @@ export const RosterGrid = ({ units, heroesData, className = '' }: RosterGridProp
 
       gridCells.push(
         <div key={`${x}-${y}`} className="roster-grid__cell" data-x={x} data-y={y}>
-          {unit && (
-            <HeroPortrait 
-              unitId={unit.unit_id}
-              rank={unit.rank || 0}
-              heroesData={heroesData}
-              size="medium"
-            />
-          )}
+          {unit && (() => {
+            // Check if this unit is currently animating or is new
+            const animationState = animationStates.find(state => state.entindex === unit.entindex);
+            const isUnitAnimating = animationState?.isMoving || false;
+            const isUnitNew = animationState?.isNew || false;
+            
+            // Only show static unit if not animating and not new (new units are handled by animated overlay)
+            return !isUnitAnimating && !isUnitNew ? (
+              <HeroPortrait 
+                unitId={unit.unit_id}
+                rank={unit.rank || 0}
+                heroesData={heroesData}
+              />
+            ) : null;
+          })()}
         </div>
       );
     }
@@ -35,6 +45,7 @@ export const RosterGrid = ({ units, heroesData, className = '' }: RosterGridProp
 
   return (
     <div className={`roster-grid ${className}`}>
+      {/* Original grid structure */}
       {gridCells}
     </div>
   );

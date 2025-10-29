@@ -39,3 +39,6 @@ export type { IconRadioProps } from './IconRadio/IconRadio';
 
 export { GradientBar } from './GradientBar/GradientBar';
 export type { GradientBarProps } from './GradientBar/GradientBar';
+
+export { MovementTrail } from './MovementTrail/MovementTrail';
+export type { MovementTrailProps } from './MovementTrail/MovementTrail';

@@ -1,6 +1,7 @@
 // Player state types
 export interface Unit {
-  unit_id: number;
+  unit_id: number;        // Hero type/definition ID (e.g., "Sven" = 4)
+  entindex: number;       // Unique entity ID for this specific unit instance
   position: {
     x: number;
     y: number;

@@ -10,16 +10,19 @@ import {
   updateHeroPortraitSettings,
   updateTierGlowConfig,
   resetHeroPortraitSettings,
+  updateUnitAnimationSettings,
+  resetUnitAnimationSettings,
   resetAllSettings,
   importSettings,
   selectHealthSettings,
   selectScoreboardSettings,
   selectGeneralSettings,
-  selectHeroPortraitSettings
+  selectHeroPortraitSettings,
+  selectUnitAnimationSettings
 } from '../store/settingsSlice';
 import type { HealthDisplaySettings } from '../components/molecules/HealthDisplay/HealthDisplaySettings';
 import type { ScoreboardColumnConfig } from '../types';
-import type { HeroPortraitSettings, TierGlowConfig } from '../store/settingsSlice';
+import type { HeroPortraitSettings, TierGlowConfig, UnitAnimationSettings } from '../store/settingsSlice';
 
 /**
  * Hook for managing Health Display settings
@@ -128,6 +131,31 @@ export const useHeroPortraitSettings = () => {
     settings,
     updateSettings,
     updateTierGlowConfig: updateTierGlowConfigSettings,
+    resetSettings
+  };
+};
+
+/**
+ * Hook for managing Unit Animation settings
+ */
+export const useUnitAnimationSettings = () => {
+  const dispatch = useAppDispatch();
+  const settings = useAppSelector(selectUnitAnimationSettings);
+
+  const updateSettings = useCallback(
+    (newSettings: Partial<UnitAnimationSettings>) => {
+      dispatch(updateUnitAnimationSettings(newSettings));
+    },
+    [dispatch]
+  );
+
+  const resetSettings = useCallback(() => {
+    dispatch(resetUnitAnimationSettings());
+  }, [dispatch]);
+
+  return {
+    settings,
+    updateSettings,
     resetSettings
   };
 };
