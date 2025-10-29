@@ -4,6 +4,7 @@ import { HeroPortrait } from '../../molecules';
 import { useUnitPositions } from '../../../hooks/useUnitPositions';
 import { useUnitAnimationSettings } from '../../../hooks/useSettings';
 import { getHeroTier } from '../../../utils/heroHelpers';
+import { useState, useEffect, useRef } from 'react';
 import type { PlayerState } from '../../../types';
 import type { HeroesData } from '../../../utils/heroHelpers';
 import './PlayerBoard.css';
@@ -20,6 +21,45 @@ export const PlayerBoard = ({ player, heroesData, onClose, className = '' }: Pla
   const units = player.units || [];
   const animationStates = useUnitPositions(units);
   const { settings: animationSettings } = useUnitAnimationSettings();
+
+  // Dynamic scaling state
+  const [scale, setScale] = useState(1);
+  const boardRef = useRef<HTMLDivElement>(null);
+
+  // Calculate dynamic scale to fit available width
+  useEffect(() => {
+    const calculateScale = () => {
+      if (!boardRef.current) return;
+      
+      const board = boardRef.current;
+      const boardWidth = board.scrollWidth;
+      
+      // Get the total available width from the board visualizer container
+      const boardVisualizer = board.closest('.board-visualizer');
+      if (!boardVisualizer) return;
+      
+      const totalAvailableWidth = boardVisualizer.clientWidth;
+      const padding = 40; // Total padding (20px on each side)
+      const gap = 60; // Total gap between 4 boards (20px * 3 gaps)
+      const availableWidthPerBoard = (totalAvailableWidth - padding - gap) / 4;
+      
+      // Calculate scale to fit 4 boards in the available width
+      const newScale = Math.min(1, availableWidthPerBoard / boardWidth);
+      setScale(newScale);
+    };
+
+    calculateScale();
+    
+    // Also calculate after a small delay to ensure DOM is fully rendered
+    const timeoutId = setTimeout(calculateScale, 100);
+    
+    window.addEventListener('resize', calculateScale);
+    
+    return () => {
+      window.removeEventListener('resize', calculateScale);
+      clearTimeout(timeoutId);
+    };
+  }, [units]); // Recalculate when units change
 
   // Calculate position for animation - unified coordinate system
   const calculatePosition = (x: number, y: number) => {
@@ -90,7 +130,12 @@ export const PlayerBoard = ({ player, heroesData, onClose, className = '' }: Pla
   }
 
   return (
-    <div className={`player-board ${className}`} id={`board-${player.player_id}`}>
+    <div 
+      ref={boardRef}
+      className={`player-board ${className}`} 
+      id={`board-${player.player_id}`}
+      style={{ zoom: scale, transformOrigin: 'top left' }}
+    >
       <div className="player-board__header">
         <Text variant="h3" weight="bold" className="player-board__name">
           {playerName}

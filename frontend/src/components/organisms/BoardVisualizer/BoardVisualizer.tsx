@@ -29,12 +29,13 @@ export const BoardVisualizer = ({
         if (!playerData) return null;
         
         return (
-          <PlayerBoard
-            key={playerId}
-            player={playerData}
-            heroesData={heroesData}
-            onClose={() => onPlayerClose(playerId)}
-          />
+          <div key={playerId} className="board-visualizer__board-container">
+            <PlayerBoard
+              player={playerData}
+              heroesData={heroesData}
+              onClose={() => onPlayerClose(playerId)}
+            />
+          </div>
         );
       })}
     </div>

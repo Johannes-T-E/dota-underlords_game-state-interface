@@ -8,6 +8,17 @@
   border-radius: 8px;
   border: 1px solid var(--border-color);
   min-height: 200px;
+  align-items: start; /* Align boards to top when scaled */
+}
+
+.board-visualizer__board-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 0; /* Allow container to shrink */
+  overflow: visible; /* Ensure scaled content is not clipped */
+  width: 100%; /* Take full width of grid cell */
+  height: fit-content; /* Adjust height to content */
 }
 
 @media (max-width: 1400px) {
