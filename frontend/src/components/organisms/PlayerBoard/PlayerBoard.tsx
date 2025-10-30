@@ -25,6 +25,32 @@ export const PlayerBoard = ({ player, heroesData, onClose, className = '' }: Pla
   // Dynamic scaling state
   const [scale, setScale] = useState(1);
   const boardRef = useRef<HTMLDivElement>(null);
+  // Track in-flight animations so overlays stay mounted until CSS transition completes
+  const activeAnimationsRef = useRef<Map<number, number>>(new Map()); // entindex -> expiry timestamp
+  const [animationRerenderTick, setAnimationRerenderTick] = useState(0);
+  // Track in-flight trails so they persist even if isMoving flips
+  type TrailKey = string;
+  interface ActiveTrail {
+    key: TrailKey;
+    entindex: number;
+    from: { x: number; y: number };
+    to: { x: number; y: number };
+    unitId?: number;
+    expiryAt: number;
+  }
+  const activeTrailsRef = useRef<Map<TrailKey, ActiveTrail>>(new Map());
+
+  const shouldShowStaticPortrait = (
+    unit: { entindex: number } | undefined,
+    animationState: { isMoving?: boolean; isNew?: boolean } | undefined
+  ) => {
+    if (!unit) return false;
+    const moving = Boolean(animationState?.isMoving);
+    const isNew = Boolean(animationState?.isNew);
+    const expiryAt = activeAnimationsRef.current.get(unit.entindex) || 0;
+    const inFlight = expiryAt > Date.now();
+    return !moving && !isNew && !inFlight;
+  };
 
   // Calculate dynamic scale to fit available width
   useEffect(() => {
@@ -61,6 +87,84 @@ export const PlayerBoard = ({ player, heroesData, onClose, className = '' }: Pla
     };
   }, [units]); // Recalculate when units change
 
+  // Maintain a per-unit "in-flight" animation window equal to the transition duration.
+  // This prevents a subsequent data update from unmounting the animated overlay mid-flight.
+  useEffect(() => {
+    const now = Date.now();
+    const expiryDelta = animationSettings.animationDuration;
+
+    // Register newly moving units and schedule cleanup
+    animationStates.forEach(state => {
+      if (state.isMoving) {
+        const expiryAt = now + expiryDelta;
+        activeAnimationsRef.current.set(state.entindex, expiryAt);
+        // Force a rerender after the animation window to allow unmounting
+        window.setTimeout(() => {
+          // On timeout, only clear if the stored expiry has passed
+          const currentExpiry = activeAnimationsRef.current.get(state.entindex) || 0;
+          if (currentExpiry <= Date.now()) {
+            activeAnimationsRef.current.delete(state.entindex);
+          }
+          setAnimationRerenderTick(t => t + 1);
+        }, expiryDelta + 16);
+      }
+    });
+
+    // Also prune any expired entries proactively
+    const entries = Array.from(activeAnimationsRef.current.entries());
+    let pruned = false;
+    entries.forEach(([entindex, expiryAt]) => {
+      if (expiryAt <= now) {
+        activeAnimationsRef.current.delete(entindex);
+        pruned = true;
+      }
+    });
+    if (pruned) setAnimationRerenderTick(t => t + 1);
+  }, [animationStates, animationSettings.animationDuration]);
+
+  // Maintain active movement trails with an expiry equal to trail duration
+  useEffect(() => {
+    if (!animationSettings.enablePositionAnimation || !animationSettings.enableMovementTrail) return;
+
+    const now = Date.now();
+    const duration = animationSettings.animationDuration;
+
+    // Add/refresh trails for any newly moving units
+    animationStates.forEach(state => {
+      if (state.isMoving && state.oldPosition) {
+        const key = `trail-${state.entindex}-${state.oldPosition.x}-${state.oldPosition.y}-${state.newPosition.x}-${state.newPosition.y}`;
+        const unit = units.find(u => u.entindex === state.entindex);
+        const trail: ActiveTrail = {
+          key,
+          entindex: state.entindex,
+          from: state.oldPosition,
+          to: state.newPosition,
+          unitId: unit?.unit_id,
+          expiryAt: now + duration
+        };
+        activeTrailsRef.current.set(key, trail);
+        // Schedule cleanup after duration
+        window.setTimeout(() => {
+          const t = activeTrailsRef.current.get(key);
+          if (t && t.expiryAt <= Date.now()) {
+            activeTrailsRef.current.delete(key);
+            setAnimationRerenderTick(v => v + 1);
+          }
+        }, duration + 32);
+      }
+    });
+
+    // Prune expired trails proactively
+    let pruned = false;
+    activeTrailsRef.current.forEach((trail, key) => {
+      if (trail.expiryAt <= now) {
+        activeTrailsRef.current.delete(key);
+        pruned = true;
+      }
+    });
+    if (pruned) setAnimationRerenderTick(v => v + 1);
+  }, [animationStates, animationSettings.enablePositionAnimation, animationSettings.enableMovementTrail, animationSettings.animationDuration, units]);
+
   // Calculate position for animation - unified coordinate system
   const calculatePosition = (x: number, y: number) => {
     const cellSize = 80;
@@ -96,7 +200,7 @@ export const PlayerBoard = ({ player, heroesData, onClose, className = '' }: Pla
       
       rosterCells.push(
         <div key={`roster-${x}-${y}`} className="player-board__cell player-board__cell--roster" data-x={x} data-y={y}>
-          {unit && !isUnitAnimating && !isUnitNew && (
+          {shouldShowStaticPortrait(unit, animationState) && (
             <HeroPortrait 
               unitId={unit.unit_id}
               rank={unit.rank || 0}
@@ -118,7 +222,7 @@ export const PlayerBoard = ({ player, heroesData, onClose, className = '' }: Pla
     
     benchCells.push(
       <div key={`bench-${x}`} className="player-board__cell player-board__cell--bench" data-x={x} data-y="-1">
-        {unit && !isUnitAnimating && !isUnitNew && (
+        {shouldShowStaticPortrait(unit, animationState) && (
           <HeroPortrait 
             unitId={unit.unit_id}
             rank={unit.rank || 0}
@@ -161,29 +265,25 @@ export const PlayerBoard = ({ player, heroesData, onClose, className = '' }: Pla
           </div>
         </div>
 
-        {/* Render trails for ALL movements */}
+        {/* Render trails from active store to prevent abrupt unmounts */}
         {animationSettings.enablePositionAnimation && animationSettings.enableMovementTrail && (
           <>
-            {animationStates
-              .filter(state => state.isMoving && state.oldPosition)
-              .map(state => {
-                return (
-                      <MovementTrail
-                        key={`trail-${state.entindex}-${state.oldPosition?.x}-${state.oldPosition?.y}-${state.newPosition.x}-${state.newPosition.y}`}
-                        fromPosition={state.oldPosition!}
-                        toPosition={state.newPosition}
-                        duration={animationSettings.animationDuration}
-                        trailLength={animationSettings.trailLength}
-                        cellSize={80}
-                        gapSize={4}
-                        trailColor={animationSettings.trailColor}
-                        trailOpacity={animationSettings.trailOpacity}
-                        trailThickness={animationSettings.trailThickness}
-                        useTierColor={animationSettings.useTierColor}
-                        unitId={getHeroTier(units.find(u => u.entindex === state.entindex)?.unit_id || 0, heroesData)}
-                      />
-                );
-              })}
+            {Array.from(activeTrailsRef.current.values()).map(trail => (
+              <MovementTrail
+                key={trail.key}
+                fromPosition={trail.from}
+                toPosition={trail.to}
+                duration={animationSettings.animationDuration}
+                trailLength={animationSettings.trailLength}
+                cellSize={80}
+                gapSize={4}
+                trailColor={animationSettings.trailColor}
+                trailOpacity={animationSettings.trailOpacity}
+                trailThickness={animationSettings.trailThickness}
+                useTierColor={animationSettings.useTierColor}
+                unitId={getHeroTier(trail.unitId || 0, heroesData)}
+              />
+            ))}
           </>
         )}
 
@@ -194,9 +294,12 @@ export const PlayerBoard = ({ player, heroesData, onClose, className = '' }: Pla
               if (!unit.position) return null;
               
               const animationState = animationStates.find(state => state.entindex === unit.entindex);
-              
-              // Only show animated version if unit is moving or new
-              if (!animationState?.isMoving && !animationState?.isNew) return null;
+              const now = Date.now();
+              const inFlight = activeAnimationsRef.current.get(unit.entindex);
+              const isAnimating = Boolean(animationState?.isMoving) || (inFlight !== undefined && inFlight > now);
+
+              // Only show animated version if unit is animating (moving or still in-flight) or new
+              if (!isAnimating && !animationState?.isNew) return null;
               
               const finalPosition = calculatePosition(unit.position.x, unit.position.y);
               
