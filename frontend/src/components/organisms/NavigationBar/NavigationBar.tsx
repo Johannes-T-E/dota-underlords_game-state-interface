@@ -64,12 +64,12 @@ export const NavigationBar = ({ className = '', onSettingsClick }: NavigationBar
       
       <div className="navigation-bar__links">
         <Link
-          to="/scoreboard"
-          className={`navigation-bar__link ${isActive('/scoreboard') ? 'navigation-bar__link--active' : ''}`}
-          title="Scoreboard"
+          to="/dashboard"
+          className={`navigation-bar__link ${isActive('/dashboard') ? 'navigation-bar__link--active' : ''}`}
+          title="Dashboard"
         >
-          <span className="navigation-bar__link-icon">SB</span>
-          {!collapsed && <Text variant="body">Scoreboard</Text>}
+          <span className="navigation-bar__link-icon">DB</span>
+          {!collapsed && <Text variant="body">Dashboard</Text>}
         </Link>
         <Link
           to="/matches"

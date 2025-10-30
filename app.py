@@ -718,15 +718,15 @@ def process_gsi_data(data):
 # Serve React App (Production mode)
 if PRODUCTION and os.path.exists(FRONTEND_BUILD_DIR):
     @app.route('/')
-    @app.route('/scoreboard')
+    @app.route('/dashboard')
     @app.route('/matches')
     def serve_react_app():
         """Serve the React app for all frontend routes."""
         return send_from_directory(app.static_folder, 'index.html')
 else:
     # Development mode - keep old template routes for reference
-    @app.route('/scoreboard')
-    def scoreboard():
+    @app.route('/dashboard')
+    def dashboard():
         return render_template('scoreboard.html')
 
     @app.route('/matches')
@@ -878,7 +878,7 @@ if __name__ == '__main__':
     print("  Dota Underlords - Unified GSI + Web App")
     print("="*60)
     print(f"\nGSI Listener: http://{GSI_HOST}:{GSI_PORT}/upload (FIXED by game config)")
-    print(f"Scoreboard: http://{GSI_HOST}:{GSI_PORT}/scoreboard")
+    print(f"Dashboard: http://{GSI_HOST}:{GSI_PORT}/dashboard")
     print(f"Health Check: http://{GSI_HOST}:{GSI_PORT}/api/health")
     print(f"Debug Mode: {DEBUG}")
     print("\nWebSocket support enabled for real-time updates!")

@@ -1,7 +1,7 @@
 import { AppLayout, MainContentTemplate } from '../components/templates';
 import { ScoreboardContainer } from '../features/scoreboard/ScoreboardContainer';
 
-export const Scoreboard = () => {
+export const Dashboard = () => {
   return (
     <AppLayout>
       <MainContentTemplate centered>
@@ -10,4 +10,5 @@ export const Scoreboard = () => {
     </AppLayout>
   );
 };
+
 
