@@ -14,10 +14,12 @@ export const RoundStatus = ({
 }: RoundStatusProps) => {
   return (
     <div className={`round-status ${className}`}>
-      <PhaseIcon phase={roundPhase} size="small" />
       <div className="round-status__text">
         <Text variant="label" weight="bold">Round {roundNumber}</Text>
-        <Text variant="label">{roundPhase}</Text>
+        <div className="round-status__phase">
+          <PhaseIcon phase={roundPhase} size="small" />
+          <Text variant="label">{roundPhase}</Text>
+        </div>
       </div>
     </div>
   );

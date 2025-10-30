@@ -4,6 +4,7 @@
   height: 10px;
   border-radius: 50%;
   flex-shrink: 0;
+  vertical-align: middle;
 }
 
 .status-indicator--connected {

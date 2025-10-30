@@ -84,7 +84,10 @@ export const NavigationBar = ({ className = '', onSettingsClick }: NavigationBar
       {currentRound && (
         <div className="navigation-bar__round-info">
           {collapsed ? (
-            <PhaseIcon phase={currentRound.round_phase} size="small" />
+            <div className="navigation-bar__round-condensed" aria-label={`Round ${currentRound.round_number}`}>
+              <Text variant="label" weight="bold">{currentRound.round_number}</Text>
+              <PhaseIcon phase={currentRound.round_phase} size="small" />
+            </div>
           ) : (
             <RoundStatus
               roundNumber={currentRound.round_number}
@@ -108,7 +111,14 @@ export const NavigationBar = ({ className = '', onSettingsClick }: NavigationBar
           aria-label="Open settings"
           title="Settings"
         >
-          ⚙
+          {collapsed ? (
+            '⚙'
+          ) : (
+            <>
+              <span aria-hidden>⚙</span>
+              <Text variant="body">Settings</Text>
+            </>
+          )}
         </Button>
       </div>
     </nav>

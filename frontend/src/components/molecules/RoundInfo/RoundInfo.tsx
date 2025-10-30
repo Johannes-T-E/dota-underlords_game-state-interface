@@ -1,4 +1,4 @@
-import { Text } from '../../atoms';
+import { Text, PhaseIcon } from '../../atoms';
 import './RoundInfo.css';
 
 export interface RoundInfoProps {
@@ -11,15 +11,16 @@ export interface RoundInfoProps {
 export const RoundInfo = ({ 
   roundNumber, 
   roundPhase, 
-  label = 'Round:',
+  label = 'Round',
   className = '' 
 }: RoundInfoProps) => {
   return (
     <div className={`round-info ${className}`}>
-      <Text variant="label">{label}</Text>
-      <Text variant="body">
-        {roundNumber} ({roundPhase})
-      </Text>
+      <PhaseIcon phase={roundPhase} size="small" />
+      <div className="round-info__text">
+        <Text variant="label" weight="bold">{label} {roundNumber}</Text>
+        <Text variant="label">{roundPhase}</Text>
+      </div>
     </div>
   );
 };

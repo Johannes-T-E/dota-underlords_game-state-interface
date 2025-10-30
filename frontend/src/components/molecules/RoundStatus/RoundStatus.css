@@ -2,15 +2,18 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 16px;
-  background: var(--secondary-color);
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
+  padding: 0;
 }
 
 .round-status__text {
   display: flex;
   flex-direction: column;
   gap: 2px;
+}
+
+.round-status__phase {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 

@@ -16,7 +16,11 @@ export const PhaseIcon = ({
     
     if (normalizedPhase.includes('combat') || normalizedPhase.includes('fight')) {
       return '⚔';
-    } else if (normalizedPhase.includes('preparation') || normalizedPhase.includes('shop')) {
+    } else if (
+      normalizedPhase.includes('preparation') ||
+      normalizedPhase.includes('prep') ||
+      normalizedPhase.includes('shop')
+    ) {
       return '🛒';
     }
     
