@@ -9,12 +9,16 @@ import json
 from typing import Dict, List
 from datetime import datetime
 from pathlib import Path
+import os
 
 
 class UnderlordsDatabaseManager:
     """Manages SQLite database for Underlords GSI data."""
     
-    def __init__(self, db_path: str = "underlords_gsi_v2.db"):
+    def __init__(self, db_path: str = None):
+        # Default to parent directory if not specified
+        if db_path is None:
+            db_path = os.path.join(os.path.dirname(__file__), '..', 'underlords_gsi_v3.db')
         self.db_path = db_path
         self.conn = None
         self.init_database()
@@ -468,3 +472,4 @@ class UnderlordsDatabaseManager:
         """Close database connection."""
         if self.conn:
             self.conn.close()
+

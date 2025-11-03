@@ -27,8 +27,8 @@ const matchSlice = createSlice({
   reducers: {
     updateMatch: (state, action: PayloadAction<MatchData>) => {
       state.currentMatch = action.payload.match;
-      state.players = action.payload.players;
-      state.privatePlayer = action.payload.private_player;
+      state.players = action.payload.public_player_states;  // Map from new backend field
+      state.privatePlayer = action.payload.private_player_state;  // Map from new backend field
       state.currentRound = action.payload.current_round;
       state.lastUpdate = action.payload.timestamp;
     },

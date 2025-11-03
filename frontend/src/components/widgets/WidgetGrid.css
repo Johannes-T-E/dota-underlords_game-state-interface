@@ -1,0 +1,13 @@
+.dashboard-grid {
+  position: relative;
+  width: 100%;
+  min-height: 60vh;
+}
+
+.dashboard-item {
+  position: absolute;
+  /* ensure the absolutely positioned container follows left/top updates */
+  will-change: left, top;
+}
+
+

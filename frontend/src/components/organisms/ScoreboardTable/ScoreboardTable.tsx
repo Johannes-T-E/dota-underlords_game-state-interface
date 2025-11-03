@@ -9,6 +9,11 @@ import type { PlayerState, ScoreboardColumnConfig } from '../../../types';
 import type { SortField } from '../ScoreboardHeader/ScoreboardHeader';
 import './ScoreboardTable.css';
 
+// Helper function to get player_id with fallback to account_id
+const getPlayerId = (player: PlayerState): string => {
+  return player.player_id || String(player.account_id);
+};
+
 // Separate component to handle player changes hook
 const PlayerRowWithChanges = ({ 
   player, 
@@ -27,7 +32,8 @@ const PlayerRowWithChanges = ({
   visibleColumns: ScoreboardColumnConfig;
   columnOrder?: string[];
 }) => {
-  const changeEvents = usePlayerChanges(player.player_id, player);
+  const playerId = getPlayerId(player);
+  const changeEvents = usePlayerChanges(playerId, player);
   
   return (
     <ScoreboardPlayerRow
@@ -133,7 +139,7 @@ export const ScoreboardTable = ({
   useEffect(() => {
     if (onPlayerDataUpdate) {
       selectedPlayerIds.forEach(playerId => {
-        const player = players.find(p => p.player_id === playerId);
+        const player = players.find(p => getPlayerId(p) === playerId);
         if (player) {
           onPlayerDataUpdate(playerId, player);
         }
@@ -168,18 +174,21 @@ export const ScoreboardTable = ({
       />
 
       <div className="scoreboard-table__players">
-        {sortedPlayers.map((player, index) => (
-          <PlayerRowWithChanges
-            key={player.player_id}
-            player={player}
-            rank={index + 1}
-            isSelected={selectedPlayerIds.includes(player.player_id)}
-            onClick={() => onPlayerSelect(player.player_id)}
-            heroesData={heroesData}
-            visibleColumns={visibleColumns}
-            columnOrder={visibleColumns.columnOrder}
-          />
-        ))}
+        {sortedPlayers.map((player, index) => {
+          const playerId = getPlayerId(player);
+          return (
+            <PlayerRowWithChanges
+              key={playerId}
+              player={player}
+              rank={index + 1}
+              isSelected={selectedPlayerIds.includes(playerId)}
+              onClick={() => onPlayerSelect(playerId)}
+              heroesData={heroesData}
+              visibleColumns={visibleColumns}
+              columnOrder={visibleColumns.columnOrder}
+            />
+          );
+        })}
       </div>
     </div>
   );

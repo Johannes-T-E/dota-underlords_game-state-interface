@@ -408,11 +408,11 @@ export const AppearanceSettings = () => {
                   value={animationSettings?.animationDuration || 300}
                   onChange={(value) => updateAnimationSettings({ animationDuration: value })}
                   min={100}
-                  max={1000}
+                  max={5000}
                   step={50}
                   unit="ms"
-                  leftLabel="Slow"
-                  rightLabel="Fast"
+                  leftLabel="Fast"
+                  rightLabel="Slow"
                 />
               </SettingsRow>
 
@@ -472,7 +472,7 @@ export const AppearanceSettings = () => {
             value={animationSettings?.trailThickness || 2}
             onChange={(value) => updateAnimationSettings({ trailThickness: value })}
             min={1}
-            max={5}
+            max={10}
             step={1}
             leftLabel="Thin"
             rightLabel="Thick"

@@ -140,8 +140,8 @@ export interface MatchInfo {
 
 export interface MatchData {
   match: MatchInfo;
-  players: PlayerState[];
-  private_player: PrivatePlayerState | null;
+  public_player_states: PlayerState[];  // Changed from 'players' to match backend
+  private_player_state: PrivatePlayerState | null;  // Changed from 'private_player' to match backend
   current_round: RoundInfo;
   timestamp: number;
 }

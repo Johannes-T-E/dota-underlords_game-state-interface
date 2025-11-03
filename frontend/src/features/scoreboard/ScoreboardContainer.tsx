@@ -3,7 +3,6 @@ import { togglePlayerBoard, updateBoardData } from '../../store/boardSlice';
 import { useHeroesData } from '../../hooks/useHeroesData';
 import { 
   ScoreboardTable, 
-  BoardVisualizer, 
   EmptyState
 } from '../../components/organisms';
 import type { PlayerState } from '../../types';
@@ -49,12 +48,6 @@ export const ScoreboardContainer = () => {
         selectedPlayerIds={selectedPlayerIds}
         onPlayerSelect={handlePlayerSelect}
         onPlayerDataUpdate={handlePlayerDataUpdate}
-      />
-
-      <BoardVisualizer
-        selectedPlayers={boardData}
-        heroesData={heroesData}
-        onPlayerClose={handlePlayerClose}
       />
     </>
   );

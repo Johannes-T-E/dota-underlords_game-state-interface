@@ -1,0 +1,84 @@
+.widget {
+  background: var(--color-surface, #1f1f23);
+  border: 1px solid var(--color-border, #2a2a2e);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  overflow: hidden;
+  width: 100%;
+  height: auto; /* ensure wrapper fits content height */
+  align-self: start; /* prevent grid from stretching height */
+}
+
+.widget__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 12px;
+  border-bottom: 1px solid var(--color-border, #2a2a2e);
+  cursor: move; /* indicate draggable area */
+  user-select: none; /* prevent text selection while dragging */
+  -webkit-user-select: none;
+}
+
+.widget__title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 800;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.widget__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.widget__body {
+  padding: 0px;
+}
+
+.scoreboard-widget .scoreboard-table__controls {
+  display: none; /* scoreboard settings moved to widget header */
+}
+
+/* Ensure inner PlayerBoard doesn't apply its own zoom in widgets */
+.widget .player-board {
+  zoom: 1 !important;
+}
+
+/* Hide PlayerBoard's internal header when displayed inside a widget; we show controls in widget header */
+.widget .player-board__header {
+  display: none;
+}
+
+.widget--resizable {
+  position: relative;
+}
+
+.widget__resize-handle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 100%;
+  cursor: ew-resize;
+  user-select: none;
+  touch-action: none;
+}
+
+.widget__resize-handle::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 2px;
+  width: 2px;
+  height: 24px;
+  background: var(--color-border, #2a2a2e);
+  transform: translateY(-50%);
+  border-radius: 1px;
+}
+
+
