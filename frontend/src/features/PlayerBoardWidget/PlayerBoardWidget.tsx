@@ -12,9 +12,10 @@ export interface PlayerBoardWidgetProps {
   storageKey?: string;
   dragId?: string;
   onHeaderDragStart?: (e: React.DragEvent, id: string) => void;
+  onHeaderMouseDown?: (e: React.MouseEvent, id: string) => void;
 }
 
-export const PlayerBoardWidget = ({ player, storageKey, dragId, onHeaderDragStart }: PlayerBoardWidgetProps) => {
+export const PlayerBoardWidget = ({ player, storageKey, dragId, onHeaderDragStart, onHeaderMouseDown }: PlayerBoardWidgetProps) => {
   const dispatch = useAppDispatch();
   const { heroesData } = useHeroesData();
   const outerRef = React.useRef<HTMLDivElement | null>(null);
@@ -56,6 +57,7 @@ export const PlayerBoardWidget = ({ player, storageKey, dragId, onHeaderDragStar
       storageKey={storageKey ? `${storageKey}:${player.player_id}` : undefined}
       dragId={dragId}
       onHeaderDragStart={onHeaderDragStart}
+      onHeaderMouseDown={onHeaderMouseDown}
       headerRight={
         <Button
           variant="ghost"

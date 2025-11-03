@@ -2,6 +2,7 @@ import React from 'react';
 import { AppLayout, MainContentTemplate } from '../components/templates';
 import { ScoreboardWidget } from '../features/scoreboard/ScoreboardWidget';
 import { PlayerBoardWidget } from '../features/PlayerBoardWidget/PlayerBoardWidget';
+import { AllPlayerBoardsWidget } from '../features/AllPlayerBoardsWidget/AllPlayerBoardsWidget';
 import { useAppSelector } from '../hooks/redux';
 import '../components/widgets/WidgetGrid.css';
 
@@ -17,7 +18,7 @@ export const Dashboard = () => {
     return { scoreboard: { x: 0, y: 0 } };
   });
 
-  const widgetIds = React.useMemo(() => ['scoreboard', ...Object.keys(boardData).map((id) => `board:${id}`)], [boardData]);
+  const widgetIds = React.useMemo(() => ['scoreboard', 'allPlayerBoards', ...Object.keys(boardData).map((id) => `board:${id}`)], [boardData]);
 
   // Ensure every widget has a position; cascade new items to the right
   React.useEffect(() => {
@@ -100,8 +101,16 @@ export const Dashboard = () => {
                 </div>
               );
             }
+            if (id === 'allPlayerBoards') {
+              return (
+                <div key={id} className="dashboard-item" style={{ left: pos.x, top: pos.y }}>
+                  <AllPlayerBoardsWidget storageKey="allPlayerBoards" dragId={id} onHeaderMouseDown={onHeaderMouseDown} />
+                </div>
+              );
+            }
             if (id.startsWith('board:')) {
               const playerId = id.split(':')[1];
+              if (!playerId) return null;
               const player = boardData[playerId];
               if (!player) return null;
               return (

@@ -4,7 +4,7 @@ Match Management - Match lifecycle, end detection, abandonment
 from datetime import datetime
 from typing import List, Dict
 from .match_state import match_state, db, stats, db_write_queue
-from .utils import generate_match_id, get_account_id
+from .utils import generate_match_id, get_account_id, is_valid_new_player
 from .game_logic import process_and_store_gsi_public_player_state, process_and_store_gsi_private_player_state, emit_realtime_update
 from .config import socketio
 
@@ -98,16 +98,65 @@ def abandon_match(match_id: str, timestamp: datetime, reason: str = "Manual"):
     }, to=None)
 
 
+def cleanup_buffers():
+    """Remove stale entries from buffers that don't qualify for a new match."""
+    # Clean public player buffer - only keep entries valid for new match start
+    cleaned_public = []
+    for gsi_buf_state, buf_time in match_state.public_player_buffer:
+        if is_valid_new_player(gsi_buf_state):
+            cleaned_public.append((gsi_buf_state, buf_time))
+    
+    removed_count = len(match_state.public_player_buffer) - len(cleaned_public)
+    if removed_count > 0:
+        print(f"[BUFFER CLEANUP] Removed {removed_count} stale entries from public_player_buffer")
+    
+    match_state.public_player_buffer = cleaned_public
+    
+    # For private player buffer, keep only the latest entry (private state is simpler)
+    # This prevents accumulation of old private states
+    if len(match_state.private_player_buffer) > 1:
+        # Find the latest by sequence number
+        latest_private = None
+        latest_sequence = -1
+        latest_time = None
+        
+        for gsi_private_state, private_time in match_state.private_player_buffer:
+            private_sequence = gsi_private_state.get('sequence_number', 0)
+            if private_sequence > latest_sequence:
+                latest_sequence = private_sequence
+                latest_private = gsi_private_state
+                latest_time = private_time
+        
+        if latest_private is not None:
+            removed_count = len(match_state.private_player_buffer) - 1
+            if removed_count > 0:
+                print(f"[BUFFER CLEANUP] Removed {removed_count} stale entries from private_player_buffer")
+            match_state.private_player_buffer = [(latest_private, latest_time)]
+
+
 def process_buffered_data(match_id: str, confirmed_players: set, timestamp: datetime):
     """Process buffered data for newly started match."""
+    # Clean buffers first to remove any stale entries
+    cleanup_buffers()
+    
+    # Copy buffers to local variables before clearing to prevent race conditions
+    # This ensures we only process data that was buffered before match started
+    public_buffer = match_state.public_player_buffer[:]
+    private_buffer = match_state.private_player_buffer[:]
+    
+    # Clear buffers immediately to prevent any new data from being mixed in
+    match_state.public_player_buffer = []
+    match_state.private_player_buffer = []
+    
     # Process public player states - find and store latest state for each player in one pass
     latest_public_player_states = {}  # account_id -> (gsi_state, time, sequence)
     
-    for gsi_buf_state, buf_time in match_state.public_player_buffer:
+    for gsi_buf_state, buf_time in public_buffer:
         buf_account_id = get_account_id(gsi_buf_state)
         buf_sequence = gsi_buf_state['sequence_number']
         
-        if buf_account_id in confirmed_players:
+        # Only process if player is confirmed AND data is valid for new match start
+        if buf_account_id in confirmed_players and is_valid_new_player(gsi_buf_state):
             if (buf_account_id not in latest_public_player_states or 
                 buf_sequence > latest_public_player_states[buf_account_id][2]):
                 latest_public_player_states[buf_account_id] = (gsi_buf_state, buf_time, buf_sequence)
@@ -123,7 +172,7 @@ def process_buffered_data(match_id: str, confirmed_players: set, timestamp: date
     latest_private_time = None
     latest_private_sequence = 0
     
-    for gsi_private_state, private_time in match_state.private_player_buffer:
+    for gsi_private_state, private_time in private_buffer:
         private_sequence = gsi_private_state['sequence_number']
         if private_sequence > latest_private_sequence:
             latest_private_sequence = private_sequence
@@ -135,8 +184,4 @@ def process_buffered_data(match_id: str, confirmed_players: set, timestamp: date
         process_and_store_gsi_private_player_state(latest_gsi_private_player_state, latest_private_time)
         match_state.sequences['private_sequence'] = latest_private_sequence
         db_write_queue.put(('insert_snapshot', match_id, 'private_player', latest_gsi_private_player_state, latest_private_time))
-    
-    # Clear both buffers
-    match_state.public_player_buffer = []
-    match_state.private_player_buffer = []
 

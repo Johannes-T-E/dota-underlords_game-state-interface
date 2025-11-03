@@ -5,7 +5,7 @@ from datetime import datetime
 from .match_state import match_state, db, stats, db_write_queue, data_lock
 from .utils import get_account_id, is_valid_new_player
 from .game_logic import process_and_store_gsi_public_player_state, process_and_store_gsi_private_player_state, emit_realtime_update
-from .match_manager import start_new_match, process_buffered_data, check_match_end, abandon_match
+from .match_manager import start_new_match, process_buffered_data, check_match_end, abandon_match, cleanup_buffers
 from .config import socketio, PRIVATE_PLAYER_ACCOUNT_ID
 
 
@@ -149,6 +149,11 @@ def process_gsi_data(gsi_payload):
                     
                     # No active match - collecting candidates
                     if match_state.match_id is None:
+                        # Periodically clean buffers to remove stale entries
+                        # Clean every 10th update to prevent accumulation without being too expensive
+                        if stats['total_updates'] % 10 == 0:
+                            cleanup_buffers()
+                        
                         if is_valid_new_player(gsi_public_player_state) and account_id not in match_state.candidates:
                             match_state.candidates[account_id] = gsi_public_player_state
                             print(f"[CANDIDATE] Player {account_id} ({len(match_state.candidates)}/8)")

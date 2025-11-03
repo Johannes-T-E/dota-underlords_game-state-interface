@@ -10,9 +10,10 @@ export interface ScoreboardWidgetProps {
   storageKey?: string;
   dragId?: string;
   onHeaderDragStart?: (e: React.DragEvent, id: string) => void;
+  onHeaderMouseDown?: (e: React.MouseEvent, id: string) => void;
 }
 
-export const ScoreboardWidget = ({ columnSpan, style, storageKey, dragId, onHeaderDragStart }: ScoreboardWidgetProps) => {
+export const ScoreboardWidget = ({ columnSpan, style, storageKey, dragId, onHeaderDragStart, onHeaderMouseDown }: ScoreboardWidgetProps) => {
   const { settings, updateColumns } = useScoreboardSettings();
 
   return (
@@ -24,6 +25,7 @@ export const ScoreboardWidget = ({ columnSpan, style, storageKey, dragId, onHead
       storageKey={storageKey}
       dragId={dragId}
       onHeaderDragStart={onHeaderDragStart}
+      onHeaderMouseDown={onHeaderMouseDown}
       headerRight={
         <ScoreboardSettings
           config={settings.columns}
