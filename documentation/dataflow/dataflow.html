@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backend Data Flow Diagram - Underlords GSI</title>
+    <link rel="stylesheet" href="dataflow.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@9/dist/mermaid.min.js"></script>
+    <script>
+        // Initialize Mermaid when it loads
+        function initMermaid() {
+            if (typeof mermaid !== 'undefined') {
+                // Load spacing from localStorage or use defaults
+                const nodeSpacing = parseInt(localStorage.getItem('mermaid-nodeSpacing') || '120');
+                const rankSpacing = parseInt(localStorage.getItem('mermaid-rankSpacing') || '200');
+                
+                // Get theme from localStorage or default
+                const savedTheme = localStorage.getItem('dataflow-theme') || 'light';
+                const theme = savedTheme === 'dark' ? 'dark' : 'default';
+                
+                mermaid.initialize({ 
+                    startOnLoad: false,
+                    theme: theme,
+                    flowchart: {
+                        useMaxWidth: true,
+                        htmlLabels: true,
+                        curve: 'basis',
+                        nodeSpacing: nodeSpacing,
+                        rankSpacing: rankSpacing
+                    }
+                });
+                window.mermaid = mermaid;
+                window.mermaidReady = true;
+                window.mermaidNodeSpacing = nodeSpacing;
+                window.mermaidRankSpacing = rankSpacing;
+                console.log('Mermaid initialized successfully');
+            } else {
+                console.error('Mermaid not loaded');
+            }
+        }
+        
+        // Function to update Mermaid configuration
+        window.updateMermaidSpacing = function(nodeSpacing, rankSpacing) {
+            if (window.mermaid) {
+                // Get current theme (check localStorage or default)
+                const currentTheme = localStorage.getItem('dataflow-theme') || 'light';
+                const theme = currentTheme === 'dark' ? 'dark' : 'default';
+                
+                window.mermaid.initialize({ 
+                    startOnLoad: false,
+                    theme: theme,
+                    flowchart: {
+                        useMaxWidth: true,
+                        htmlLabels: true,
+                        curve: 'basis',
+                        nodeSpacing: nodeSpacing,
+                        rankSpacing: rankSpacing
+                    }
+                });
+                window.mermaidNodeSpacing = nodeSpacing;
+                window.mermaidRankSpacing = rankSpacing;
+                localStorage.setItem('mermaid-nodeSpacing', nodeSpacing.toString());
+                localStorage.setItem('mermaid-rankSpacing', rankSpacing.toString());
+            }
+        };
+        
+        // Try to initialize immediately or wait for load
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initMermaid);
+        } else {
+            // If script loads after DOM, use setTimeout to ensure mermaid is available
+            setTimeout(initMermaid, 100);
+        }
+        
+        // Also try on window load
+        window.addEventListener('load', () => {
+            if (!window.mermaidReady) {
+                initMermaid();
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div>
+                    <h1>Underlords GSI - Backend Data Flow Diagram</h1>
+                    <p class="subtitle">Interactive visualization of how GSI data flows through the backend system</p>
+                </div>
+                <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="view-selector">
+            <button class="view-btn active" data-view="overview">Overview</button>
+            <button class="view-btn" data-view="detailed">Detailed</button>
+            <button class="view-btn" data-view="no-match">No Match State</button>
+            <button class="view-btn" data-view="active-match">Active Match</button>
+            <button class="view-btn" data-view="private-public">Private vs Public</button>
+            <button class="view-btn" data-view="gsi-processor">GSI Processor</button>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <button id="resetBtn" class="btn">Reset View</button>
+                <button id="zoomInBtn" class="btn">Zoom In</button>
+                <button id="zoomOutBtn" class="btn">Zoom Out</button>
+                <span id="zoomIndicator" class="zoom-indicator">100%</span>
+            </div>
+            <div class="spacing-controls">
+                <label for="nodeSpacing" class="spacing-label">Node Spacing:</label>
+                <input type="number" id="nodeSpacing" class="spacing-input" value="120" step="10">
+                <label for="rankSpacing" class="spacing-label">Rank Spacing:</label>
+                <input type="number" id="rankSpacing" class="spacing-input" value="200" step="20">
+                <label for="arrowThickness" class="spacing-label">Arrow Thickness:</label>
+                <input type="number" id="arrowThickness" class="spacing-input" value="4" step="0.5" min="0.5">
+                <label for="orientation" class="spacing-label">Orientation:</label>
+                <select id="orientation" class="spacing-select">
+                    <option value="horizontal">Horizontal</option>
+                    <option value="vertical">Vertical</option>
+                </select>
+                <button id="applySpacingBtn" class="btn">Apply Settings</button>
+            </div>
+            <div class="legend">
+                <h3>Legend</h3>
+                <div class="legend-items">
+                    <div class="legend-item">
+                        <div class="legend-color entry-color"></div>
+                        <span>Entry Point</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color http-color"></div>
+                        <span>HTTP Layer</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color process-color"></div>
+                        <span>Processing</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color decision-color"></div>
+                        <span>Decision Point</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color buffer-color"></div>
+                        <span>Buffering</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color storage-color"></div>
+                        <span>Storage</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color delivery-color"></div>
+                        <span>Delivery</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color lifecycle-color"></div>
+                        <span>Match Lifecycle</span>
+                    </div>
+                </div>
+                <div class="legend-section" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-color);">
+                    <h4 style="margin: 0 0 10px 0; font-size: 0.9em;">Line Colors</h4>
+                    <div class="legend-items">
+                        <div class="legend-item">
+                            <div class="legend-line legend-line-yes"></div>
+                            <span>"Yes" Decision Path</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-line legend-line-no"></div>
+                            <span>"No" Decision Path</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-line legend-line-write"></div>
+                            <span>Write Operation</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-line legend-line-read"></div>
+                            <span>Read Operation</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-line legend-line-async-db"></div>
+                            <span>Async DB Write</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="canvas-container" id="canvasContainer">
+            <div class="canvas-wrapper" id="canvasWrapper">
+                <div class="mermaid-container" id="mermaidContainer">
+                    <div class="loading-spinner" id="loadingSpinner">
+                        <div class="spinner"></div>
+                        <p>Loading diagram...</p>
+                    </div>
+                    <div class="mermaid" id="dataflow-diagram"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="detailsPanel" class="details-panel">
+            <div class="panel-header">
+                <h2>Component Details</h2>
+                <button id="closePanel" class="close-btn">&times;</button>
+            </div>
+            <div id="panelContent" class="panel-content">
+                <p>Click on a node to see detailed information</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="dataflow.js"></script>
+</body>
+</html>

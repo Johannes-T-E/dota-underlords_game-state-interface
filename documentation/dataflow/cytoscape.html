@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backend Data Flow Diagram - Cytoscape - Underlords GSI</title>
+    <link rel="stylesheet" href="cytoscape.css">
+    <script src="https://unpkg.com/cytoscape@3.27.0/dist/cytoscape.min.js"></script>
+    <script src="https://unpkg.com/dagre@0.8.5/dist/dagre.min.js"></script>
+    <script src="https://unpkg.com/cytoscape-dagre@2.5.0/cytoscape-dagre.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div>
+                    <h1>Underlords GSI - Backend Data Flow Diagram</h1>
+                    <p class="subtitle">Interactive visualization of how GSI data flows through the backend system (Cytoscape.js)</p>
+                </div>
+                <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="view-selector">
+            <button class="view-btn active" data-view="gsi-processor">GSI Processor</button>
+        </div>
+
+        <div class="controls">
+                <div class="control-group">
+                    <button id="resetBtn" class="btn">Reset View</button>
+                    <button id="zoomInBtn" class="btn">Zoom In</button>
+                    <button id="zoomOutBtn" class="btn">Zoom Out</button>
+                    <span id="zoomIndicator" class="zoom-indicator">100%</span>
+                    <button id="fullscreenBtn" class="btn">Fullscreen</button>
+                    <button id="exportBtn" class="btn">Export Image</button>
+                </div>
+            <div class="spacing-controls">
+                <label for="nodeSpacing" class="spacing-label">Node Spacing:</label>
+                <input type="number" id="nodeSpacing" class="spacing-input" value="120" step="10">
+                <label for="rankSpacing" class="spacing-label">Rank Spacing:</label>
+                <input type="number" id="rankSpacing" class="spacing-input" value="200" step="20">
+                <label for="arrowThickness" class="spacing-label">Arrow Thickness:</label>
+                <input type="number" id="arrowThickness" class="spacing-input" value="4" step="0.5" min="0.5">
+                <label for="arrowShape" class="spacing-label">Arrow Shape:</label>
+                <select id="arrowShape" class="spacing-select">
+                    <option value="triangle">Triangle</option>
+                    <option value="triangle-tee">Triangle Tee</option>
+                    <option value="triangle-cross">Triangle Cross</option>
+                    <option value="triangle-backcurve">Triangle Backcurve</option>
+                    <option value="vee">Vee</option>
+                    <option value="tee">Tee</option>
+                    <option value="square">Square</option>
+                    <option value="circle">Circle</option>
+                    <option value="diamond">Diamond</option>
+                    <option value="none">None</option>
+                </select>
+                <label for="arrowScale" class="spacing-label">Arrow Scale:</label>
+                <input type="number" id="arrowScale" class="spacing-input" value="1" step="0.1" min="0.5" max="3">
+                <label for="orientation" class="spacing-label">Orientation:</label>
+                <select id="orientation" class="spacing-select">
+                    <option value="LR">Horizontal</option>
+                    <option value="TB">Vertical</option>
+                </select>
+                <button id="applySpacingBtn" class="btn">Apply Settings</button>
+            </div>
+            <div class="legend">
+                <h3>Legend</h3>
+                <div class="legend-items">
+                    <div class="legend-item">
+                        <div class="legend-color entry-color"></div>
+                        <span>Entry Point</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color process-color"></div>
+                        <span>Processing</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color decision-color"></div>
+                        <span>Decision Point</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color buffer-color"></div>
+                        <span>Buffering</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color storage-color"></div>
+                        <span>Storage</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color delivery-color"></div>
+                        <span>Delivery</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color end-state-color"></div>
+                        <span>End State</span>
+                    </div>
+                </div>
+                <div class="legend-section" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-color);">
+                    <h4 style="margin: 0 0 10px 0; font-size: 0.9em;">Line Colors</h4>
+                    <div class="legend-items">
+                        <div class="legend-item">
+                            <div class="legend-line legend-line-yes"></div>
+                            <span>"Yes" Decision Path</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-line legend-line-no"></div>
+                            <span>"No" Decision Path</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-line legend-line-write"></div>
+                            <span>Write Operation</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-line legend-line-read"></div>
+                            <span>Read Operation</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-line legend-line-async-db"></div>
+                            <span>Async DB Write</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="canvas-container" id="canvasContainer">
+            <div class="canvas-wrapper" id="canvasWrapper">
+                <div id="cytoscape-container" style="width: 100%; height: 800px;"></div>
+                <div class="loading-spinner" id="loadingSpinner">
+                    <div class="spinner"></div>
+                    <p>Loading diagram...</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="detailsPanel" class="details-panel">
+            <div class="panel-header">
+                <h2>Component Details</h2>
+                <button id="closePanel" class="close-btn">&times;</button>
+            </div>
+            <div id="panelContent" class="panel-content">
+                <p>Click on a node to see detailed information</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="cytoscape.js"></script>
+</body>
+</html>
+
