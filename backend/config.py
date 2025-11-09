@@ -7,7 +7,7 @@ from flask_socketio import SocketIO
 from flask_cors import CORS
 
 # Configuration from environment variables
-DEBUG = os.getenv('DEBUG', 'true').lower() == 'true'
+DEBUG = os.getenv('DEBUG', 'false').lower() == 'true'
 SECRET_KEY = os.getenv('SECRET_KEY', 'underlords_gsi_secret_key')
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
 

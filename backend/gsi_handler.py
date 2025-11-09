@@ -1,11 +1,15 @@
 """
-GSI Data Processing - Main GSI data processor and database writer worker
+GSI Handler - GSI data processing and database writer
+Handles incoming GSI payloads and delegates to game_state for processing
 """
 from datetime import datetime
-from .match_state import match_state, db, stats, db_write_queue, data_lock
-from .utils import get_account_id, is_valid_new_player
-from .game_logic import process_and_store_gsi_public_player_state, process_and_store_gsi_private_player_state, emit_realtime_update
-from .match_manager import start_new_match, process_buffered_data, check_match_end, abandon_match, cleanup_buffers
+from .game_state import (
+    match_state, db, stats, db_write_queue, data_lock,
+    process_and_store_gsi_public_player_state, process_and_store_gsi_private_player_state,
+    emit_realtime_update, start_new_match, process_buffered_data, check_match_end,
+    abandon_match
+)
+from .utils import generate_bot_account_id, is_valid_new_player
 from .config import socketio, PRIVATE_PLAYER_ACCOUNT_ID
 
 
@@ -22,12 +26,14 @@ def db_writer_worker():
                 task_type = task[0]
                 
                 if task_type == 'insert_snapshot':
-                    # Original insert task: (task_type, match_id, account_id, player_data, timestamp)
-                    _, match_id, account_id, player_data, timestamp = task
-                    if account_id == 'private_player':
-                        db.insert_private_snapshot(match_id, player_data, timestamp)
-                    else:
-                        db.insert_public_snapshot(match_id, account_id, player_data, timestamp)
+                    # New insert task: (task_type, match_id, player_category, account_id, player_data, timestamp)
+                    _, match_id, player_category, account_id, player_data, timestamp = task
+                    try:
+                        snapshot_id = db.insert_snapshot(match_id, player_category, account_id, player_data, timestamp)
+                        print(f"[DB Writer] Inserted {player_category} snapshot {snapshot_id} for match {match_id}, player {account_id}")
+                    except Exception as e:
+                        print(f"[DB Writer] Failed to insert snapshot: {e}")
+                        raise
                 
                 elif task_type == 'update_final_place':
                     # Update final place task: (task_type, match_id, account_id, final_place)
@@ -137,84 +143,103 @@ def process_private_player_state(gsi_private_player_state, timestamp):
     Returns:
         bool: True if update occurred (state was processed for active match), False otherwise
     """
+    # No active match - buffer private state separately
+    if match_state.match_id is None:
+        match_state.private_player_buffer.append((gsi_private_player_state, timestamp))
+        return False
+    
+    # Active match mode
     private_player_sequence_num = gsi_private_player_state['sequence_number']
     
     # Skip if same or older sequence number
     if 'private_sequence' in match_state.sequences and match_state.sequences['private_sequence'] >= private_player_sequence_num:
         return False
     
-    # No active match - buffer private state separately
-    if match_state.match_id is None:
-        match_state.private_player_buffer.append((gsi_private_player_state, timestamp))
-        return False
-    
     # Active match - update memory and store in DB
     # Update sequence tracker
     match_state.sequences['private_sequence'] = private_player_sequence_num
     
-    # Update in-memory state
-    process_and_store_gsi_private_player_state(gsi_private_player_state, timestamp)
+    # Update in-memory state and get processed data
+    processed_private_state = process_and_store_gsi_private_player_state(gsi_private_player_state, timestamp)
     
-    # Queue for DB write (private state)
-    db_write_queue.put(('insert_snapshot', match_state.match_id, 'private_player', gsi_private_player_state, timestamp))
+    # Queue for DB write (private state) - use processed data
+    db_write_queue.put(('insert_snapshot', match_state.match_id, 'private_player', None, processed_private_state, timestamp))
+    print(f"[GSI] Queued private snapshot for match {match_state.match_id}, queue size: {db_write_queue.qsize()}")
     
     return True
 
 
-def process_public_player_state_no_match(gsi_public_player_state, timestamp):
+def process_public_player_state(gsi_public_player_state, timestamp):
     """
-    Handle public player state when no match is active.
-    Collects candidates, buffers data, and starts match when 8 candidates are found.
+    Process public player state - handles both buffering and active match.
     
     Returns:
-        bool: True if match was started, False otherwise
+        bool: True if update occurred (state was processed), False otherwise
     """
-    account_id = get_account_id(gsi_public_player_state)
+    # Get account_id - for bots generate it, for humans use raw data
+    is_human = gsi_public_player_state.get('is_human_player')
+    if is_human is False:
+        # Bot player - generate account_id
+        account_id = generate_bot_account_id(gsi_public_player_state)
+    else:
+        # Human player - use account_id directly from raw data
+        account_id = gsi_public_player_state.get('account_id')
     
-    # Periodically clean buffers to remove stale entries
-    # Clean every 10th update to prevent accumulation without being too expensive
-    if stats['total_updates'] % 10 == 0:
-        cleanup_buffers()
-    
-    # Collect candidates
-    if is_valid_new_player(gsi_public_player_state) and account_id not in match_state.candidates:
-        match_state.candidates[account_id] = gsi_public_player_state
-        print(f"[CANDIDATE] Player {account_id} ({len(match_state.candidates)}/8)")
-    
-    # Buffer public state if valid
-    if is_valid_new_player(gsi_public_player_state):
-        match_state.public_player_buffer.append((gsi_public_player_state, timestamp))
-    
-    # Start match when we have 8 valid candidates
-    if len(match_state.candidates) == 8:
-        confirmed = list(match_state.candidates.keys())
-        match_players_data = [match_state.candidates[p] for p in confirmed]
+    # No active match - buffering mode
+    if match_state.match_id is None:
+        # Validate each object individually - discard invalid data silently
+        if not is_valid_new_player(gsi_public_player_state):
+            return False  # Discard invalid data, don't ban player
         
-        # Start new match
-        match_id = start_new_match(match_players_data, timestamp)
+        # Check current unique players before adding
+        unique_players_before = set(acc_id for _, _, acc_id in match_state.public_player_buffer)
+        is_new_player = account_id not in unique_players_before
         
-        # Process buffered data
-        process_buffered_data(match_id, set(confirmed), timestamp)
+        # Add valid data to buffer (with account_id for tracking unique players)
+        match_state.public_player_buffer.append((gsi_public_player_state, timestamp, account_id))
         
-        # Emit initial state
-        emit_realtime_update()
+        # Check for 8 unique players in buffer
+        unique_players = set(acc_id for _, _, acc_id in match_state.public_player_buffer)
+        unique_count = len(unique_players)
         
-        # Clear candidates
-        match_state.candidates = {}
+        # Log buffering progress
+        if is_new_player:
+            print(f"[BUFFER] New player found: {account_id} ({unique_count}/8 unique players in buffer, {len(match_state.public_player_buffer)} total entries)")
+        else:
+            print(f"[BUFFER] Update for existing player: {account_id} ({unique_count}/8 unique players in buffer, {len(match_state.public_player_buffer)} total entries)")
         
-        return True
+        if unique_count == 8:
+            print(f"[BUFFER] Match detected! Found 8 unique players. Processing buffer...")
+            # Match detected - extract latest state for each of the 8 players
+            # Build dict of latest state per player (by sequence number)
+            latest_states = {}  # account_id -> (gsi_state, timestamp, sequence)
+            
+            for gsi_state, buf_timestamp, buf_account_id in match_state.public_player_buffer:
+                sequence = gsi_state.get('sequence_number', 0)
+                if (buf_account_id not in latest_states or 
+                    sequence > latest_states[buf_account_id][2]):
+                    latest_states[buf_account_id] = (gsi_state, buf_timestamp, sequence)
+            
+            # Extract confirmed players and their data
+            confirmed_players = list(unique_players)
+            match_players_data = [latest_states[acc_id][0] for acc_id in confirmed_players]
+            
+            print(f"[BUFFER] Starting match with players: {confirmed_players}")
+            
+            # Start new match
+            match_id = start_new_match(match_players_data, timestamp)
+            
+            # Process all buffered data for the confirmed players
+            process_buffered_data(match_id, timestamp)
+            
+            # Emit initial state
+            emit_realtime_update()
+            
+            return True
+        
+        return False
     
-    return False
-
-
-def process_public_player_state_active_match(account_id, gsi_public_player_state, timestamp):
-    """
-    Handle public player state when match is active.
-    Detects abandonment, updates state, and checks for match end.
-    
-    Returns:
-        bool: True if update occurred, False otherwise
-    """
+    # Active match mode
     sequence_num = gsi_public_player_state['sequence_number']
     
     # Skip if same or older sequence number
@@ -242,11 +267,12 @@ def process_public_player_state_active_match(account_id, gsi_public_player_state
     # Update sequence tracker
     match_state.sequences[account_id] = sequence_num
     
-    # Update in-memory state
-    process_and_store_gsi_public_player_state(account_id, gsi_public_player_state, timestamp)
+    # Update in-memory state and get processed data
+    processed_public_state = process_and_store_gsi_public_player_state(account_id, gsi_public_player_state, timestamp)
     
-    # Queue for DB write
-    db_write_queue.put(('insert_snapshot', match_state.match_id, account_id, gsi_public_player_state, timestamp))
+    # Queue for DB write - use processed data
+    db_write_queue.put(('insert_snapshot', match_state.match_id, 'public_player', account_id, processed_public_state, timestamp))
+    print(f"[GSI] Queued public snapshot for player {account_id}, match {match_state.match_id}, queue size: {db_write_queue.qsize()}")
     
     # Check for match end
     final_place = gsi_public_player_state.get('final_place', 0)
@@ -289,17 +315,8 @@ def process_gsi_data(gsi_payload):
         
         # Process all public player states
         for gsi_public_player_state, state_timestamp in gsi_public_player_states:
-            account_id = get_account_id(gsi_public_player_state)
-            
-            if match_state.match_id is None:
-                # No active match - collect candidates and start match if ready
-                if process_public_player_state_no_match(gsi_public_player_state, state_timestamp):
-                    # Match was started, subsequent states will be handled in active match mode
-                    any_updates = True
-            else:
-                # Active match - update state and check for match end
-                if process_public_player_state_active_match(account_id, gsi_public_player_state, state_timestamp):
-                    any_updates = True
+            if process_public_player_state(gsi_public_player_state, state_timestamp):
+                any_updates = True
         
         # Emit WebSocket update if there were updates
         if any_updates and match_state.match_id:

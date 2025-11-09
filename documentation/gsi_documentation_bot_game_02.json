@@ -1,0 +1,1354 @@
+{
+  "timestamp": "2025-11-06T13:27:49.033123",
+  "total_samples": 444,
+  "field_count": 117,
+  "parent_instance_counts": {
+    "block": 838,
+    "block.data": 3605,
+    "block.data.public_player_state": 2847,
+    "block.data.public_player_state.board_buddy": 2847,
+    "block.data.public_player_state.player_loadout": 39416,
+    "block.data.private_player_state": 758,
+    "block.data.private_player_state.shop_units": 3790,
+    "block.data.public_player_state.units": 29556,
+    "block.data.public_player_state.units.position": 29556,
+    "block.data.public_player_state.synergies": 29171,
+    "block.data.public_player_state.prop_state": 65,
+    "block.data.private_player_state.challenges": 42340,
+    "block.data.public_player_state.item_slots": 11251,
+    "block.data.private_player_state.oldest_unclaimed_reward": 18,
+    "block.data.private_player_state.oldest_unclaimed_reward.choices": 54,
+    "block.data.private_player_state.underlord_picker_offering": 4
+  },
+  "structure": {
+    "block": {
+      "type": "array",
+      "presence_percentage": 100.0,
+      "frequency": 444,
+      "examples": [],
+      "array_lengths": [
+        1,
+        1,
+        143,
+        72,
+        99,
+        77,
+        80,
+        53,
+        147,
+        99
+      ],
+      "description": "Root array containing game state blocks",
+      "children": {
+        "data": {
+          "type": "array",
+          "presence_percentage": 100.0,
+          "frequency": 838,
+          "examples": [],
+          "array_lengths": [
+            9,
+            2,
+            7,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          "description": "Array of player data objects",
+          "children": {
+            "public_player_state": {
+              "type": "object",
+              "presence_percentage": 79.0,
+              "frequency": 2847,
+              "examples": [],
+              "description": "Public player state information",
+              "children": {
+                "player_slot": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    3,
+                    4,
+                    6,
+                    2,
+                    1
+                  ]
+                },
+                "account_id": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    0,
+                    249722568
+                  ]
+                },
+                "connection_status": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    1
+                  ]
+                },
+                "is_human_player": {
+                  "type": "boolean",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    false,
+                    true
+                  ]
+                },
+                "health": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    100,
+                    96,
+                    98,
+                    99,
+                    93
+                  ]
+                },
+                "gold": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    5,
+                    0,
+                    1,
+                    2,
+                    4
+                  ]
+                },
+                "level": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    1,
+                    2,
+                    3,
+                    5,
+                    4
+                  ]
+                },
+                "xp": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4
+                  ]
+                },
+                "item_slots": {
+                  "type": "array",
+                  "presence_percentage": 96.7,
+                  "frequency": 2752,
+                  "examples": [],
+                  "array_lengths": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                  ],
+                  "children": {
+                    "slot_index": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 11251,
+                      "examples": [
+                        0,
+                        1,
+                        2,
+                        3,
+                        4
+                      ]
+                    },
+                    "item_id": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 11251,
+                      "examples": [
+                        10104,
+                        10101,
+                        10200,
+                        10109,
+                        10100
+                      ]
+                    },
+                    "assigned_unit_entindex": {
+                      "type": "integer",
+                      "presence_percentage": 87.4,
+                      "frequency": 9834,
+                      "examples": [
+                        62,
+                        8,
+                        14,
+                        32,
+                        46
+                      ]
+                    }
+                  }
+                },
+                "units": {
+                  "type": "array",
+                  "presence_percentage": 91.8,
+                  "frequency": 2613,
+                  "examples": [],
+                  "array_lengths": [
+                    3,
+                    3,
+                    3,
+                    3,
+                    3,
+                    3,
+                    4,
+                    3,
+                    4,
+                    3
+                  ],
+                  "children": {
+                    "entindex": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 29556,
+                      "examples": [
+                        8,
+                        10,
+                        12,
+                        14,
+                        16
+                      ]
+                    },
+                    "unit_id": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 29556,
+                      "examples": [
+                        15,
+                        132,
+                        6,
+                        41,
+                        113
+                      ]
+                    },
+                    "position": {
+                      "type": "object",
+                      "presence_percentage": 100.0,
+                      "frequency": 29556,
+                      "examples": [],
+                      "children": {
+                        "x": {
+                          "type": "integer",
+                          "presence_percentage": 100.0,
+                          "frequency": 29556,
+                          "examples": [
+                            4,
+                            3,
+                            6,
+                            0,
+                            1
+                          ]
+                        },
+                        "y": {
+                          "type": "integer",
+                          "presence_percentage": 100.0,
+                          "frequency": 29556,
+                          "examples": [
+                            3,
+                            0,
+                            2,
+                            1,
+                            -1
+                          ]
+                        }
+                      }
+                    },
+                    "rank": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 29556,
+                      "examples": [
+                        1,
+                        2,
+                        0,
+                        3,
+                        4
+                      ]
+                    },
+                    "gold_value": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 29556,
+                      "examples": [
+                        2,
+                        1,
+                        3,
+                        4,
+                        0
+                      ]
+                    },
+                    "kill_count": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 29556,
+                      "examples": [
+                        0,
+                        1,
+                        2,
+                        3,
+                        4
+                      ]
+                    },
+                    "kill_streak": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 29556,
+                      "examples": [
+                        0,
+                        2,
+                        1,
+                        3,
+                        5
+                      ]
+                    },
+                    "keywords": {
+                      "type": "array",
+                      "presence_percentage": 91.0,
+                      "frequency": 26883,
+                      "examples": [],
+                      "array_lengths": [
+                        2,
+                        2,
+                        2,
+                        3,
+                        2,
+                        2,
+                        2,
+                        2,
+                        2,
+                        2
+                      ],
+                      "children": {}
+                    },
+                    "duel_bonus_damage": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 29556,
+                      "examples": [
+                        0,
+                        5,
+                        8,
+                        16,
+                        10
+                      ]
+                    },
+                    "unit_cap_cost": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 29556,
+                      "examples": [
+                        1,
+                        0
+                      ]
+                    },
+                    "is_placeable_item": {
+                      "type": "boolean",
+                      "presence_percentage": 3.0,
+                      "frequency": 890,
+                      "examples": [
+                        true
+                      ]
+                    },
+                    "can_move_to_bench": {
+                      "type": "boolean",
+                      "presence_percentage": 100.0,
+                      "frequency": 29556,
+                      "examples": [
+                        true
+                      ]
+                    },
+                    "can_be_sold": {
+                      "type": "boolean",
+                      "presence_percentage": 100.0,
+                      "frequency": 29556,
+                      "examples": [
+                        true
+                      ]
+                    },
+                    "recommended_for_placement": {
+                      "type": "boolean",
+                      "presence_percentage": 100.0,
+                      "frequency": 29556,
+                      "examples": [
+                        false,
+                        true
+                      ]
+                    },
+                    "float_kill_count": {
+                      "type": "float",
+                      "presence_percentage": 100.0,
+                      "frequency": 29556,
+                      "examples": [
+                        0.0,
+                        1.0,
+                        2.0,
+                        3.0,
+                        4.25
+                      ]
+                    }
+                  }
+                },
+                "final_place": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    0,
+                    8,
+                    7,
+                    6,
+                    5
+                  ]
+                },
+                "next_level_xp": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    1,
+                    5,
+                    20,
+                    15,
+                    25
+                  ]
+                },
+                "synergies": {
+                  "type": "array",
+                  "presence_percentage": 99.4,
+                  "frequency": 2829,
+                  "examples": [],
+                  "array_lengths": [
+                    5,
+                    7,
+                    6,
+                    4,
+                    5,
+                    5,
+                    7,
+                    5,
+                    7,
+                    5
+                  ],
+                  "children": {
+                    "keyword": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 29171,
+                      "examples": [
+                        15,
+                        34,
+                        39,
+                        45,
+                        47
+                      ]
+                    },
+                    "unique_unit_count": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 29171,
+                      "examples": [
+                        1,
+                        2,
+                        0,
+                        3,
+                        4
+                      ]
+                    },
+                    "bench_additional_unique_unit_count": {
+                      "type": "integer",
+                      "presence_percentage": 23.0,
+                      "frequency": 6706,
+                      "examples": [
+                        1,
+                        2,
+                        3
+                      ]
+                    }
+                  }
+                },
+                "bot_persona_name": {
+                  "type": "string",
+                  "presence_percentage": 73.4,
+                  "frequency": 2089,
+                  "examples": [
+                    "#DAC_BotName_41",
+                    "#DAC_BotName_44",
+                    "#DAC_BotName_67",
+                    "#DAC_BotName_68",
+                    "#DAC_BotName_24"
+                  ]
+                },
+                "sequence_number": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    2,
+                    3,
+                    18,
+                    20,
+                    6
+                  ]
+                },
+                "shop_cost_modifier": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    0
+                  ]
+                },
+                "combat_duration": {
+                  "type": "float",
+                  "presence_percentage": 91.2,
+                  "frequency": 2597,
+                  "examples": [
+                    29.0,
+                    38.9,
+                    24.3,
+                    26.55,
+                    25.85
+                  ]
+                },
+                "reroll_cost_modifier": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    0
+                  ]
+                },
+                "opponent_player_slot": {
+                  "type": "integer",
+                  "presence_percentage": 70.0,
+                  "frequency": 1993,
+                  "examples": [
+                    8,
+                    7,
+                    2,
+                    6,
+                    5
+                  ]
+                },
+                "win_streak": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4
+                  ]
+                },
+                "lose_streak": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4
+                  ]
+                },
+                "rank_tier": {
+                  "type": "integer",
+                  "presence_percentage": 26.6,
+                  "frequency": 758,
+                  "examples": [
+                    70
+                  ]
+                },
+                "disconnected_time": {
+                  "type": "float",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    0.0
+                  ]
+                },
+                "vs_opponent_wins": {
+                  "type": "integer",
+                  "presence_percentage": 62.8,
+                  "frequency": 1787,
+                  "examples": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4
+                  ]
+                },
+                "vs_opponent_losses": {
+                  "type": "integer",
+                  "presence_percentage": 62.8,
+                  "frequency": 1787,
+                  "examples": [
+                    1,
+                    0,
+                    2,
+                    3,
+                    4
+                  ]
+                },
+                "vs_opponent_draws": {
+                  "type": "integer",
+                  "presence_percentage": 62.8,
+                  "frequency": 1787,
+                  "examples": [
+                    0,
+                    1
+                  ]
+                },
+                "platform": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    0,
+                    1
+                  ]
+                },
+                "event_tier": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    0,
+                    235
+                  ]
+                },
+                "persona_name": {
+                  "type": "string",
+                  "presence_percentage": 26.6,
+                  "frequency": 758,
+                  "examples": [
+                    "Kælle"
+                  ]
+                },
+                "wins": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4
+                  ]
+                },
+                "losses": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4
+                  ]
+                },
+                "player_loadout": {
+                  "type": "array",
+                  "presence_percentage": 26.6,
+                  "frequency": 758,
+                  "examples": [],
+                  "array_lengths": [
+                    52,
+                    52,
+                    52,
+                    52,
+                    52,
+                    52,
+                    52,
+                    52,
+                    52,
+                    52
+                  ],
+                  "children": {
+                    "slot": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 39416,
+                      "examples": [
+                        0,
+                        4,
+                        9,
+                        11,
+                        12
+                      ]
+                    },
+                    "sub_slot": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 39416,
+                      "examples": [
+                        0,
+                        59650,
+                        64007,
+                        64513,
+                        65024
+                      ]
+                    },
+                    "def_index": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 39416,
+                      "examples": [
+                        100049,
+                        100053,
+                        100050,
+                        100059,
+                        100058
+                      ]
+                    }
+                  }
+                },
+                "net_worth": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    5,
+                    10,
+                    11,
+                    17,
+                    16
+                  ]
+                },
+                "combat_result": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    0,
+                    2,
+                    1
+                  ]
+                },
+                "lobby_team": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    2,
+                    3,
+                    5,
+                    1,
+                    0
+                  ]
+                },
+                "underlord_selected_talents": {
+                  "type": "array",
+                  "presence_percentage": 70.2,
+                  "frequency": 1999,
+                  "examples": [],
+                  "array_lengths": [
+                    2,
+                    2,
+                    2,
+                    2,
+                    2,
+                    2,
+                    2,
+                    2,
+                    2,
+                    2
+                  ],
+                  "children": {}
+                },
+                "is_mirrored_match": {
+                  "type": "boolean",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    false,
+                    true
+                  ]
+                },
+                "underlord": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    0,
+                    3,
+                    4,
+                    1,
+                    2
+                  ]
+                },
+                "board_unit_limit": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    3,
+                    5,
+                    4,
+                    6,
+                    7
+                  ]
+                },
+                "combat_type": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    0,
+                    3,
+                    2,
+                    1
+                  ]
+                },
+                "board_buddy": {
+                  "type": "object",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [],
+                  "children": {
+                    "desired_pos_x": {
+                      "type": "float",
+                      "presence_percentage": 100.0,
+                      "frequency": 2847,
+                      "examples": [
+                        0.0
+                      ]
+                    },
+                    "desired_pos_y": {
+                      "type": "float",
+                      "presence_percentage": 100.0,
+                      "frequency": 2847,
+                      "examples": [
+                        0.0
+                      ]
+                    }
+                  }
+                },
+                "prop_state": {
+                  "type": "array",
+                  "presence_percentage": 1.0,
+                  "frequency": 28,
+                  "examples": [],
+                  "array_lengths": [
+                    1,
+                    1,
+                    2,
+                    2,
+                    3,
+                    2,
+                    3,
+                    2,
+                    3,
+                    2
+                  ],
+                  "children": {
+                    "prop_idx": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 65,
+                      "examples": [
+                        7,
+                        5,
+                        4
+                      ]
+                    },
+                    "num_clicks": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 65,
+                      "examples": [
+                        1,
+                        2
+                      ]
+                    }
+                  }
+                },
+                "brawny_kills_float": {
+                  "type": "float",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    0.0,
+                    1.0,
+                    3.0,
+                    4.0,
+                    2.0
+                  ]
+                },
+                "owns_event": {
+                  "type": "boolean",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    false,
+                    true
+                  ]
+                },
+                "city_prestige_level": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    0
+                  ]
+                },
+                "stat_best_victory_duration": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    0
+                  ]
+                },
+                "stat_best_victory_net_worth": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    0
+                  ]
+                },
+                "stat_best_victory_remaining_health_percent": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    0
+                  ]
+                },
+                "stat_best_victory_units": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    0
+                  ]
+                },
+                "stat_prev_victory_duration": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    0
+                  ]
+                },
+                "stat_prev_victory_net_worth": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    0
+                  ]
+                },
+                "stat_prev_victory_units": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 2847,
+                  "examples": [
+                    0
+                  ]
+                }
+              }
+            },
+            "private_player_state": {
+              "type": "object",
+              "presence_percentage": 21.0,
+              "frequency": 758,
+              "examples": [],
+              "description": "Private player state information",
+              "children": {
+                "player_slot": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 758,
+                  "examples": [
+                    1
+                  ]
+                },
+                "unclaimed_reward_count": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 758,
+                  "examples": [
+                    0,
+                    1
+                  ]
+                },
+                "oldest_unclaimed_reward": {
+                  "type": "object",
+                  "presence_percentage": 2.4,
+                  "frequency": 18,
+                  "examples": [],
+                  "children": {
+                    "reward_id": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 18,
+                      "examples": [
+                        6,
+                        14,
+                        17,
+                        32,
+                        33
+                      ]
+                    },
+                    "choices": {
+                      "type": "array",
+                      "presence_percentage": 100.0,
+                      "frequency": 18,
+                      "examples": [],
+                      "array_lengths": [
+                        3,
+                        3,
+                        3,
+                        3,
+                        3,
+                        3,
+                        3,
+                        3,
+                        3,
+                        3
+                      ],
+                      "children": {
+                        "item_id": {
+                          "type": "integer",
+                          "presence_percentage": 100.0,
+                          "frequency": 54,
+                          "examples": [
+                            10100,
+                            10103,
+                            10106,
+                            10116,
+                            10118
+                          ]
+                        },
+                        "available": {
+                          "type": "boolean",
+                          "presence_percentage": 100.0,
+                          "frequency": 54,
+                          "examples": [
+                            true
+                          ]
+                        }
+                      }
+                    }
+                  }
+                },
+                "shop_locked": {
+                  "type": "boolean",
+                  "presence_percentage": 100.0,
+                  "frequency": 758,
+                  "examples": [
+                    false,
+                    true
+                  ]
+                },
+                "shop_units": {
+                  "type": "array",
+                  "presence_percentage": 100.0,
+                  "frequency": 758,
+                  "examples": [],
+                  "array_lengths": [
+                    5,
+                    5,
+                    5,
+                    5,
+                    5,
+                    5,
+                    5,
+                    5,
+                    5,
+                    5
+                  ],
+                  "children": {
+                    "unit_id": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 3790,
+                      "examples": [
+                        -1,
+                        20,
+                        112,
+                        13,
+                        5
+                      ]
+                    },
+                    "will_combine_two_stars": {
+                      "type": "boolean",
+                      "presence_percentage": 86.2,
+                      "frequency": 3267,
+                      "examples": [
+                        false,
+                        true
+                      ]
+                    },
+                    "gold_cost": {
+                      "type": "integer",
+                      "presence_percentage": 86.2,
+                      "frequency": 3267,
+                      "examples": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5
+                      ]
+                    },
+                    "wanted_legendary": {
+                      "type": "boolean",
+                      "presence_percentage": 86.2,
+                      "frequency": 3267,
+                      "examples": [
+                        false
+                      ]
+                    },
+                    "will_combine_three_stars": {
+                      "type": "boolean",
+                      "presence_percentage": 86.2,
+                      "frequency": 3267,
+                      "examples": [
+                        false,
+                        true
+                      ]
+                    },
+                    "keywords": {
+                      "type": "array",
+                      "presence_percentage": 86.2,
+                      "frequency": 3267,
+                      "examples": [],
+                      "array_lengths": [
+                        2,
+                        3,
+                        2,
+                        3,
+                        2,
+                        2,
+                        3,
+                        2,
+                        3,
+                        2
+                      ],
+                      "children": {}
+                    }
+                  }
+                },
+                "gold_earned_this_round": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 758,
+                  "examples": [
+                    0,
+                    4,
+                    5,
+                    7,
+                    8
+                  ]
+                },
+                "shop_generation_id": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 758,
+                  "examples": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4
+                  ]
+                },
+                "challenges": {
+                  "type": "array",
+                  "presence_percentage": 96.3,
+                  "frequency": 730,
+                  "examples": [],
+                  "array_lengths": [
+                    58,
+                    58,
+                    58,
+                    58,
+                    58,
+                    58,
+                    58,
+                    58,
+                    58,
+                    58
+                  ],
+                  "children": {
+                    "slot_id": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 42340,
+                      "examples": [
+                        1,
+                        2,
+                        17,
+                        20,
+                        21
+                      ]
+                    },
+                    "sequence_id": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 42340,
+                      "examples": [
+                        171,
+                        167,
+                        1
+                      ]
+                    },
+                    "progress": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 42340,
+                      "examples": [
+                        0,
+                        1,
+                        4,
+                        5,
+                        9
+                      ]
+                    },
+                    "initial_progress": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 42340,
+                      "examples": [
+                        46,
+                        0,
+                        336,
+                        90,
+                        71
+                      ]
+                    },
+                    "claimed": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 42340,
+                      "examples": [
+                        0
+                      ]
+                    }
+                  }
+                },
+                "grants_rewards": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 758,
+                  "examples": [
+                    0,
+                    1
+                  ]
+                },
+                "sequence_number": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 758,
+                  "examples": [
+                    2,
+                    3,
+                    6,
+                    7,
+                    8
+                  ]
+                },
+                "reroll_cost": {
+                  "type": "integer",
+                  "presence_percentage": 100.0,
+                  "frequency": 758,
+                  "examples": [
+                    0,
+                    2
+                  ]
+                },
+                "can_select_underlord": {
+                  "type": "boolean",
+                  "presence_percentage": 100.0,
+                  "frequency": 758,
+                  "examples": [
+                    false,
+                    true
+                  ]
+                },
+                "underlord_picker_offering": {
+                  "type": "array",
+                  "presence_percentage": 0.1,
+                  "frequency": 1,
+                  "examples": [],
+                  "array_lengths": [
+                    4
+                  ],
+                  "children": {
+                    "underlord_id": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 4,
+                      "examples": [
+                        1,
+                        2,
+                        3,
+                        4
+                      ]
+                    },
+                    "build_id": {
+                      "type": "integer",
+                      "presence_percentage": 100.0,
+                      "frequency": 4,
+                      "examples": [
+                        1,
+                        0
+                      ]
+                    }
+                  }
+                },
+                "used_item_reward_reroll_this_round": {
+                  "type": "boolean",
+                  "presence_percentage": 100.0,
+                  "frequency": 758,
+                  "examples": [
+                    false,
+                    true
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -530,14 +530,8 @@
         function buildStructureHTML(structure, path = '', depth = 0) {
             let html = '';
             
-            // Sort entries to put public_player_state before private_player_state
-            const sortedEntries = Object.entries(structure).sort(([a], [b]) => {
-                if (a === 'public_player_state' && b === 'private_player_state') return -1;
-                if (a === 'private_player_state' && b === 'public_player_state') return 1;
-                return a.localeCompare(b);
-            });
-            
-            for (const [key, value] of sortedEntries) {
+            // Use original order from structure (preserved by field_order in generator)
+            for (const [key, value] of Object.entries(structure)) {
                 const currentPath = path ? `${path}.${key}` : key;
                 const hasChildren = value.children && Object.keys(value.children).length > 0;
                 const isExpanded = hasChildren;
@@ -639,7 +633,7 @@
         loadDocumentation();
         
         // Auto-refresh every 30 seconds
-        setInterval(loadDocumentation, 30000);
+        //setInterval(loadDocumentation, 30000);
     </script>
 </body>
 </html>

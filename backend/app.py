@@ -4,13 +4,32 @@ Combines both services in one process for maximum speed.
 """
 
 import threading
+from signal import signal, SIGINT, SIGTERM
 from .config import app, socketio, GSI_HOST, GSI_PORT, DEBUG
-from .match_state import db, db_write_queue
-from .gsi_processor import db_writer_worker
+from .game_state import db, db_write_queue
+from .gsi_handler import db_writer_worker
 
-# Import routes and websocket handlers to register them
+# Import routes to register HTTP and WebSocket handlers
 from . import routes
-from . import websocket
+
+
+def signal_handler(signum, frame):
+    """Handle shutdown signals gracefully."""
+    print(f"\n[SHUTDOWN] Received signal {signum}, shutting down gracefully...")
+    
+    # Close database connection
+    if db:
+        db.close()
+        print("[SHUTDOWN] Database connection closed")
+    
+    # Stop the application
+    print("[SHUTDOWN] Application stopped")
+    exit(0)
+
+
+# Register signal handlers
+signal(SIGINT, signal_handler)
+signal(SIGTERM, signal_handler)
 
 # Verify handlers are registered (debug only)
 if DEBUG:

@@ -6,16 +6,56 @@ Uses SQLite for efficient storage and real-time querying.
 import sqlite3
 import hashlib
 import json
-from typing import Dict, List
+from typing import Dict, List, Optional, Literal, Any
 from datetime import datetime
 from pathlib import Path
 import os
+from .utils import generate_bot_account_id
+
+
+PlayerCategory = Literal['public_player', 'private_player']
 
 
 class UnderlordsDatabaseManager:
     """Manages SQLite database for Underlords GSI data."""
     
-    def __init__(self, db_path: str = None):
+    # Field mapping constants for public snapshots
+    PUBLIC_SNAPSHOT_FIELDS = [
+        'sequence_number', 'health', 'gold', 'level', 'xp', 'next_level_xp',
+        'wins', 'losses', 'win_streak', 'lose_streak', 'net_worth',
+        'player_slot', 'combat_type', 'combat_result', 'combat_duration', 'opponent_player_slot',
+        'underlord', 'board_unit_limit',
+        'rank_tier', 'final_place', 'platform',
+        'vs_opponent_wins', 'vs_opponent_losses', 'vs_opponent_draws',
+        'brawny_kills_float', 'city_prestige_level', 'event_tier', 'owns_event', 'is_mirrored_match',
+        'connection_status', 'disconnected_time', 'lobby_team'
+    ]
+    
+    PUBLIC_SNAPSHOT_JSON_FIELDS = {
+        'underlord_talents': 'underlord_selected_talents',
+        'synergies_json': 'synergies',
+        'board_buddy_json': 'board_buddy',
+        'units_json': 'units',
+        'items_json': 'items'
+    }
+    
+    # Field mapping constants for private snapshots
+    # Order: all direct fields first, then all JSON fields (matches public snapshot pattern)
+    PRIVATE_SNAPSHOT_FIELDS = [
+        'sequence_number', 'player_slot',
+        'shop_locked', 'reroll_cost', 'gold_earned_this_round', 'shop_generation_id',
+        'can_select_underlord',
+        'unclaimed_reward_count', 'used_item_reward_reroll_this_round', 'grants_rewards'
+    ]
+    
+    PRIVATE_SNAPSHOT_JSON_FIELDS = {
+        'shop_units_json': 'shop_units',
+        'underlord_picker_offering_json': 'underlord_picker_offering',
+        'oldest_unclaimed_reward_json': 'oldest_unclaimed_reward'
+    }
+    
+    
+    def __init__(self, db_path: Optional[str] = None) -> None:
         # Default to parent directory if not specified
         if db_path is None:
             db_path = os.path.join(os.path.dirname(__file__), '..', 'underlords_gsi_v3.db')
@@ -23,13 +63,13 @@ class UnderlordsDatabaseManager:
         self.conn = None
         self.init_database()
     
-    def init_database(self):
+    def init_database(self) -> None:
         """Initialize database connection and create tables if they don't exist."""
         self.conn = sqlite3.connect(self.db_path, check_same_thread=False)
         self.conn.row_factory = sqlite3.Row  # Enable column access by name
         self.create_tables()
     
-    def create_tables(self):
+    def create_tables(self) -> None:
         """Create all necessary tables."""
         cursor = self.conn.cursor()
         
@@ -49,7 +89,6 @@ class UnderlordsDatabaseManager:
             CREATE TABLE IF NOT EXISTS match_players (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 match_id TEXT,
-                player_id TEXT,
                 account_id INTEGER,
                 persona_name TEXT,
                 bot_persona_name TEXT,
@@ -58,7 +97,7 @@ class UnderlordsDatabaseManager:
                 platform INTEGER,
                 final_place INTEGER DEFAULT 0,
                 FOREIGN KEY (match_id) REFERENCES matches(match_id),
-                UNIQUE(match_id, player_id)
+                UNIQUE(match_id, account_id)
             )
         """)
         
@@ -67,7 +106,7 @@ class UnderlordsDatabaseManager:
             CREATE TABLE IF NOT EXISTS public_player_snapshots (
                 snapshot_id INTEGER PRIMARY KEY AUTOINCREMENT,
                 match_id TEXT,
-                player_id TEXT,
+                account_id INTEGER,
                 sequence_number INTEGER,
                 timestamp TIMESTAMP,
                 
@@ -154,8 +193,8 @@ class UnderlordsDatabaseManager:
         """)
         
         # Create indexes for performance
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_match_players ON match_players(match_id, player_id)")
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_public_snapshots_player ON public_player_snapshots(player_id, sequence_number)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_match_players ON match_players(match_id, account_id)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_public_snapshots_player ON public_player_snapshots(account_id, sequence_number)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_public_snapshots_match ON public_player_snapshots(match_id, timestamp)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_private_snapshots_match ON private_player_snapshots(match_id, timestamp)")
         
@@ -179,25 +218,24 @@ class UnderlordsDatabaseManager:
         # Insert players
         print(f"[DB DEBUG] Inserting {len(players_data)} players...")
         for i, player in enumerate(players_data):
-            account_id = player.get('account_id')
-            is_human = player.get('is_human_player', True)
-            
-            # Generate player_id (account_id for humans, bot_persona_name for bots)
-            if account_id == 0:
-                player_id = player.get('bot_persona_name', 'unknown_bot')
+            # Get account_id - for bots generate it, for humans use raw data
+            is_human = player.get('is_human_player')
+            if is_human is False:
+                # Bot player - generate account_id
+                account_id = generate_bot_account_id(player)
             else:
-                player_id = str(account_id)
+                # Human player - use account_id directly from raw data
+                account_id = player.get('account_id')
             
-            print(f"[DB DEBUG] Player {i+1}: {player_id} (account_id={account_id}, is_human={is_human})")
+            print(f"[DB DEBUG] Player {i+1}: account_id={account_id} (is_human={is_human})")
             
             cursor.execute("""
                 INSERT OR IGNORE INTO match_players 
-                (match_id, player_id, account_id, persona_name, bot_persona_name, 
+                (match_id, account_id, persona_name, bot_persona_name, 
                  player_slot, is_human_player, platform)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             """, (
                 match_id,
-                player_id,
                 account_id,
                 player.get('persona_name'),
                 player.get('bot_persona_name'),
@@ -211,264 +249,246 @@ class UnderlordsDatabaseManager:
         print(f"[OK] Created new match: {match_id} with {len(players_data)} players")
         return match_id
     
-    def insert_public_snapshot(self, match_id: str, player_id: str, player_data: Dict, timestamp: datetime) -> int:
+    def _execute_with_retry(self, sql: str, params: tuple):
+        """
+        Execute SQL with automatic retry on SQLite transaction errors.
+        Only retries on specific "cannot start a transaction within a transaction" error.
+        Re-raises all other exceptions immediately.
+        """
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute(sql, params)
+            return cursor
+        except sqlite3.OperationalError as e:
+            if "cannot start a transaction within a transaction" in str(e):
+                self.conn.rollback()
+                cursor = self.conn.cursor()
+                cursor.execute(sql, params)
+                return cursor
+            else:
+                raise
+    
+    def _serialize_json_field(self, data: Any) -> str:
+        """
+        Serialize a field to JSON string.
+        Requires the field to exist - no defaults. Let KeyError propagate if missing.
+        """
+        return json.dumps(data)
+    
+    def _build_public_snapshot_values(self, player_data: Dict) -> tuple:
+        """Build values tuple for public snapshot insert, handling missing fields."""
+        values = []
+        # Direct fields - use .get() with None as default for missing fields
+        for field in self.PUBLIC_SNAPSHOT_FIELDS:
+            values.append(player_data.get(field))
+        # JSON fields - use .get() with None as default, serialize None as "null"
+        for db_column, gsi_field in self.PUBLIC_SNAPSHOT_JSON_FIELDS.items():
+            field_value = player_data.get(gsi_field)
+            if field_value is None:
+                values.append("null")
+            else:
+                values.append(self._serialize_json_field(field_value))
+        return tuple(values)
+    
+    def _build_private_snapshot_values(self, private_data: Dict) -> tuple:
+        """Build values tuple for private snapshot insert, handling missing fields."""
+        values = []
+        # Direct fields - use .get() with None as default for missing fields
+        for field in self.PRIVATE_SNAPSHOT_FIELDS:
+            values.append(private_data.get(field))
+        # JSON fields - use .get() with None as default, serialize None as "null"
+        for db_column, gsi_field in self.PRIVATE_SNAPSHOT_JSON_FIELDS.items():
+            field_value = private_data.get(gsi_field)
+            if field_value is None:
+                values.append("null")
+            else:
+                values.append(self._serialize_json_field(field_value))
+        return tuple(values)
+    
+    def _insert_public_snapshot(self, match_id: str, account_id: int, player_data: Dict, timestamp: datetime) -> int:
         """Insert public player snapshot with all fields."""
         cursor = self.conn.cursor()
         
+        field_values = self._build_public_snapshot_values(player_data)
+        # SQL expects: match_id, account_id, sequence_number, timestamp, then all direct fields, then all JSON fields
+        # field_values starts with sequence_number, so we need to insert timestamp after it
+        params = (match_id, account_id, field_values[0], timestamp, *field_values[1:])
+        
         cursor.execute("""
             INSERT INTO public_player_snapshots (
-                match_id, player_id, sequence_number, timestamp,
+                match_id, account_id, sequence_number, timestamp,
                 health, gold, level, xp, next_level_xp,
                 wins, losses, win_streak, lose_streak, net_worth,
                 player_slot, combat_type, combat_result, combat_duration, opponent_player_slot,
-                underlord, underlord_talents, board_unit_limit,
+                underlord, board_unit_limit,
                 rank_tier, final_place, platform,
-                synergies_json, vs_opponent_wins, vs_opponent_losses, vs_opponent_draws,
+                vs_opponent_wins, vs_opponent_losses, vs_opponent_draws,
                 brawny_kills_float, city_prestige_level, event_tier, owns_event, is_mirrored_match,
-                connection_status, disconnected_time, board_buddy_json, lobby_team,
-                units_json, items_json
+                connection_status, disconnected_time, lobby_team,
+                underlord_talents, synergies_json, board_buddy_json, units_json, items_json
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
-            match_id,
-            player_id,
-            player_data.get('sequence_number'),
-            timestamp,
-            player_data.get('health'),
-            player_data.get('gold'),
-            player_data.get('level'),
-            player_data.get('xp'),
-            player_data.get('next_level_xp'),
-            player_data.get('wins'),
-            player_data.get('losses'),
-            player_data.get('win_streak'),
-            player_data.get('lose_streak'),
-            player_data.get('net_worth'),
-            player_data.get('player_slot'),
-            player_data.get('combat_type'),
-            player_data.get('combat_result'),
-            player_data.get('combat_duration'),
-            player_data.get('opponent_player_slot'),
-            player_data.get('underlord'),
-            json.dumps(player_data.get('underlord_selected_talents', [])),
-            player_data.get('board_unit_limit'),
-            player_data.get('rank_tier'),
-            player_data.get('final_place'),
-            player_data.get('platform'),
-            json.dumps(player_data.get('synergies', [])),
-            player_data.get('vs_opponent_wins'),
-            player_data.get('vs_opponent_losses'),
-            player_data.get('vs_opponent_draws'),
-            player_data.get('brawny_kills_float'),
-            player_data.get('city_prestige_level'),
-            player_data.get('event_tier'),
-            player_data.get('owns_event'),
-            player_data.get('is_mirrored_match'),
-            player_data.get('connection_status'),
-            player_data.get('disconnected_time'),
-            json.dumps(player_data.get('board_buddy', {})),
-            player_data.get('lobby_team'),
-            json.dumps(player_data.get('units', [])),
-            json.dumps(player_data.get('items', []))
-        ))
+        """, params)
         
         return cursor.lastrowid
     
+    def insert_snapshot(self, match_id: str, player_category: PlayerCategory, account_id: Optional[int] = None, player_data: Dict = None, timestamp: datetime = None) -> int:
+        """
+        Insert player snapshot (public or private).
+        
+        Args:
+            match_id: Match identifier
+            player_category: 'public_player' or 'private_player'
+            account_id: Required for 'public_player', ignored for 'private_player'
+            player_data: Player data dictionary
+            timestamp: Timestamp for the snapshot
+            
+        Returns:
+            Last inserted row ID
+        """
+        if player_data is None:
+            raise ValueError("player_data is required")
+        if timestamp is None:
+            raise ValueError("timestamp is required")
+        
+        if player_category == 'private_player':
+            return self._insert_private_snapshot(match_id, player_data, timestamp)
+        elif player_category == 'public_player':
+            if account_id is None:
+                raise ValueError("account_id is required for public_player snapshots")
+            return self._insert_public_snapshot(match_id, account_id, player_data, timestamp)
+        else:
+            raise ValueError(f"Invalid player_category: {player_category}. Must be 'public_player' or 'private_player'")
+    
+    def insert_public_snapshot(self, match_id: str, account_id: int, player_data: Dict, timestamp: datetime) -> int:
+        """Insert public player snapshot with all fields. Public wrapper for backward compatibility."""
+        return self._insert_public_snapshot(match_id, account_id, player_data, timestamp)
+    
     def insert_private_snapshot(self, match_id: str, private_data: Dict, timestamp: datetime) -> int:
+        """Insert private player snapshot with all fields. Public wrapper for backward compatibility."""
+        return self._insert_private_snapshot(match_id, private_data, timestamp)
+    
+    def _insert_private_snapshot(self, match_id: str, private_data: Dict, timestamp: datetime) -> int:
         """Insert private player snapshot."""
         cursor = self.conn.cursor()
+        
+        field_values = self._build_private_snapshot_values(private_data)
+        # SQL expects: match_id, sequence_number, timestamp, player_slot, then rest of fields
+        # field_values starts with sequence_number, so we need to insert timestamp after it
+        params = (match_id, field_values[0], timestamp, *field_values[1:])
         
         cursor.execute("""
             INSERT INTO private_player_snapshots (
                 match_id, sequence_number, timestamp, player_slot,
-                shop_units_json, shop_locked, reroll_cost, gold_earned_this_round, shop_generation_id,
-                can_select_underlord, underlord_picker_offering_json,
-                unclaimed_reward_count, oldest_unclaimed_reward_json, used_item_reward_reroll_this_round, grants_rewards
+                shop_locked, reroll_cost, gold_earned_this_round, shop_generation_id,
+                can_select_underlord, unclaimed_reward_count, used_item_reward_reroll_this_round, grants_rewards,
+                shop_units_json, underlord_picker_offering_json, oldest_unclaimed_reward_json
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
-            match_id,
-            private_data.get('sequence_number'),
-            timestamp,
-            private_data.get('player_slot'),
-            json.dumps(private_data.get('shop_units', [])),
-            private_data.get('shop_locked'),
-            private_data.get('reroll_cost'),
-            private_data.get('gold_earned_this_round'),
-            private_data.get('shop_generation_id'),
-            private_data.get('can_select_underlord'),
-            json.dumps(private_data.get('underlord_picker_offering', [])),
-            private_data.get('unclaimed_reward_count'),
-            json.dumps(private_data.get('oldest_unclaimed_reward')),
-            private_data.get('used_item_reward_reroll_this_round'),
-            private_data.get('grants_rewards')
-        ))
+        """, params)
         
         return cursor.lastrowid
     
-    def update_match_end_time(self, match_id: str, timestamp: datetime):
+    def update_match_end_time(self, match_id: str, timestamp: datetime) -> None:
         """Update match ended_at timestamp."""
-        try:
-            cursor = self.conn.cursor()
-            cursor.execute("""
-                UPDATE matches 
-                SET ended_at = ?
-                WHERE match_id = ?
-            """, (timestamp, match_id))
-        except sqlite3.OperationalError as e:
-            if "cannot start a transaction within a transaction" in str(e):
-                # Rollback and retry
-                self.conn.rollback()
-                cursor = self.conn.cursor()
-                cursor.execute("""
-                    UPDATE matches 
-                    SET ended_at = ?
-                    WHERE match_id = ?
-                """, (timestamp, match_id))
-            else:
-                raise
+        self._execute_with_retry(
+            "UPDATE matches SET ended_at = ? WHERE match_id = ?",
+            (timestamp, match_id)
+        )
     
-    def update_player_final_place(self, match_id: str, player_id: str, final_place: int, timestamp: datetime):
+    def update_player_final_place(self, match_id: str, account_id: int, final_place: int, timestamp: datetime) -> None:
         """Update a player's final_place in their latest snapshot."""
-        try:
-            cursor = self.conn.cursor()
-            cursor.execute("""
-                UPDATE public_player_snapshots 
-                SET final_place = ?
-                WHERE match_id = ? AND player_id = ? AND sequence_number = (
-                    SELECT MAX(sequence_number) 
-                    FROM public_player_snapshots 
-                    WHERE match_id = ? AND player_id = ?
-                )
-            """, (final_place, match_id, player_id, match_id, player_id))
-        except sqlite3.OperationalError as e:
-            if "cannot start a transaction within a transaction" in str(e):
-                # Rollback and retry
-                self.conn.rollback()
-                cursor = self.conn.cursor()
-                cursor.execute("""
-                    UPDATE public_player_snapshots 
-                    SET final_place = ?
-                    WHERE match_id = ? AND player_id = ? AND sequence_number = (
-                        SELECT MAX(sequence_number) 
-                        FROM public_player_snapshots 
-                        WHERE match_id = ? AND player_id = ?
-                    )
-                """, (final_place, match_id, player_id, match_id, player_id))
-            else:
-                raise
+        self._execute_with_retry(
+            """UPDATE public_player_snapshots 
+               SET final_place = ?
+               WHERE match_id = ? AND account_id = ? AND sequence_number = (
+                   SELECT MAX(sequence_number) 
+                   FROM public_player_snapshots 
+                   WHERE match_id = ? AND account_id = ?
+               )""",
+            (final_place, match_id, account_id, match_id, account_id)
+        )
     
-    def update_match_player_final_place(self, match_id: str, player_id: str, final_place: int):
+    def update_match_player_final_place(self, match_id: str, account_id: int, final_place: int) -> None:
         """Update a player's final_place in the match_players table."""
-        try:
-            cursor = self.conn.cursor()
-            cursor.execute("""
-                UPDATE match_players 
-                SET final_place = ?
-                WHERE match_id = ? AND player_id = ?
-            """, (final_place, match_id, player_id))
-        except sqlite3.OperationalError as e:
-            if "cannot start a transaction within a transaction" in str(e):
-                # Rollback and retry
-                self.conn.rollback()
-                cursor = self.conn.cursor()
-                cursor.execute("""
-                    UPDATE match_players 
-                    SET final_place = ?
-                    WHERE match_id = ? AND player_id = ?
-                """, (final_place, match_id, player_id))
-            else:
-                raise
+        self._execute_with_retry(
+            "UPDATE match_players SET final_place = ? WHERE match_id = ? AND account_id = ?",
+            (final_place, match_id, account_id)
+        )
     
-    def execute_in_transaction(self, operations):
+    def execute_in_transaction(self, operations: List[Dict]) -> None:
         """Execute multiple database operations in a single transaction."""
-        try:
-            cursor = self.conn.cursor()
-            for operation in operations:
-                cursor.execute(operation['sql'], operation['params'])
-            return True
-        except Exception as e:
-            self.conn.rollback()
-            print(f"[DATABASE ERROR] Transaction failed: {e}")
-            return False
+        cursor = self.conn.cursor()
+        for operation in operations:
+            cursor.execute(operation['sql'], operation['params'])
     
-    def delete_match(self, match_id: str) -> bool:
+    def delete_match(self, match_id: str) -> None:
         """Delete a match and all associated data."""
-        try:
-            cursor = self.conn.cursor()
-            
-            # Delete in order: snapshots first, then players, then match
-            cursor.execute("DELETE FROM private_player_snapshots WHERE match_id = ?", (match_id,))
-            cursor.execute("DELETE FROM public_player_snapshots WHERE match_id = ?", (match_id,))
-            cursor.execute("DELETE FROM match_players WHERE match_id = ?", (match_id,))
-            cursor.execute("DELETE FROM matches WHERE match_id = ?", (match_id,))
-            
-            print(f"[DB] Deleted match {match_id} and all associated data")
-            return True
-        except Exception as e:
-            self.conn.rollback()
-            print(f"[DB ERROR] Failed to delete match {match_id}: {e}")
-            return False
+        cursor = self.conn.cursor()
+        
+        # Delete in order: snapshots first, then players, then match
+        cursor.execute("DELETE FROM private_player_snapshots WHERE match_id = ?", (match_id,))
+        cursor.execute("DELETE FROM public_player_snapshots WHERE match_id = ?", (match_id,))
+        cursor.execute("DELETE FROM match_players WHERE match_id = ?", (match_id,))
+        cursor.execute("DELETE FROM matches WHERE match_id = ?", (match_id,))
+        
+        print(f"[DB] Deleted match {match_id} and all associated data")
 
     def get_all_matches(self) -> List[Dict]:
         """Get list of all matches with basic info and player data."""
-        try:
-            cursor = self.conn.cursor()
-            # Get all matches
+        cursor = self.conn.cursor()
+        # Get all matches
+        cursor.execute("""
+            SELECT 
+                match_id,
+                started_at,
+                ended_at,
+                player_count,
+                created_at
+            FROM matches
+            ORDER BY started_at DESC
+        """)
+        
+        matches = []
+        for row in cursor.fetchall():
+            match_id = row[0]
+            
+            # Get players for this match
             cursor.execute("""
                 SELECT 
-                    match_id,
-                    started_at,
-                    ended_at,
-                    player_count,
-                    created_at
-                FROM matches
-                ORDER BY started_at DESC
-            """)
+                    mp.account_id,
+                    mp.persona_name,
+                    mp.bot_persona_name,
+                    COALESCE(
+                        (SELECT final_place FROM public_player_snapshots 
+                         WHERE match_id = ?
+                           AND account_id = mp.account_id 
+                           AND final_place > 0 
+                         ORDER BY timestamp DESC LIMIT 1), 0
+                    ) as final_place
+                FROM match_players mp
+                WHERE mp.match_id = ?
+            """, (match_id, match_id))
             
-            matches = []
-            for row in cursor.fetchall():
-                match_id = row[0]
-                
-                # Get players for this match
-                cursor.execute("""
-                    SELECT 
-                        mp.player_id,
-                        mp.persona_name,
-                        mp.bot_persona_name,
-                        COALESCE(
-                            (SELECT final_place FROM public_player_snapshots 
-                             WHERE match_id = ?
-                               AND player_id = mp.player_id 
-                               AND final_place > 0 
-                             ORDER BY timestamp DESC LIMIT 1), 0
-                        ) as final_place
-                    FROM match_players mp
-                    WHERE mp.match_id = ?
-                """, (match_id, match_id))
-                
-                players = []
-                for player_row in cursor.fetchall():
-                    players.append({
-                        'player_id': player_row[0],
-                        'persona_name': player_row[1],
-                        'bot_persona_name': player_row[2],
-                        'final_place': player_row[3]
-                    })
-                
-                matches.append({
-                    'match_id': match_id,
-                    'started_at': row[1],
-                    'ended_at': row[2],
-                    'player_count': row[3],
-                    'created_at': row[4],
-                    'players': players
+            players = []
+            for player_row in cursor.fetchall():
+                players.append({
+                    'account_id': player_row[0],
+                    'persona_name': player_row[1],
+                    'bot_persona_name': player_row[2],
+                    'final_place': player_row[3]
                 })
             
-            return matches
-        except Exception as e:
-            print(f"[DB ERROR] Failed to get matches: {e}")
-            return []
+            matches.append({
+                'match_id': match_id,
+                'started_at': row[1],
+                'ended_at': row[2],
+                'player_count': row[3],
+                'created_at': row[4],
+                'players': players
+            })
+        
+        return matches
 
-    def close(self):
+    def close(self) -> None:
         """Close database connection."""
         if self.conn:
             self.conn.close()

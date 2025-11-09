@@ -16,7 +16,8 @@ parent_instance_counts = {}  # path: total count of parent instances
 total_packets = 0  # Total data packets received
 instance_counters = {}  # Track instance IDs for each path
 parent_instances_seen = defaultdict(set)  # path -> set of unique parent instance IDs
-
+field_order = {}  # parent_path: [key1, key2, key3, ...] - order of keys within each parent object
+example_values = 10
 
 def get_type(value):
     """Get the type of a value."""
@@ -38,17 +39,65 @@ def get_type(value):
         return 'unknown'
 
 
+def insert_field_in_order(parent_path, new_key, current_keys_in_packet):
+    """
+    Insert a new field key into the field_order for a parent path.
+    Determines position based on where it appears in the current packet.
+    """
+    if parent_path not in field_order:
+        # First time seeing this parent - record all keys in order
+        field_order[parent_path] = list(current_keys_in_packet)
+        return
+    
+    # Find position in current packet
+    current_order = field_order[parent_path]
+    
+    # Find the key that comes before and after new_key in the current packet
+    packet_keys = list(current_keys_in_packet)
+    new_key_index = packet_keys.index(new_key)
+    
+    # Find the last key before new_key that exists in our tracked order
+    before_key = None
+    for i in range(new_key_index - 1, -1, -1):
+        if packet_keys[i] in current_order:
+            before_key = packet_keys[i]
+            break
+    
+    # Find the first key after new_key that exists in our tracked order
+    after_key = None
+    for i in range(new_key_index + 1, len(packet_keys)):
+        if packet_keys[i] in current_order:
+            after_key = packet_keys[i]
+            break
+    
+    # Insert the new key
+    if before_key is not None:
+        # Insert after before_key
+        before_index = current_order.index(before_key)
+        current_order.insert(before_index + 1, new_key)
+    elif after_key is not None:
+        # Insert before after_key
+        after_index = current_order.index(after_key)
+        current_order.insert(after_index, new_key)
+    else:
+        # No neighbors found - append to end
+        current_order.append(new_key)
+
+
 def track_field(path, value, timestamp, parent_instance_id):
     """Track a field's occurrence and which parent instance contains it."""
     if path not in field_data:
+        field_type = get_type(value)
         field_data[path] = {
-            'type': get_type(value),
+            'type': field_type,
             'examples': [],
-            'first_seen': timestamp,
-            'last_seen': timestamp,
-            'parent_instances': set(),
-            'array_lengths': []
+            #'first_seen': timestamp,
+            #'last_seen': timestamp,
+            'parent_instances': set()
         }
+        # Only initialize array_lengths for array types
+        if field_type == 'array':
+            field_data[path]['array_lengths'] = []
     
     info = field_data[path]
     info['last_seen'] = timestamp
@@ -62,11 +111,13 @@ def track_field(path, value, timestamp, parent_instance_id):
     
     # Store examples for primitive types
     if isinstance(value, (str, int, float, bool)) and value is not None:
-        if len(info['examples']) < 5 and value not in info['examples']:
+        if len(info['examples']) < example_values and value not in info['examples']:
             info['examples'].append(value)
     
-    # Track array lengths
+    # Track array lengths only for array types
     if isinstance(value, list):
+        if 'array_lengths' not in info:
+            info['array_lengths'] = []
         info['array_lengths'].append(len(value))
 
 
@@ -76,6 +127,7 @@ def analyze_structure(data, path='', timestamp=None, parent_instance_id=None):
 
     - Records, for each object path, the set of unique parent instance IDs observed.
     - Ensures array items are traversed correctly (fixed indentation).
+    - Tracks field order within each parent object.
     """
     if isinstance(data, dict):
         # Skip empty dicts in block arrays
@@ -94,8 +146,18 @@ def analyze_structure(data, path='', timestamp=None, parent_instance_id=None):
                 parent_instance_counts[path] = 0
             parent_instance_counts[path] += 1
 
-            # NEW: Track unique parent instances per path (used as denominator)
+            # Track unique parent instances per path (used as denominator)
             parent_instances_seen[path].add(current_instance_id)
+
+        # Track field order for this parent object
+        # Get keys in the order they appear in the current packet
+        current_keys = list(data.keys())
+        for key in current_keys:
+            current_path = f"{path}.{key}" if path else key
+            # Check if this is a new field
+            if current_path not in field_data:
+                # New field - insert it in the correct position
+                insert_field_in_order(path, key, current_keys)
 
         # Analyze each field in this dict
         for key, value in data.items():
@@ -133,7 +195,7 @@ def calculate_presence(path):
         return 0.0
 
     # Numerator: how many distinct parent instances included this field
-    included = len(field_data[path].get('parent_instances', set()))
+    included = len(field_data[path]['parent_instances'])
 
     parts = path.split('.')
     if len(parts) == 1:
@@ -142,7 +204,7 @@ def calculate_presence(path):
     else:
         parent_path = '.'.join(parts[:-1])
         # Denominator: unique parent instances observed for the parent path
-        total = len(parent_instances_seen.get(parent_path, set()))
+        total = len(parent_instances_seen[parent_path])
 
     if total == 0:
         return 0.0
@@ -150,27 +212,100 @@ def calculate_presence(path):
     return round((included / total) * 100.0, 1)
 
 
+def get_ordered_paths():
+    """
+    Get all paths in the correct order based on field_order.
+    Returns paths sorted by depth first, then by field_order within each parent.
+    """
+    # Group paths by depth
+    paths_by_depth = defaultdict(list)
+    for path in field_data.keys():
+        depth = path.count('.')
+        paths_by_depth[depth].append(path)
+    
+    # Build ordered paths level by level
+    ordered_paths = []
+    
+    # Process each depth level
+    for depth in sorted(paths_by_depth.keys()):
+        depth_paths = paths_by_depth[depth]
+        
+        if depth == 0:
+            # Root level - use field_order if available
+            if '' in field_order:
+                root_order = field_order['']
+                # Add paths in field_order
+                for key in root_order:
+                    if key in field_data:
+                        ordered_paths.append(key)
+                # Add any remaining paths not in field_order
+                for path in depth_paths:
+                    if path not in ordered_paths:
+                        ordered_paths.append(path)
+            else:
+                ordered_paths.extend(depth_paths)
+        else:
+            # Nested paths - group by parent
+            paths_by_parent = defaultdict(list)
+            for path in depth_paths:
+                parts = path.split('.')
+                parent_path = '.'.join(parts[:-1])
+                paths_by_parent[parent_path].append(path)
+            
+            # Process each parent that we've already seen
+            for parent_path in ordered_paths:
+                if parent_path in paths_by_parent:
+                    child_paths = paths_by_parent[parent_path]
+                    # Get the key order for this parent
+                    if parent_path in field_order:
+                        parent_key_order = field_order[parent_path]
+                        # Extract keys from child paths
+                        child_keys = [p.split('.')[-1] for p in child_paths]
+                        # Order by field_order
+                        ordered_child_keys = [k for k in parent_key_order if k in child_keys]
+                        # Add any keys not in field_order
+                        for k in child_keys:
+                            if k not in ordered_child_keys:
+                                ordered_child_keys.append(k)
+                        # Build full paths in order
+                        for key in ordered_child_keys:
+                            child_path = f"{parent_path}.{key}"
+                            if child_path in field_data:
+                                ordered_paths.append(child_path)
+                    else:
+                        # No field_order for this parent - add children as-is
+                        ordered_paths.extend(child_paths)
+            
+            # Add any remaining parents we haven't processed yet
+            for parent_path, child_paths in paths_by_parent.items():
+                if parent_path not in ordered_paths:
+                    # Parent not yet processed - add children as-is
+                    ordered_paths.extend(child_paths)
+    
+    return ordered_paths
+
+
 def build_hierarchical_structure():
     """Build hierarchical JSON structure from flat field data."""
     
     def create_node(field_path):
         """Create a node with field information."""
-        if field_path not in field_data:
-            return None
-        
         info = field_data[field_path]
         presence = calculate_presence(field_path)
         frequency = len(info['parent_instances'])
         
-        return {
+        node = {
             'type': info['type'],
             'presence_percentage': round(presence, 1),
             'frequency': frequency,
-            'first_seen': info['first_seen'].isoformat() if info['first_seen'] else None,
-            'last_seen': info['last_seen'].isoformat() if info['last_seen'] else None,
-            'examples': info['examples'][:5],
-            'array_lengths': info['array_lengths'][:10] if info.get('array_lengths') else []
+            #'first_seen': info['first_seen'].isoformat() if info['first_seen'] else None,
+            #'last_seen': info['last_seen'].isoformat() if info['last_seen'] else None,
+            'examples': info['examples'][:example_values]
         }
+        # Only include array_lengths for array types
+        if info['type'] == 'array' and 'array_lengths' in info:
+            node['array_lengths'] = info['array_lengths'][:10]
+        return node
     
     def add_to_tree(tree, path, node):
         """Add a node to the tree at the specified path."""
@@ -181,13 +316,9 @@ def build_hierarchical_structure():
             if part not in current:
                 # Create intermediate node
                 intermediate_path = '.'.join(parts[:i+1])
-                current[part] = create_node(intermediate_path) or {
-                    'type': 'object',
-                    'presence_percentage': 100.0,
-                    'frequency': 0
-                }
-                if 'children' not in current[part]:
-                    current[part]['children'] = {}
+                intermediate_node = create_node(intermediate_path)
+                current[part] = intermediate_node
+                current[part]['children'] = {}
             
             if 'children' not in current[part]:
                 current[part]['children'] = {}
@@ -195,30 +326,29 @@ def build_hierarchical_structure():
         
         # Add the final node
         current[parts[-1]] = node
-        if node and node.get('type') in ['object', 'array']:
+        if node['type'] in ['object', 'array']:
             if 'children' not in current[parts[-1]]:
                 current[parts[-1]]['children'] = {}
     
     # Build the tree structure
     tree = {}
     
-    # Sort paths to ensure parents are created before children
-    sorted_paths = sorted(field_data.keys(), key=lambda x: (x.count('.'), x))
+    # Get paths in the correct order
+    ordered_paths = get_ordered_paths()
     
-    for path in sorted_paths:
+    for path in ordered_paths:
         node = create_node(path)
-        if node:
-            # Add description for known fields
-            if path == 'block':
-                node['description'] = 'Root array containing game state blocks'
-            elif path == 'block.data':
-                node['description'] = 'Array of player data objects'
-            elif path == 'block.data.public_player_state':
-                node['description'] = 'Public player state information'
-            elif path == 'block.data.private_player_state':
-                node['description'] = 'Private player state information'
-            
-            add_to_tree(tree, path, node)
+        # Add description for known fields
+        if path == 'block':
+            node['description'] = 'Root array containing game state blocks'
+        elif path == 'block.data':
+            node['description'] = 'Array of player data objects'
+        elif path == 'block.data.public_player_state':
+            node['description'] = 'Public player state information'
+        elif path == 'block.data.private_player_state':
+            node['description'] = 'Private player state information'
+        
+        add_to_tree(tree, path, node)
     
     return tree
 
@@ -290,13 +420,16 @@ def get_stats():
 def get_fields():
     """Get all tracked fields."""
     fields = []
-    for path, info in sorted(field_data.items()):
+    # Use ordered paths instead of sorting
+    ordered_paths = get_ordered_paths()
+    for path in ordered_paths:
+        info = field_data[path]
         fields.append({
             'path': path,
             'type': info['type'],
             'frequency': len(info['parent_instances']),
             'presence': calculate_presence(path),
-            'examples': info['examples'][:3]
+            'examples': info['examples'][:example_values]
         })
     
     return jsonify({'fields': fields})
@@ -324,17 +457,23 @@ def get_structure_json():
 def get_flat_json():
     """Get flattened list of all fields as JSON."""
     fields = []
-    for path, info in sorted(field_data.items()):
-        fields.append({
+    # Use ordered paths instead of sorting
+    ordered_paths = get_ordered_paths()
+    for path in ordered_paths:
+        info = field_data[path]
+        field_obj = {
             'path': path,
             'type': info['type'],
             'frequency': len(info['parent_instances']),
             'presence_percentage': round(calculate_presence(path), 1),
-            'first_seen': info['first_seen'].isoformat() if info['first_seen'] else None,
-            'last_seen': info['last_seen'].isoformat() if info['last_seen'] else None,
-            'examples': info['examples'][:5],
-            'array_lengths': info['array_lengths'][:10] if info.get('array_lengths') else []
-        })
+            #'first_seen': info['first_seen'].isoformat() if info['first_seen'] else None,
+            #'last_seen': info['last_seen'].isoformat() if info['last_seen'] else None,
+            'examples': info['examples'][:example_values]
+        }
+        # Only include array_lengths for array types
+        if info['type'] == 'array' and 'array_lengths' in info:
+            field_obj['array_lengths'] = info['array_lengths'][:10]
+        fields.append(field_obj)
     
     return jsonify({
         'timestamp': datetime.now().isoformat(),
@@ -349,9 +488,6 @@ def get_schema_json():
     """Get simplified schema JSON for easy parsing."""
     def build_schema_node(field_path):
         """Build a simplified schema node."""
-        if field_path not in field_data:
-            return None
-        
         info = field_data[field_path]
         node = {
             'type': info['type'],
@@ -360,25 +496,25 @@ def get_schema_json():
         
         # Add examples for primitive types
         if info['examples']:
-            node['examples'] = info['examples'][:3]
+            node['examples'] = info['examples'][:example_values]
         
-        # Add array length info
-        if info['type'] == 'array' and info.get('array_lengths'):
+        # Add array length info only for array types
+        if info['type'] == 'array' and 'array_lengths' in info and info['array_lengths']:
             lengths = info['array_lengths']
-            node['min_length'] = min(lengths) if lengths else 0
-            node['max_length'] = max(lengths) if lengths else 0
-            node['avg_length'] = round(sum(lengths) / len(lengths), 1) if lengths else 0
+            node['min_length'] = min(lengths)
+            node['max_length'] = max(lengths)
+            node['avg_length'] = round(sum(lengths) / len(lengths), 1)
         
         return node
     
     def build_schema_tree():
-        """Build simplified schema tree."""
+        """Build simplified schema tree using field_order."""
         schema = {}
         
-        # Sort paths to ensure parents are created before children
-        sorted_paths = sorted(field_data.keys(), key=lambda x: (x.count('.'), x))
+        # Get paths in the correct order
+        ordered_paths = get_ordered_paths()
         
-        for path in sorted_paths:
+        for path in ordered_paths:
             parts = path.split('.')
             current = schema
             
@@ -390,8 +526,7 @@ def get_schema_json():
             
             # Add the field
             node = build_schema_node(path)
-            if node:
-                current[parts[-1]] = node
+            current[parts[-1]] = node
         
         return schema
     
@@ -414,15 +549,15 @@ def get_typescript_interfaces():
         for key, value in structure.items():
             if isinstance(value, dict) and 'type' in value:
                 ts_type = get_typescript_type(value['type'])
-                optional = "" if value.get('presence_percentage', 100) == 100.0 else "?"
+                optional = "" if value['presence_percentage'] == 100.0 else "?"
                 
-                if value['type'] == 'array' and value.get('children'):
+                if value['type'] == 'array' and 'children' in value:
                     # For arrays with children, generate the child interface
                     child_name = f"{name}_{key.title()}"
                     lines.append(f"{indent}  {key}{optional}: {child_name}[];")
                     lines.append("")
                     lines.append(generate_interface(child_name, value['children'], depth))
-                elif value['type'] == 'object' and value.get('children'):
+                elif value['type'] == 'object' and 'children' in value:
                     # For objects with children, generate nested interface
                     child_name = f"{name}_{key.title()}"
                     lines.append(f"{indent}  {key}{optional}: {child_name};")
@@ -445,7 +580,7 @@ def get_typescript_interfaces():
             'object': 'object',
             'null': 'null'
         }
-        return type_map.get(field_type, 'any')
+        return type_map[field_type]
     
     structure = build_hierarchical_structure()
     interfaces = []
@@ -464,6 +599,8 @@ def get_typescript_interfaces():
 @app.route('/json/export')
 def export_all_formats():
     """Export all JSON formats at once."""
+    # Use ordered paths instead of sorting
+    ordered_paths = get_ordered_paths()
     return jsonify({
         'timestamp': datetime.now().isoformat(),
         'formats': {
@@ -471,11 +608,11 @@ def export_all_formats():
             'structure_only': build_hierarchical_structure(),
             'flat_fields': [{
                 'path': path,
-                'type': info['type'],
-                'frequency': len(info['parent_instances']),
+                'type': field_data[path]['type'],
+                'frequency': len(field_data[path]['parent_instances']),
                 'presence_percentage': round(calculate_presence(path), 1),
-                'examples': info['examples'][:3]
-            } for path, info in sorted(field_data.items())],
+                'examples': field_data[path]['examples'][:example_values]
+            } for path in ordered_paths],
             'statistics': {
                 'total_packets': total_packets,
                 'field_count': len(field_data),

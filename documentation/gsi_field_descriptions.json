@@ -1,0 +1,495 @@
+{
+  "block": {
+    "description": "Root array of game state blocks.",
+    "type": "array"
+  },
+  "block.data": {
+    "description": "Array of player data objects (typically 8 players).",
+    "type": "array"
+  },
+  "block.data.public_player_state": {
+    "description": "Public state visible to all players.",
+    "type": "object"
+  },
+  "block.data.public_player_state.player_slot": {
+    "description": "Player slot number (1-8).",
+    "type": "integer",
+    "examples": [1, 2, 3, 4, 5, 6, 7, 8]
+  },
+  "block.data.public_player_state.account_id": {
+    "description": "Steam account ID (friend-invite code). 0 for bots.",
+    "type": "integer",
+    "examples": [0, 249722568]
+  },
+  "block.data.public_player_state.connection_status": {
+    "description": "Connection status (1 = connected).",
+    "type": "integer",
+    "examples": [1]
+  },
+  "block.data.public_player_state.is_human_player": {
+    "description": "True for human players, false for bots.",
+    "type": "boolean",
+    "examples": [false, true]
+  },
+  "block.data.public_player_state.health": {
+    "description": "Current HP. Eliminated at 0.",
+    "type": "integer",
+    "examples": [93, 96, 98, 99, 100]
+  },
+  "block.data.public_player_state.gold": {
+    "description": "Available gold for purchases and rerolls.",
+    "type": "integer",
+    "examples": [0, 1, 2, 4, 5]
+  },
+  "block.data.public_player_state.level": {
+    "description": "Player level (1-10). Determines board size and shop tier odds.",
+    "type": "integer",
+    "examples": [1, 2, 3, 4, 5]
+  },
+  "block.data.public_player_state.xp": {
+    "description": "Current XP toward next level.",
+    "type": "integer",
+    "examples": [0, 1, 2, 3, 4]
+  },
+  "block.data.public_player_state.next_level_xp": {
+    "description": "XP required for next level.",
+    "type": "integer",
+    "examples": [1, 5, 15, 20, 25]
+  },
+  "block.data.public_player_state.item_slots": {
+    "description": "Array of item slots in inventory.",
+    "type": "array"
+  },
+  "block.data.public_player_state.item_slots.slot_index": {
+    "description": "Item slot index (0-based).",
+    "type": "integer",
+    "examples": [0, 1, 2, 3, 4]
+  },
+  "block.data.public_player_state.item_slots.item_id": {
+    "description": "Item ID (e.g., 10100-10200 range).",
+    "type": "integer",
+    "examples": [10100, 10101, 10104, 10109, 10200]
+  },
+  "block.data.public_player_state.item_slots.assigned_unit_entindex": {
+    "description": "Entity index of unit this item is equipped to. Null if unequipped.",
+    "type": "integer",
+    "examples": [8, 14, 32, 46, 62]
+  },
+  "block.data.public_player_state.units": {
+    "description": "Array of all units (board + bench).",
+    "type": "array"
+  },
+  "block.data.public_player_state.units.entindex": {
+    "description": "Unique entity index for this unit instance.",
+    "type": "integer",
+    "examples": [8, 10, 12, 14, 16]
+  },
+  "block.data.public_player_state.units.unit_id": {
+    "description": "Unit type ID.",
+    "type": "integer",
+    "examples": [6, 15, 41, 113, 132]
+  },
+  "block.data.public_player_state.units.position": {
+    "description": "Board position coordinates.",
+    "type": "object"
+  },
+  "block.data.public_player_state.units.position.x": {
+    "description": "X coordinate (0-7 typically).",
+    "type": "integer",
+    "examples": [0, 1, 3, 4, 6]
+  },
+  "block.data.public_player_state.units.position.y": {
+    "description": "Y coordinate. Negative values indicate bench.",
+    "type": "integer",
+    "examples": [-1, 0, 1, 2, 3]
+  },
+  "block.data.public_player_state.units.rank": {
+    "description": "Star rank: 0=1-star, 1=2-star, 2=3-star.",
+    "type": "integer",
+    "examples": [0, 1, 2, 3, 4]
+  },
+  "block.data.public_player_state.units.gold_value": {
+    "description": "Unit cost tier (1-5 gold).",
+    "type": "integer",
+    "examples": [0, 1, 2, 3, 4]
+  },
+  "block.data.public_player_state.units.kill_count": {
+    "description": "Total lifetime kills for this unit.",
+    "type": "integer",
+    "examples": [0, 1, 2, 3, 4]
+  },
+  "block.data.public_player_state.units.kill_streak": {
+    "description": "Current combat kill streak.",
+    "type": "integer",
+    "examples": [0, 1, 2, 3, 5]
+  },
+  "block.data.public_player_state.units.keywords": {
+    "description": "Array of alliance keyword IDs.",
+    "type": "array"
+  },
+  "block.data.public_player_state.units.duel_bonus_damage": {
+    "description": "Duel alliance damage bonus.",
+    "type": "integer",
+    "examples": [0, 5, 8, 10, 16]
+  },
+  "block.data.public_player_state.units.unit_cap_cost": {
+    "description": "Unit cap cost (typically 1, 0 for special cases).",
+    "type": "integer",
+    "examples": [0, 1]
+  },
+  "block.data.public_player_state.units.is_placeable_item": {
+    "description": "True if unit is actually a placeable item (rare).",
+    "type": "boolean",
+    "examples": [true]
+  },
+  "block.data.public_player_state.units.can_move_to_bench": {
+    "description": "Whether unit can be moved to bench.",
+    "type": "boolean",
+    "examples": [true]
+  },
+  "block.data.public_player_state.units.can_be_sold": {
+    "description": "Whether unit can be sold.",
+    "type": "boolean",
+    "examples": [true]
+  },
+  "block.data.public_player_state.units.recommended_for_placement": {
+    "description": "Game recommendation flag for board placement.",
+    "type": "boolean",
+    "examples": [false, true]
+  },
+  "block.data.public_player_state.units.float_kill_count": {
+    "description": "Floating point kill count (accounts for DoT fractional kills).",
+    "type": "float",
+    "examples": [0.0, 1.0, 2.0, 3.0, 4.25]
+  },
+  "block.data.public_player_state.final_place": {
+    "description": "Final placement: 0=in game, 1-8=elimination order (1=winner).",
+    "type": "integer",
+    "examples": [0, 5, 6, 7, 8]
+  },
+  "block.data.public_player_state.synergies": {
+    "description": "Array of active alliance synergies.",
+    "type": "array"
+  },
+  "block.data.public_player_state.synergies.keyword": {
+    "description": "Alliance keyword ID.",
+    "type": "integer",
+    "examples": [15, 34, 39, 45, 47]
+  },
+  "block.data.public_player_state.synergies.unique_unit_count": {
+    "description": "Unique units of this alliance on board.",
+    "type": "integer",
+    "examples": [0, 1, 2, 3, 4]
+  },
+  "block.data.public_player_state.synergies.bench_additional_unique_unit_count": {
+    "description": "Additional unique units on bench counting toward synergy.",
+    "type": "integer",
+    "examples": [1, 2, 3]
+  },
+  "block.data.public_player_state.bot_persona_name": {
+    "description": "Bot display name (format: #DAC_BotName_XX).",
+    "type": "string",
+    "examples": ["#DAC_BotName_24", "#DAC_BotName_41", "#DAC_BotName_44", "#DAC_BotName_67", "#DAC_BotName_68"]
+  },
+  "block.data.public_player_state.sequence_number": {
+    "description": "State update sequence number (increments per update).",
+    "type": "integer",
+    "examples": [2, 3, 6, 18, 20]
+  },
+  "block.data.public_player_state.shop_cost_modifier": {
+    "description": "Shop cost modifier (typically 0).",
+    "type": "integer",
+    "examples": [0]
+  },
+  "block.data.public_player_state.combat_duration": {
+    "description": "Last combat duration in seconds.",
+    "type": "float",
+    "examples": [24.3, 25.85, 26.55, 29.0, 38.9]
+  },
+  "block.data.public_player_state.reroll_cost_modifier": {
+    "description": "Reroll cost modifier (typically 0).",
+    "type": "integer",
+    "examples": [0]
+  },
+  "block.data.public_player_state.opponent_player_slot": {
+    "description": "Current opponent's player slot (1-8).",
+    "type": "integer",
+    "examples": [2, 5, 6, 7, 8]
+  },
+  "block.data.public_player_state.win_streak": {
+    "description": "Current win streak count.",
+    "type": "integer",
+    "examples": [0, 1, 2, 3, 4]
+  },
+  "block.data.public_player_state.lose_streak": {
+    "description": "Current loss streak count.",
+    "type": "integer",
+    "examples": [0, 1, 2, 3, 4]
+  },
+  "block.data.public_player_state.rank_tier": {
+    "description": "MMR tier. Only in ranked matches.",
+    "type": "integer",
+    "examples": [70]
+  },
+  "block.data.public_player_state.disconnected_time": {
+    "description": "Disconnect duration in seconds (0.0 = connected).",
+    "type": "float",
+    "examples": [0.0]
+  },
+  "block.data.public_player_state.vs_opponent_wins": {
+    "description": "Wins vs current opponent this match.",
+    "type": "integer",
+    "examples": [0, 1, 2, 3, 4]
+  },
+  "block.data.public_player_state.vs_opponent_losses": {
+    "description": "Losses vs current opponent this match.",
+    "type": "integer",
+    "examples": [0, 1, 2, 3, 4]
+  },
+  "block.data.public_player_state.vs_opponent_draws": {
+    "description": "Draws vs current opponent this match.",
+    "type": "integer",
+    "examples": [0, 1]
+  },
+  "block.data.public_player_state.platform": {
+    "description": "Platform: 0=PC, 1=other.",
+    "type": "integer",
+    "examples": [0, 1]
+  },
+  "block.data.public_player_state.event_tier": {
+    "description": "Event tier (0=no event).",
+    "type": "integer",
+    "examples": [0, 235]
+  },
+  "block.data.public_player_state.persona_name": {
+    "description": "Human player display name. Only for human players.",
+    "type": "string",
+    "examples": ["Kælle"]
+  },
+  "block.data.public_player_state.wins": {
+    "description": "Total round wins this match.",
+    "type": "integer",
+    "examples": [0, 1, 2, 3, 4]
+  },
+  "block.data.public_player_state.losses": {
+    "description": "Total round losses this match.",
+    "type": "integer",
+    "examples": [0, 1, 2, 3, 4]
+  },
+  "block.data.public_player_state.net_worth": {
+    "description": "Total board net worth (unit values + items).",
+    "type": "integer",
+    "examples": [5, 10, 11, 16, 17]
+  },
+  "block.data.public_player_state.combat_result": {
+    "description": "Last combat result: 0=loss, 1=win, 2=draw.",
+    "type": "integer",
+    "examples": [0, 1, 2]
+  },
+  "block.data.public_player_state.lobby_team": {
+    "description": "Team number in team modes.",
+    "type": "integer",
+    "examples": [0, 1, 2, 3, 5]
+  },
+  "block.data.public_player_state.underlord_selected_talents": {
+    "description": "Array of selected Underlord talent IDs (typically 2 talents).",
+    "type": "array"
+  },
+  "block.data.public_player_state.is_mirrored_match": {
+    "description": "True if fighting self (setup phase mirror match).",
+    "type": "boolean",
+    "examples": [false, true]
+  },
+  "block.data.public_player_state.underlord": {
+    "description": "Selected Underlord ID.",
+    "type": "integer",
+    "examples": [0, 1, 2, 3, 4]
+  },
+  "block.data.public_player_state.board_unit_limit": {
+    "description": "Max board units (3-7 based on level).",
+    "type": "integer",
+    "examples": [3, 4, 5, 6, 7]
+  },
+  "block.data.public_player_state.combat_type": {
+    "description": "Combat type: 0=normal PvP, 1=PvE, 2=event, 3=other.",
+    "type": "integer",
+    "examples": [0, 1, 2, 3]
+  },
+  "block.data.public_player_state.prop_state": {
+    "description": "Interactive board prop states (rare, event-specific).",
+    "type": "array"
+  },
+  "block.data.public_player_state.prop_state.prop_idx": {
+    "description": "Prop index identifier.",
+    "type": "integer",
+    "examples": [4, 5, 7]
+  },
+  "block.data.public_player_state.prop_state.num_clicks": {
+    "description": "Number of times prop has been clicked.",
+    "type": "integer",
+    "examples": [1, 2]
+  },
+  "block.data.public_player_state.brawny_kills_float": {
+    "description": "Brawny alliance kill count (float, accounts for DoT).",
+    "type": "float",
+    "examples": [0.0, 1.0, 2.0, 3.0, 4.0]
+  },
+  "block.data.public_player_state.owns_event": {
+    "description": "True if player owns the current event.",
+    "type": "boolean",
+    "examples": [false, true]
+  },
+  "block.data.private_player_state": {
+    "description": "Private state (shop, challenges, rewards).",
+    "type": "object"
+  },
+  "block.data.private_player_state.player_slot": {
+    "description": "Player slot number (1-8).",
+    "type": "integer",
+    "examples": [1]
+  },
+  "block.data.private_player_state.unclaimed_reward_count": {
+    "description": "Number of unclaimed rewards.",
+    "type": "integer",
+    "examples": [0, 1]
+  },
+  "block.data.private_player_state.oldest_unclaimed_reward": {
+    "description": "Oldest unclaimed reward data (item choice rewards).",
+    "type": "object"
+  },
+  "block.data.private_player_state.oldest_unclaimed_reward.reward_id": {
+    "description": "Reward type ID.",
+    "type": "integer",
+    "examples": [6, 14, 17, 32, 33]
+  },
+  "block.data.private_player_state.oldest_unclaimed_reward.choices": {
+    "description": "Array of item choice options (typically 3 choices).",
+    "type": "array"
+  },
+  "block.data.private_player_state.oldest_unclaimed_reward.choices.item_id": {
+    "description": "Item ID for this choice option.",
+    "type": "integer",
+    "examples": [10100, 10103, 10106, 10116, 10118]
+  },
+  "block.data.private_player_state.oldest_unclaimed_reward.choices.available": {
+    "description": "Whether this choice is selectable.",
+    "type": "boolean",
+    "examples": [true]
+  },
+  "block.data.private_player_state.shop_locked": {
+    "description": "True if shop cannot be rerolled.",
+    "type": "boolean",
+    "examples": [false, true]
+  },
+  "block.data.private_player_state.shop_units": {
+    "description": "Array of 5 shop slots.",
+    "type": "array"
+  },
+  "block.data.private_player_state.shop_units.unit_id": {
+    "description": "Unit ID in shop slot (-1 = empty slot).",
+    "type": "integer",
+    "examples": [-1, 5, 13, 20, 112]
+  },
+  "block.data.private_player_state.shop_units.will_combine_two_stars": {
+    "description": "True if purchase creates 2-star unit.",
+    "type": "boolean",
+    "examples": [false, true]
+  },
+  "block.data.private_player_state.shop_units.gold_cost": {
+    "description": "Gold cost to purchase (1-5).",
+    "type": "integer",
+    "examples": [1, 2, 3, 4, 5]
+  },
+  "block.data.private_player_state.shop_units.wanted_legendary": {
+    "description": "AI preference flag for legendary units.",
+    "type": "boolean",
+    "examples": [false]
+  },
+  "block.data.private_player_state.shop_units.will_combine_three_stars": {
+    "description": "True if purchase creates 3-star unit.",
+    "type": "boolean",
+    "examples": [false, true]
+  },
+  "block.data.private_player_state.shop_units.keywords": {
+    "description": "Array of alliance keyword IDs for shop unit.",
+    "type": "array"
+  },
+  "block.data.private_player_state.gold_earned_this_round": {
+    "description": "Gold earned this round (combat + interest + streak).",
+    "type": "integer",
+    "examples": [0, 4, 5, 7, 8]
+  },
+  "block.data.private_player_state.shop_generation_id": {
+    "description": "Shop generation ID (increments on reroll).",
+    "type": "integer",
+    "examples": [0, 1, 2, 3, 4]
+  },
+  "block.data.private_player_state.challenges": {
+    "description": "Array of challenge/quest progress (typically 58 challenges).",
+    "type": "array"
+  },
+  "block.data.private_player_state.challenges.slot_id": {
+    "description": "Challenge slot ID.",
+    "type": "integer",
+    "examples": [1, 2, 17, 20, 21]
+  },
+  "block.data.private_player_state.challenges.sequence_id": {
+    "description": "Challenge sequence ID.",
+    "type": "integer",
+    "examples": [1, 167, 171]
+  },
+  "block.data.private_player_state.challenges.progress": {
+    "description": "Current challenge progress value.",
+    "type": "integer",
+    "examples": [0, 1, 4, 5, 9]
+  },
+  "block.data.private_player_state.challenges.initial_progress": {
+    "description": "Initial progress when challenge activated.",
+    "type": "integer",
+    "examples": [0, 46, 71, 90, 336]
+  },
+  "block.data.private_player_state.challenges.claimed": {
+    "description": "Reward claimed status: 0=unclaimed, 1=claimed.",
+    "type": "integer",
+    "examples": [0]
+  },
+  "block.data.private_player_state.grants_rewards": {
+    "description": "Whether current round grants rewards: 0=no, 1=yes.",
+    "type": "integer",
+    "examples": [0, 1]
+  },
+  "block.data.private_player_state.sequence_number": {
+    "description": "State update sequence number (increments per update).",
+    "type": "integer",
+    "examples": [2, 3, 6, 7, 8]
+  },
+  "block.data.private_player_state.reroll_cost": {
+    "description": "Current reroll cost in gold.",
+    "type": "integer",
+    "examples": [0, 2]
+  },
+  "block.data.private_player_state.can_select_underlord": {
+    "description": "True if Underlord selection is available.",
+    "type": "boolean",
+    "examples": [false, true]
+  },
+  "block.data.private_player_state.underlord_picker_offering": {
+    "description": "Array of Underlord pick options (typically 4 options, rare).",
+    "type": "array"
+  },
+  "block.data.private_player_state.underlord_picker_offering.underlord_id": {
+    "description": "Available Underlord ID.",
+    "type": "integer",
+    "examples": [1, 2, 3, 4]
+  },
+  "block.data.private_player_state.underlord_picker_offering.build_id": {
+    "description": "Talent build preset ID.",
+    "type": "integer",
+    "examples": [0, 1]
+  },
+  "block.data.private_player_state.used_item_reward_reroll_this_round": {
+    "description": "True if item reward reroll used this round.",
+    "type": "boolean",
+    "examples": [false, true]
+  }
+}

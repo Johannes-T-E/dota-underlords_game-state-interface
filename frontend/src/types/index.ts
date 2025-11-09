@@ -115,12 +115,8 @@ export interface PrivatePlayerState {
   can_select_underlord: boolean;
   underlord_picker_offering: number[];
   
-  // Challenges & Rewards
-  challenges: Challenge[];
-  unclaimed_reward_count: number;
-  oldest_unclaimed_reward?: number;
+  // Rewards
   used_item_reward_reroll_this_round: boolean;
-  grants_rewards: number;
   
   // Timestamp
   timestamp: string;
