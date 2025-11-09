@@ -1,6 +1,6 @@
 .streak-badge {
-  font-size: var(--scoreboard-font-size);
-  font-weight: normal;
+  font-size: calc(var(--scoreboard-font-size)*1.2);
+  font-weight: bold;
   letter-spacing: 0.5px;
 }
 
