@@ -125,7 +125,6 @@ export interface PrivatePlayerState {
 export interface RoundInfo {
   round_number: number;
   round_phase: 'prep' | 'combat';
-  is_combat_phase: boolean;
 }
 
 export interface MatchInfo {
@@ -215,4 +214,34 @@ export interface ScoreboardColumnConfig {
   bench: boolean;
   columnOrder?: string[];  // NEW: Array of column keys in display order
 }
+
+export interface Change {
+  type: 'bought' | 'sold' | 'upgraded' | 'benched' | 'deployed' | 'reposition' | 'organize_bench' | 'reroll' | 'xp_purchase' | 'level_up' | 'hp_change';
+  // Player identification
+  player_id: string;
+  // Unit change fields (optional for player changes)
+  unit_id?: number;
+  entindex?: number | null; // null for upgrades where entity changes
+  previous_entindex?: number; // for upgrades
+  rank?: number;
+  previous_rank?: number; // for upgrades
+  position?: { x: number; y: number };
+  previous_position?: { x: number; y: number }; // for moves
+  // Player change fields (optional for unit changes)
+  gold_spent?: number; // for reroll, xp_purchase
+  xp_gained?: number; // for xp_purchase
+  level_before?: number; // for level_up
+  level_after?: number; // for level_up
+  // HP change fields
+  health_before?: number; // for hp_change
+  health_after?: number; // for hp_change
+  damage_taken?: number; // for hp_change
+  // Round info (for hp_change)
+  round_number?: number; // for hp_change
+  round_phase?: 'prep' | 'combat'; // for hp_change
+  timestamp: number;
+}
+
+// Keep UnitChange as an alias for backward compatibility
+export type UnitChange = Change;
 

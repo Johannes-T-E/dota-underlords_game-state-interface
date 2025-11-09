@@ -111,21 +111,35 @@ export const ScoreboardTable = ({
     const sorted = [...players];
 
     sorted.sort((a: PlayerState, b: PlayerState) => {
+      // Separate active players (final_place === 0) from knocked-out players (final_place > 0)
+      const aKnockedOut = (a.final_place || 0) > 0;
+      const bKnockedOut = (b.final_place || 0) > 0;
+
+      // Active players come first
+      if (!aKnockedOut && bKnockedOut) return -1;
+      if (aKnockedOut && !bKnockedOut) return 1;
+
+      // If both are knocked out, sort by final_place (8th at bottom, 1st at top of knocked-out section)
+      if (aKnockedOut && bKnockedOut) {
+        return (b.final_place || 0) - (a.final_place || 0); // Descending: 8, 7, 6, ..., 1
+      }
+
+      // Both are active players - sort by selected field
       let aValue = 0;
       let bValue = 0;
 
       switch (sortField) {
         case 'health':
-          aValue = a.health;
-          bValue = b.health;
+          aValue = a.health || 0;
+          bValue = b.health || 0;
           break;
         case 'record':
-          aValue = a.wins - a.losses;
-          bValue = b.wins - b.losses;
+          aValue = (a.wins || 0) - (a.losses || 0);
+          bValue = (b.wins || 0) - (b.losses || 0);
           break;
         case 'networth':
-          aValue = a.net_worth;
-          bValue = b.net_worth;
+          aValue = a.net_worth || 0;
+          bValue = b.net_worth || 0;
           break;
       }
 

@@ -52,3 +52,6 @@ export type { EmptyStateProps } from './EmptyState/EmptyState';
 export { SettingsDrawer } from './SettingsDrawer/SettingsDrawer';
 export type { SettingsDrawerProps } from './SettingsDrawer/SettingsDrawer';
 
+export { WidgetManager } from './WidgetManager/WidgetManager';
+export type { WidgetManagerProps } from './WidgetManager/WidgetManager';
+

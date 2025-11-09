@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button, Text, StatusIndicator, PhaseIcon } from '../../atoms';
 import { RoundStatus } from '../../molecules';
+import { WidgetManager } from '../WidgetManager/WidgetManager';
 import { useAppSelector } from '../../../hooks/redux';
 import './NavigationBar.css';
 
@@ -80,6 +81,10 @@ export const NavigationBar = ({ className = '', onSettingsClick }: NavigationBar
           {!collapsed && <Text variant="body">Matches</Text>}
         </Link>
       </div>
+
+      {isActive('/dashboard') && (
+        <WidgetManager collapsed={collapsed} />
+      )}
 
       {currentRound && (
         <div className="navigation-bar__round-info">

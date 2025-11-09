@@ -58,7 +58,7 @@ class UnderlordsDatabaseManager:
     def __init__(self, db_path: Optional[str] = None) -> None:
         # Default to parent directory if not specified
         if db_path is None:
-            db_path = os.path.join(os.path.dirname(__file__), '..', 'underlords_gsi_v3.db')
+            db_path = os.path.join(os.path.dirname(__file__), '..', 'underlords_gsi_v4.db')
         self.db_path = db_path
         self.conn = None
         self.init_database()

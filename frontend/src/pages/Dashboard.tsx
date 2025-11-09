@@ -3,11 +3,16 @@ import { AppLayout, MainContentTemplate } from '../components/templates';
 import { ScoreboardWidget } from '../features/scoreboard/ScoreboardWidget';
 import { PlayerBoardWidget } from '../features/PlayerBoardWidget/PlayerBoardWidget';
 import { AllPlayerBoardsWidget } from '../features/AllPlayerBoardsWidget/AllPlayerBoardsWidget';
-import { useAppSelector } from '../hooks/redux';
+import { UnitChangesWidget } from '../features/UnitChangesWidget';
+import { useAppSelector, useAppDispatch } from '../hooks/redux';
+import { addWidgetInstance } from '../store/dashboardSlice';
 import '../components/widgets/WidgetGrid.css';
 
 export const Dashboard = () => {
+  const dispatch = useAppDispatch();
   const { boardData } = useAppSelector((state) => state.board);
+  const { widgetInstances } = useAppSelector((state) => state.dashboard);
+  
   // Free-placement state (positions persisted)
   type Positions = Record<string, { x: number; y: number }>;
   const [positions, setPositions] = React.useState<Positions>(() => {
@@ -18,7 +23,20 @@ export const Dashboard = () => {
     return { scoreboard: { x: 0, y: 0 } };
   });
 
-  const widgetIds = React.useMemo(() => ['scoreboard', 'allPlayerBoards', ...Object.keys(boardData).map((id) => `board:${id}`)], [boardData]);
+  // Sync playerBoard instances with boardData
+  React.useEffect(() => {
+    Object.keys(boardData).forEach((playerId) => {
+      const id = `board:${playerId}`;
+      if (!widgetInstances[id]) {
+        dispatch(addWidgetInstance({ type: 'playerBoard', playerId }));
+      }
+    });
+  }, [boardData, widgetInstances, dispatch]);
+
+  // Get visible widget instances from Redux
+  const visibleWidgets = React.useMemo(() => {
+    return Object.values(widgetInstances).filter((instance) => instance.visible);
+  }, [widgetInstances]);
 
   // Ensure every widget has a position; cascade new items to the right
   React.useEffect(() => {
@@ -26,16 +44,16 @@ export const Dashboard = () => {
       const next = { ...prev } as Positions;
       let cursorX = 0;
       let cursorY = 0;
-      widgetIds.forEach((id) => {
-        if (!next[id]) {
-          next[id] = { x: cursorX, y: cursorY };
+      visibleWidgets.forEach((instance) => {
+        if (!next[instance.id]) {
+          next[instance.id] = { x: cursorX, y: cursorY };
           cursorX += 420; // default placement step
           if (cursorX > 1000) { cursorX = 0; cursorY += 320; }
         }
       });
       return next;
     });
-  }, [widgetIds]);
+  }, [visibleWidgets]);
 
   // Persist positions
   React.useEffect(() => {
@@ -92,30 +110,37 @@ export const Dashboard = () => {
     <AppLayout>
       <MainContentTemplate centered>
         <div ref={canvasRef} className="dashboard-grid">
-          {widgetIds.map((id) => {
-            const pos = positions[id] || { x: 0, y: 0 };
-            if (id === 'scoreboard') {
+          {visibleWidgets.map((instance) => {
+            const pos = positions[instance.id] || { x: 0, y: 0 };
+            const storageKey = instance.type === 'playerBoard' ? 'board' : instance.id.split('-')[0];
+            
+            if (instance.type === 'scoreboard') {
               return (
-                <div key={id} className="dashboard-item" style={{ left: pos.x, top: pos.y }}>
-                  <ScoreboardWidget storageKey="scoreboard" dragId={id} onHeaderMouseDown={onHeaderMouseDown} />
+                <div key={instance.id} className="dashboard-item" style={{ left: pos.x, top: pos.y }}>
+                  <ScoreboardWidget storageKey={storageKey} dragId={instance.id} onHeaderMouseDown={onHeaderMouseDown} />
                 </div>
               );
             }
-            if (id === 'allPlayerBoards') {
+            if (instance.type === 'allPlayerBoards') {
               return (
-                <div key={id} className="dashboard-item" style={{ left: pos.x, top: pos.y }}>
-                  <AllPlayerBoardsWidget storageKey="allPlayerBoards" dragId={id} onHeaderMouseDown={onHeaderMouseDown} />
+                <div key={instance.id} className="dashboard-item" style={{ left: pos.x, top: pos.y }}>
+                  <AllPlayerBoardsWidget storageKey={storageKey} dragId={instance.id} onHeaderMouseDown={onHeaderMouseDown} />
                 </div>
               );
             }
-            if (id.startsWith('board:')) {
-              const playerId = id.split(':')[1];
-              if (!playerId) return null;
-              const player = boardData[playerId];
+            if (instance.type === 'unitChanges') {
+              return (
+                <div key={instance.id} className="dashboard-item" style={{ left: pos.x, top: pos.y }}>
+                  <UnitChangesWidget storageKey={storageKey} dragId={instance.id} onHeaderMouseDown={onHeaderMouseDown} />
+                </div>
+              );
+            }
+            if (instance.type === 'playerBoard' && instance.playerId) {
+              const player = boardData[instance.playerId];
               if (!player) return null;
               return (
-                <div key={id} className="dashboard-item" style={{ left: pos.x, top: pos.y }}>
-                  <PlayerBoardWidget player={player} storageKey="board" dragId={id} onHeaderMouseDown={onHeaderMouseDown} />
+                <div key={instance.id} className="dashboard-item" style={{ left: pos.x, top: pos.y }}>
+                  <PlayerBoardWidget player={player} storageKey={storageKey} dragId={instance.id} onHeaderMouseDown={onHeaderMouseDown} />
                 </div>
               );
             }

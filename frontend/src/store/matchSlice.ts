@@ -16,7 +16,6 @@ const initialState: MatchState = {
   currentRound: {
     round_number: 1,
     round_phase: 'prep',
-    is_combat_phase: false,
   },
   lastUpdate: null,
 };
