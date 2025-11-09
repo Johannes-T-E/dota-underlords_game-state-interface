@@ -22,18 +22,15 @@ PRIVATE_PLAYER_ACCOUNT_ID = 249722568  # int to match account_id type
 PRODUCTION = os.getenv('PRODUCTION', 'false').lower() == 'true'
 FRONTEND_BUILD_DIR = os.path.join(os.path.dirname(__file__), '..', 'frontend', 'dist')
 
-# Flask app setup - reference templates/static at parent directory
+# Flask app setup
 if PRODUCTION and os.path.exists(FRONTEND_BUILD_DIR):
     # Production: serve React from dist folder
     app = Flask(__name__, 
-                template_folder=os.path.join(os.path.dirname(__file__), '..', 'templates'),
                 static_folder=FRONTEND_BUILD_DIR, 
                 static_url_path='')
 else:
     # Development: use default Flask setup (React runs separately)
-    app = Flask(__name__, 
-                template_folder=os.path.join(os.path.dirname(__file__), '..', 'templates'),
-                static_folder=os.path.join(os.path.dirname(__file__), '..', 'static'))
+    app = Flask(__name__)
     # Enable CORS for development (React dev server runs on different port)
     CORS(app, resources={r"/*": {"origins": ["http://localhost:5173", "http://127.0.0.1:5173"]}})
 

@@ -2,7 +2,7 @@
 Flask Routes - API endpoints, WebSocket handlers, and React app serving
 """
 import os
-from flask import request, jsonify, render_template, send_from_directory
+from flask import request, jsonify, send_from_directory
 from flask_socketio import emit
 from datetime import datetime
 from .game_state import match_state, db, db_write_queue, connected_clients, stats, abandon_match, emit_realtime_update
@@ -18,15 +18,6 @@ if PRODUCTION and FRONTEND_BUILD_DIR and os.path.exists(FRONTEND_BUILD_DIR):
     def serve_react_app():
         """Serve the React app for all frontend routes."""
         return send_from_directory(app.static_folder, 'index.html')
-else:
-    # Development mode - keep old template routes for reference
-    @app.route('/dashboard')
-    def dashboard():
-        return render_template('scoreboard.html')
-
-    @app.route('/matches')
-    def matches_page():
-        return render_template('matches.html')
 
 
 @app.route('/api/status')
