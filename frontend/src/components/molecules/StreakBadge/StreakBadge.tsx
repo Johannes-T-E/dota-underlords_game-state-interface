@@ -1,4 +1,4 @@
-import { Badge } from '../../atoms';
+import { Text } from '../../atoms';
 import './StreakBadge.css';
 
 export interface StreakBadgeProps {
@@ -10,17 +10,17 @@ export interface StreakBadgeProps {
 export const StreakBadge = ({ winStreak = 0, loseStreak = 0, className = '' }: StreakBadgeProps) => {
   if (winStreak > 0) {
     return (
-      <Badge variant="win" className={`streak-badge ${className}`}>
-        W{winStreak}
-      </Badge>
+      <Text className={`streak-badge streak-badge--win ${className}`}>
+        {winStreak}
+      </Text>
     );
   }
   
   if (loseStreak > 0) {
     return (
-      <Badge variant="loss" className={`streak-badge ${className}`}>
-        L{loseStreak}
-      </Badge>
+      <Text className={`streak-badge streak-badge--loss ${className}`}>
+        {loseStreak}
+      </Text>
     );
   }
   

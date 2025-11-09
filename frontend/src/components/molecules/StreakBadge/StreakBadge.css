@@ -1,5 +1,14 @@
 .streak-badge {
-  font-size: 11px;
-  padding: 3px 6px;
+  font-size: var(--scoreboard-font-size);
+  font-weight: normal;
+  letter-spacing: 0.5px;
+}
+
+.streak-badge--win {
+  color: var(--win-streak-color);
+}
+
+.streak-badge--loss {
+  color: var(--lose-streak-color);
 }
 
