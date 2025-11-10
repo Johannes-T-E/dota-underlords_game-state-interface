@@ -4,14 +4,12 @@ import {
   StatDisplay, 
   StreakBadge, 
   RecordDisplay, 
-  ChangeBar, 
   HeroPortrait,
   LevelXpIndicator,
   HealthDisplay,
   NetWorthDisplay,
   GoldDisplay
 } from '../../molecules';
-import type { ChangeEventData } from '../../molecules';
 import type { PlayerState, ScoreboardColumnConfig, Unit } from '../../../types';
 import type { HeroesData } from '../../../utils/heroHelpers';
 import { getHeroTier } from '../../../utils/heroHelpers';
@@ -22,7 +20,6 @@ export interface ScoreboardPlayerRowProps {
   rank: number;
   isSelected: boolean;
   onClick: () => void;
-  changeEvents: ChangeEventData[];
   heroesData: HeroesData | null;
   visibleColumns?: ScoreboardColumnConfig;
   columnOrder?: string[];
@@ -34,7 +31,6 @@ export const ScoreboardPlayerRow = memo(({
   rank, 
   isSelected, 
   onClick,
-  changeEvents,
   heroesData,
   visibleColumns,
   columnOrder,
@@ -102,7 +98,6 @@ export const ScoreboardPlayerRow = memo(({
       case 'place':
         return (
           <div key={columnKey} className="scoreboard-player-row__place">
-            <ChangeBar events={changeEvents} />
             <div className="scoreboard-player-row__rank">{rank}</div>
           </div>
         );

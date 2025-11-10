@@ -2,7 +2,6 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { ScoreboardHeader } from '../ScoreboardHeader/ScoreboardHeader';
 import { ScoreboardPlayerRow } from '../ScoreboardPlayerRow/ScoreboardPlayerRow';
 import { ScoreboardSettings } from '../ScoreboardSettings/ScoreboardSettings';
-import { usePlayerChanges } from '../../../hooks/usePlayerChanges';
 import { useHeroesData } from '../../../hooks/useHeroesData';
 import { useScoreboardSettings } from '../../../hooks/useSettings';
 import type { PlayerState, ScoreboardColumnConfig } from '../../../types';
@@ -12,41 +11,6 @@ import './ScoreboardTable.css';
 // Helper function to get player_id with fallback to account_id
 const getPlayerId = (player: PlayerState): string => {
   return player.player_id || String(player.account_id);
-};
-
-// Separate component to handle player changes hook
-const PlayerRowWithChanges = ({ 
-  player, 
-  rank, 
-  isSelected, 
-  onClick, 
-  heroesData, 
-  visibleColumns,
-  columnOrder
-}: {
-  player: PlayerState;
-  rank: number;
-  isSelected: boolean;
-  onClick: () => void;
-  heroesData: any;
-  visibleColumns: ScoreboardColumnConfig;
-  columnOrder?: string[];
-}) => {
-  const playerId = getPlayerId(player);
-  const changeEvents = usePlayerChanges(playerId, player);
-  
-  return (
-    <ScoreboardPlayerRow
-      player={player}
-      rank={rank}
-      isSelected={isSelected}
-      onClick={onClick}
-      changeEvents={changeEvents}
-      heroesData={heroesData}
-      visibleColumns={visibleColumns}
-      columnOrder={columnOrder}
-    />
-  );
 };
 
 export interface ScoreboardTableProps {
@@ -119,9 +83,9 @@ export const ScoreboardTable = ({
       if (!aKnockedOut && bKnockedOut) return -1;
       if (aKnockedOut && !bKnockedOut) return 1;
 
-      // If both are knocked out, sort by final_place (8th at bottom, 1st at top of knocked-out section)
+      // If both are knocked out, sort by final_place (1st at top, 8th at bottom)
       if (aKnockedOut && bKnockedOut) {
-        return (b.final_place || 0) - (a.final_place || 0); // Descending: 8, 7, 6, ..., 1
+        return (a.final_place || 0) - (b.final_place || 0); // Ascending: 1, 2, 3, ..., 8
       }
 
       // Both are active players - sort by selected field
@@ -191,7 +155,7 @@ export const ScoreboardTable = ({
         {sortedPlayers.map((player, index) => {
           const playerId = getPlayerId(player);
           return (
-            <PlayerRowWithChanges
+            <ScoreboardPlayerRow
               key={playerId}
               player={player}
               rank={index + 1}
