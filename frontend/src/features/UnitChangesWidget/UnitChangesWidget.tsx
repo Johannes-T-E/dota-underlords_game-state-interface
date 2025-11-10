@@ -583,7 +583,7 @@ export const UnitChangesWidget = ({ storageKey, dragId, onHeaderMouseDown }: Uni
         {/* Changes List */}
         {filteredChanges.length > 0 && (
           <div className="unit-changes-widget__section">
-            <Text variant="heading" className="unit-changes-widget__section-title">
+            <Text variant="label" className="unit-changes-widget__section-title">
               Changes ({filteredChanges.length})
             </Text>
             <div className="unit-changes-widget__changes-list">

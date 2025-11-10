@@ -202,7 +202,11 @@ def process_and_store_gsi_public_player_state(account_id: int, gsi_public_player
         
         # Technical
         'sequence_number': gsi_public_player_state.get('sequence_number'),
-        'timestamp': timestamp.isoformat()
+        'timestamp': timestamp.isoformat(),
+        
+        # Round tracking
+        'round_number': match_state.round_number,
+        'round_phase': match_state.round_phase
     }
     
     # Store in match state

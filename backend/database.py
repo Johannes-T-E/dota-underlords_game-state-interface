@@ -28,7 +28,8 @@ class UnderlordsDatabaseManager:
         'rank_tier', 'final_place', 'platform',
         'vs_opponent_wins', 'vs_opponent_losses', 'vs_opponent_draws',
         'brawny_kills_float', 'city_prestige_level', 'event_tier', 'owns_event', 'is_mirrored_match',
-        'connection_status', 'disconnected_time', 'lobby_team'
+        'connection_status', 'disconnected_time', 'lobby_team',
+        'round_number', 'round_phase'
     ]
     
     PUBLIC_SNAPSHOT_JSON_FIELDS = {
@@ -68,6 +69,7 @@ class UnderlordsDatabaseManager:
         self.conn = sqlite3.connect(self.db_path, check_same_thread=False)
         self.conn.row_factory = sqlite3.Row  # Enable column access by name
         self.create_tables()
+        self.migrate_add_round_columns()
     
     def create_tables(self) -> None:
         """Create all necessary tables."""
@@ -158,6 +160,10 @@ class UnderlordsDatabaseManager:
                 units_json TEXT,
                 items_json TEXT,
                 
+                -- Round tracking
+                round_number INTEGER,
+                round_phase TEXT,
+                
                 FOREIGN KEY (match_id) REFERENCES matches(match_id)
             )
         """)
@@ -196,7 +202,40 @@ class UnderlordsDatabaseManager:
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_match_players ON match_players(match_id, account_id)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_public_snapshots_player ON public_player_snapshots(account_id, sequence_number)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_public_snapshots_match ON public_player_snapshots(match_id, timestamp)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_public_snapshots_round ON public_player_snapshots(match_id, account_id, round_number, round_phase)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_private_snapshots_match ON private_player_snapshots(match_id, timestamp)")
+        
+        self.conn.commit()
+    
+    def migrate_add_round_columns(self) -> None:
+        """Add round_number and round_phase columns to existing databases if they don't exist."""
+        cursor = self.conn.cursor()
+        
+        # Check if columns exist by querying table info
+        cursor.execute("PRAGMA table_info(public_player_snapshots)")
+        columns = [row[1] for row in cursor.fetchall()]
+        
+        # Add round_number if it doesn't exist
+        if 'round_number' not in columns:
+            try:
+                cursor.execute("ALTER TABLE public_player_snapshots ADD COLUMN round_number INTEGER")
+                print("[MIGRATION] Added round_number column to public_player_snapshots")
+            except sqlite3.OperationalError as e:
+                print(f"[MIGRATION] Could not add round_number: {e}")
+        
+        # Add round_phase if it doesn't exist
+        if 'round_phase' not in columns:
+            try:
+                cursor.execute("ALTER TABLE public_player_snapshots ADD COLUMN round_phase TEXT")
+                print("[MIGRATION] Added round_phase column to public_player_snapshots")
+            except sqlite3.OperationalError as e:
+                print(f"[MIGRATION] Could not add round_phase: {e}")
+        
+        # Add index if it doesn't exist
+        try:
+            cursor.execute("CREATE INDEX IF NOT EXISTS idx_public_snapshots_round ON public_player_snapshots(match_id, account_id, round_number, round_phase)")
+        except sqlite3.OperationalError as e:
+            print(f"[MIGRATION] Could not create round index: {e}")
         
         self.conn.commit()
     
@@ -325,8 +364,9 @@ class UnderlordsDatabaseManager:
                 vs_opponent_wins, vs_opponent_losses, vs_opponent_draws,
                 brawny_kills_float, city_prestige_level, event_tier, owns_event, is_mirrored_match,
                 connection_status, disconnected_time, lobby_team,
-                underlord_talents, synergies_json, board_buddy_json, units_json, items_json
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                underlord_talents, synergies_json, board_buddy_json, units_json, items_json,
+                round_number, round_phase
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, params)
         
         return cursor.lastrowid
