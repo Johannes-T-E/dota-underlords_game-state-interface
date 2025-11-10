@@ -53,6 +53,24 @@ class ApiService {
   async getHealth(): Promise<ApiHealthResponse> {
     return this.request<ApiHealthResponse>('/api/health');
   }
+
+  async getMatchChanges(
+    matchId: string,
+    accountId?: number,
+    limit?: number,
+    roundNumber?: number,
+    roundPhase?: string
+  ): Promise<{ status: string; match_id: string; changes: any[]; count: number }> {
+    const params = new URLSearchParams();
+    if (accountId !== undefined) params.append('account_id', accountId.toString());
+    if (limit !== undefined) params.append('limit', limit.toString());
+    if (roundNumber !== undefined) params.append('round_number', roundNumber.toString());
+    if (roundPhase !== undefined) params.append('round_phase', roundPhase);
+    
+    const queryString = params.toString();
+    const endpoint = `/api/matches/${matchId}/changes${queryString ? `?${queryString}` : ''}`;
+    return this.request(endpoint);
+  }
 }
 
 export const apiService = new ApiService();

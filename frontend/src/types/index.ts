@@ -216,10 +216,13 @@ export interface ScoreboardColumnConfig {
 }
 
 export interface Change {
-  type: 'bought' | 'sold' | 'upgraded' | 'benched' | 'deployed' | 'reposition' | 'organize_bench' | 'reroll' | 'xp_purchase' | 'level_up' | 'hp_change';
+  type: 'bought' | 'sold' | 'upgraded' | 'benched' | 'deployed' | 'reposition' | 'organize_bench' | 
+        'reroll' | 'xp_purchase' | 'level_up' | 'hp_change' |
+        'item_added' | 'item_assigned' | 'item_unassigned' | 'item_reassigned' |
+        'synergy_added' | 'synergy_removed' | 'synergy_level_changed';
   // Player identification
   player_id: string;
-  // Unit change fields (optional for player changes)
+  // Unit change fields (optional for non-unit changes)
   unit_id?: number;
   entindex?: number | null; // null for upgrades where entity changes
   previous_entindex?: number; // for upgrades
@@ -227,11 +230,11 @@ export interface Change {
   previous_rank?: number; // for upgrades
   position?: { x: number; y: number };
   previous_position?: { x: number; y: number }; // for moves
-  // Player change fields (optional for unit changes)
+  // Player change fields (optional for non-player changes)
   gold_spent?: number; // for reroll, xp_purchase
   xp_gained?: number; // for xp_purchase
-  level_before?: number; // for level_up
-  level_after?: number; // for level_up
+  level_before?: number; // for level_up, synergy_level_changed
+  level_after?: number; // for level_up, synergy_level_changed
   // HP change fields
   health_before?: number; // for hp_change
   health_after?: number; // for hp_change
@@ -239,6 +242,15 @@ export interface Change {
   // Round info (for hp_change)
   round_number?: number; // for hp_change
   round_phase?: 'prep' | 'combat'; // for hp_change
+  // Item change fields (optional)
+  item_id?: number;
+  slot_index?: number;
+  assigned_unit_entindex?: number | null;
+  previous_assigned_unit_entindex?: number | null;
+  new_assigned_unit_entindex?: number; // for item_reassigned
+  // Synergy change fields (optional)
+  synergy_keyword?: number;
+  unique_unit_count?: number; // for synergy_added, synergy_removed
   timestamp: number;
 }
 

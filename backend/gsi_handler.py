@@ -11,6 +11,7 @@ from .game_state import (
 )
 from .utils import generate_bot_account_id, is_valid_new_player
 from .config import socketio, PRIVATE_PLAYER_ACCOUNT_ID
+from .change_detector import change_detector
 
 
 def db_writer_worker():
@@ -274,6 +275,35 @@ def process_public_player_state(gsi_public_player_state, timestamp):
     db_write_queue.put(('insert_snapshot', match_state.match_id, 'public_player', account_id, processed_public_state, timestamp))
     print(f"[GSI] Queued public snapshot for player {account_id}, match {match_state.match_id}, queue size: {db_write_queue.qsize()}")
     
+    # Detect changes from previous state
+    previous_state = change_detector.get_previous_state(match_state.match_id, account_id)
+    if previous_state is not None:
+        # Detect changes between previous and current state
+        detected_changes = change_detector.detect_changes(
+            previous_state,
+            processed_public_state,
+            account_id,
+            match_state.match_id,
+            round_number=processed_public_state.get('round_number'),
+            round_phase=processed_public_state.get('round_phase')
+        )
+        
+        # Add changes to buffer (automatically done by detect_changes, but we need to add them)
+        if detected_changes:
+            for change in detected_changes:
+                change_detector.add_change(match_state.match_id, change)
+            
+            # Emit player_changes WebSocket event
+            socketio.emit('player_changes', {
+                'match_id': match_state.match_id,
+                'account_id': account_id,
+                'changes': detected_changes,
+                'timestamp': timestamp.isoformat()
+            }, to=None)
+    
+    # Update previous state for next comparison
+    change_detector.update_previous_state(match_state.match_id, account_id, processed_public_state)
+    
     # Check for match end
     final_place = gsi_public_player_state.get('final_place', 0)
     if final_place > 0:
@@ -289,6 +319,8 @@ def process_public_player_state(gsi_public_player_state, timestamp):
                 'match_id': match_state.match_id,
                 'timestamp': timestamp.isoformat()
             }, to=None)
+            # Clear change detector buffer for this match
+            change_detector.clear_match(match_state.match_id)
             # Now reset the state
             match_state.reset()
     

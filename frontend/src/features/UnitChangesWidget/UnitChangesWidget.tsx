@@ -4,6 +4,7 @@ import { Text, PhaseIcon, Button } from '../../components/atoms';
 import { HeroPortrait, HealthDisplay, LevelXpIndicator, SettingsSection } from '../../components/molecules';
 import { useAppSelector } from '../../hooks/redux';
 import { useHeroesData } from '../../hooks/useHeroesData';
+import { apiService } from '../../services/api';
 import type { PlayerState, Change } from '../../types';
 import './UnitChangesWidget.css';
 
@@ -20,7 +21,7 @@ const getPlayerId = (player: PlayerState): string => {
 
 export const UnitChangesWidget = ({ storageKey, dragId, onHeaderMouseDown }: UnitChangesWidgetProps) => {
   const { heroesData } = useHeroesData();
-  const { players, currentRound } = useAppSelector((state) => state.match);
+  const { players, currentMatch } = useAppSelector((state) => state.match);
   const [selectedPlayerIds, setSelectedPlayerIds] = useState<Set<string>>(new Set());
   const [changeFilters, setChangeFilters] = useState<{
     all: boolean;
@@ -35,6 +36,13 @@ export const UnitChangesWidget = ({ storageKey, dragId, onHeaderMouseDown }: Uni
     xp_purchase: boolean;
     level_up: boolean;
     hp_change: boolean;
+    item_added: boolean;
+    item_assigned: boolean;
+    item_unassigned: boolean;
+    item_reassigned: boolean;
+    synergy_added: boolean;
+    synergy_removed: boolean;
+    synergy_level_changed: boolean;
   }>({
     all: true,
     bought: true,
@@ -48,10 +56,18 @@ export const UnitChangesWidget = ({ storageKey, dragId, onHeaderMouseDown }: Uni
     xp_purchase: true,
     level_up: true,
     hp_change: true,
+    item_added: true,
+    item_assigned: true,
+    item_unassigned: true,
+    item_reassigned: true,
+    synergy_added: true,
+    synergy_removed: true,
+    synergy_level_changed: true,
   });
   const [changes, setChanges] = useState<Change[]>([]);
-  const previousPlayersRef = useRef<Map<string, PlayerState>>(new Map());
+  const [loading, setLoading] = useState(false);
   const hasManuallySelectedRef = useRef<boolean>(false);
+  const queuedChangesRef = useRef<Change[]>([]);
 
   // Get valid players
   const validPlayers = useMemo(() => {
@@ -71,309 +87,100 @@ export const UnitChangesWidget = ({ storageKey, dragId, onHeaderMouseDown }: Uni
     }
   }, [validPlayers, selectedPlayerIds.size]);
 
-  // Change detection logic - runs for all players
+  // Historical data fetching - runs when component mounts or match_id changes
   useEffect(() => {
-    if (validPlayers.length === 0) return;
+    if (!currentMatch?.match_id) {
+      setChanges([]);
+      return;
+    }
 
-    const previousPlayers = previousPlayersRef.current;
-    const newChanges: Change[] = [];
-    const timestamp = Date.now();
+    const fetchChanges = async () => {
+      setLoading(true);
+      try {
+        // Get selected player account IDs if filtering
+        const accountIds = selectedPlayerIds.size > 0 && selectedPlayerIds.size < validPlayers.length
+          ? validPlayers
+              .filter((p) => selectedPlayerIds.has(getPlayerId(p)))
+              .map((p) => p.account_id)
+          : undefined;
 
-    // Process each valid player
-    validPlayers.forEach((currentPlayer) => {
-      const playerId = getPlayerId(currentPlayer);
-      const previousPlayer = previousPlayers.get(playerId);
+        const response = await apiService.getMatchChanges(currentMatch.match_id, accountIds?.[0], undefined);
+        
+        if (response.status === 'success') {
+          // Convert backend timestamp (ISO string) to frontend format (milliseconds)
+          const convertedChanges: Change[] = response.changes.map((change: any) => ({
+            ...change,
+            timestamp: new Date(change.timestamp).getTime(),
+          }));
 
-      // Skip if no previous state (first time seeing this player)
-      if (!previousPlayer) {
-        previousPlayers.set(playerId, currentPlayer);
+          // Merge with any queued changes and deduplicate
+          const allChanges = [...convertedChanges, ...queuedChangesRef.current];
+          const uniqueChanges = deduplicateChanges(allChanges);
+          
+          setChanges(uniqueChanges);
+          queuedChangesRef.current = [];
+        }
+      } catch (error) {
+        console.error('[UnitChangesWidget] Failed to fetch changes:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchChanges();
+  }, [currentMatch?.match_id, selectedPlayerIds, validPlayers]);
+
+  // Real-time WebSocket listener
+  useEffect(() => {
+    const handlePlayerChanges = (event: CustomEvent) => {
+      const { match_id, account_id, changes: newChanges, timestamp } = event.detail;
+      
+      // Filter by current match_id
+      if (currentMatch?.match_id !== match_id) {
         return;
       }
 
-      // Calculate player stat changes
-      const goldDelta = (currentPlayer.gold || 0) - (previousPlayer.gold || 0);
-      const xpDelta = (currentPlayer.xp || 0) - (previousPlayer.xp || 0);
-      const levelDelta = (currentPlayer.level || 0) - (previousPlayer.level || 0);
-      const healthDelta = (currentPlayer.health || 0) - (previousPlayer.health || 0);
+      // Convert backend timestamp to frontend format
+      const convertedChanges: Change[] = newChanges.map((change: any) => ({
+        ...change,
+        timestamp: new Date(timestamp).getTime(),
+      }));
 
-      // Safely get units arrays, defaulting to empty arrays if null/undefined
-      const previousUnits = previousPlayer.units || [];
-      const currentUnits = currentPlayer.units || [];
-
-      // Create maps for efficient lookup
-      const previousUnitsByEntindex = new Map<number, typeof previousUnits[0]>();
-      const currentUnitsByEntindex = new Map<number, typeof currentUnits[0]>();
-      
-      previousUnits.forEach((unit) => {
-        previousUnitsByEntindex.set(unit.entindex, unit);
-      });
-      
-      currentUnits.forEach((unit) => {
-        currentUnitsByEntindex.set(unit.entindex, unit);
-      });
-
-      // Track units by unit_id and rank for upgrade detection
-      const previousUnitsByUnitIdAndRank = new Map<string, typeof previousUnits[0][]>();
-      const currentUnitsByUnitIdAndRank = new Map<string, typeof currentUnits[0][]>();
-
-      previousUnits.forEach((unit) => {
-        const key = `${unit.unit_id}:${unit.rank}`;
-        if (!previousUnitsByUnitIdAndRank.has(key)) {
-          previousUnitsByUnitIdAndRank.set(key, []);
-        }
-        previousUnitsByUnitIdAndRank.get(key)!.push(unit);
-      });
-
-      currentUnits.forEach((unit) => {
-        const key = `${unit.unit_id}:${unit.rank}`;
-        if (!currentUnitsByUnitIdAndRank.has(key)) {
-          currentUnitsByUnitIdAndRank.set(key, []);
-        }
-        currentUnitsByUnitIdAndRank.get(key)!.push(unit);
-      });
-
-      // Track consumed entindexes (units used in upgrades) to exclude from "sold"
-      const consumedEntindexes = new Set<number>();
-      // Track upgraded entindexes (result units) to exclude from "bought"
-      const upgradedEntindexes = new Set<number>();
-
-      // FIRST: Detect upgrades
-      // If a unit with rank > 1 appears that wasn't there before, it's an upgrade (not a buy)
-      // This works for any rank upgrade: rank 1→2, rank 2→3, etc.
-      // Process from highest rank to lowest to handle cascading upgrades correctly
-      const unitsByRank = currentUnits
-        .filter((unit) => unit.rank > 1 && !previousUnitsByEntindex.has(unit.entindex))
-        .sort((a, b) => b.rank - a.rank); // Sort descending by rank
-      
-      unitsByRank.forEach((unit) => {
-        const previousRank = unit.rank - 1;
-        const previousKey = `${unit.unit_id}:${previousRank}`;
-        const previousLowerRankUnits = previousUnitsByUnitIdAndRank.get(previousKey) || [];
-        
-        // Check which lower-rank units disappeared (were consumed in the upgrade)
-        // We'll only see 2 units disappear - the 3rd one was just bought and consumed immediately
-        // Examples:
-        // - Rank 1→2: 2 rank 1 units disappear, 1 rank 2 unit appears (the bought one)
-        // - Rank 2→3: 2 rank 2 units disappear, 1 rank 3 unit appears (the bought one)
-        // - Cascading: 2 rank 1 units disappear (1→2 upgrade), 2 rank 2 units disappear (2→3 upgrade)
-        const disappearedLowerRankUnits = previousLowerRankUnits.filter(
-          (prevUnit) => !currentUnitsByEntindex.has(prevUnit.entindex) && 
-                       !consumedEntindexes.has(prevUnit.entindex) // Don't count units already consumed in higher-rank upgrades
-        );
-        
-        // Need at least 2 units to have disappeared (the 3rd was the bought one that got consumed immediately)
-        // The 3rd unit that was bought appears as the higher rank unit (rank 2, 3, etc.)
-        if (disappearedLowerRankUnits.length >= 2) {
-          // Mark this as an upgrade
-          upgradedEntindexes.add(unit.entindex);
-          
-          // Mark the consumed units (the 2 that disappeared from the board)
-          disappearedLowerRankUnits.forEach((consumedUnit) => {
-            consumedEntindexes.add(consumedUnit.entindex);
-          });
-          
-          // For cascading upgrades (e.g., rank 2→3), also check if rank 1 units of the same unit_id disappeared
-          // These were consumed in the intermediate rank 1→2 upgrade that fed into the rank 2→3 upgrade
-          if (previousRank > 1) {
-            const rank1Key = `${unit.unit_id}:1`;
-            const previousRank1Units = previousUnitsByUnitIdAndRank.get(rank1Key) || [];
-            const disappearedRank1Units = previousRank1Units.filter(
-              (prevUnit) => !currentUnitsByEntindex.has(prevUnit.entindex) && 
-                           !consumedEntindexes.has(prevUnit.entindex)
-            );
-            
-            // If we see rank 1 units disappearing along with rank 2 units, they're part of the cascading upgrade
-            if (disappearedRank1Units.length >= 2) {
-              // Mark these rank 1 units as consumed too
-              disappearedRank1Units.forEach((consumedUnit) => {
-                consumedEntindexes.add(consumedUnit.entindex);
-              });
-            }
-          }
-          
-          // Find the consumed units' entindexes for display
-          const consumedEntindexesList = disappearedLowerRankUnits.map((u) => u.entindex);
-          
-          newChanges.push({
-            type: 'upgraded',
-            player_id: playerId,
-            unit_id: unit.unit_id,
-            entindex: unit.entindex,
-            previous_entindex: consumedEntindexesList[0], // Store first consumed entindex
-            rank: unit.rank,
-            previous_rank: previousRank,
-            position: unit.position,
-            timestamp,
-          });
-        }
-      });
-
-      // Detect bought: new entindex appears, but only if rank = 1
-      // Rank > 1 units that appear are always upgrades (you can't buy rank > 1 units from shop)
-      currentUnits.forEach((unit) => {
-        // Only rank 1 units can be bought - rank > 1 are always upgrades
-        if (!previousUnitsByEntindex.has(unit.entindex) && unit.rank === 1) {
-          // Check if this unit_id was just upgraded (the 3rd bought unit gets consumed immediately)
-          // If an upgrade was detected for this unit_id, suppress the bought event
-          const wasPartOfUpgrade = Array.from(upgradedEntindexes).some((upgradedEntindex) => {
-            const upgradedUnit = currentUnits.find((cu) => cu.entindex === upgradedEntindex);
-            return upgradedUnit && upgradedUnit.unit_id === unit.unit_id;
-          });
-          
-          if (!wasPartOfUpgrade) {
-            newChanges.push({
-              type: 'bought',
-              player_id: playerId,
-              unit_id: unit.unit_id,
-              entindex: unit.entindex,
-              rank: unit.rank,
-              position: unit.position,
-              timestamp,
-            });
-          }
-        }
-        // Note: We don't check for rank > 1 units here because they're always upgrades, 
-        // which are already handled in the upgrade detection above
-      });
-
-      // Detect sold: entindex disappears, but exclude units consumed in upgrades
-      previousUnits.forEach((unit) => {
-        if (!currentUnitsByEntindex.has(unit.entindex)) {
-          // Only mark as sold if it wasn't consumed in an upgrade
-          if (!consumedEntindexes.has(unit.entindex)) {
-            newChanges.push({
-              type: 'sold',
-              player_id: playerId,
-              unit_id: unit.unit_id,
-              entindex: unit.entindex,
-              rank: unit.rank,
-              previous_position: unit.position,
-              timestamp,
-            });
-          }
-        }
-      });
-
-      // Detect moved: same entindex, different position
-      // Determine if position is on board (y >= 0 && y <= 3) or bench (y === -1)
-      const isBoardPosition = (y: number) => y >= 0 && y <= 3;
-      const isBenchPosition = (y: number) => y === -1;
-      
-      currentUnits.forEach((unit) => {
-        const previousUnit = previousUnitsByEntindex.get(unit.entindex);
-        if (previousUnit) {
-          const positionChanged = 
-            previousUnit.position.x !== unit.position.x ||
-            previousUnit.position.y !== unit.position.y;
-          
-          if (positionChanged) {
-            const prevOnBoard = isBoardPosition(previousUnit.position.y);
-            const prevOnBench = isBenchPosition(previousUnit.position.y);
-            const currOnBoard = isBoardPosition(unit.position.y);
-            const currOnBench = isBenchPosition(unit.position.y);
-            
-            let moveType: 'benched' | 'deployed' | 'reposition' | 'organize_bench';
-            
-            if (prevOnBoard && currOnBoard) {
-              // Board to board = reposition
-              moveType = 'reposition';
-            } else if (prevOnBench && currOnBench) {
-              // Bench to bench = organize bench
-              moveType = 'organize_bench';
-            } else if (prevOnBoard && currOnBench) {
-              // Board to bench = benched
-              moveType = 'benched';
-            } else {
-              // Bench to board = deployed
-              moveType = 'deployed';
-            }
-            
-            newChanges.push({
-              type: moveType,
-              player_id: playerId,
-              unit_id: unit.unit_id,
-              entindex: unit.entindex,
-              rank: unit.rank,
-              position: unit.position,
-              previous_position: previousUnit.position,
-              timestamp,
-            });
-          }
-        }
-      });
-
-      // Detect player changes (reroll, XP purchase, level up, HP change)
-      // These should be detected after unit changes to check if units were bought/upgraded
-      
-      // Get changes for this player only (for reroll detection)
-      const playerChanges = newChanges.filter((c) => c.player_id === playerId);
-      
-      // Detect reroll: Gold decreases by 2, no units were bought or upgraded
-      // Check if any units were bought or upgraded (not sold/moved)
-      const hasBoughtOrUpgraded = playerChanges.some(
-        (change) => change.type === 'bought' || change.type === 'upgraded'
-      );
-      
-      if (goldDelta === -2 && !hasBoughtOrUpgraded) {
-        // If gold went down by 2 and no units were bought/upgraded, it's a reroll
-        newChanges.push({
-          type: 'reroll',
-          player_id: playerId,
-          gold_spent: 2,
-          timestamp,
-        });
-      }
-      
-      // Detect XP purchase: Account for level ups when calculating effective XP gain
-      // When buying XP causes a level up, XP resets to 0/next_level_xp
-      // Formula: effectiveXpGain = xpDelta + (levelDelta * previousNextLevelXp)
-      const effectiveXpGain = xpDelta + (levelDelta * (previousPlayer.next_level_xp || 0));
-      
-      if (effectiveXpGain === 5 && goldDelta === -5) {
-        newChanges.push({
-          type: 'xp_purchase',
-          player_id: playerId,
-          gold_spent: 5,
-          xp_gained: 5,
-          timestamp,
-        });
-      }
-      
-      // Detect level up: Level increases
-      if (levelDelta > 0) {
-        newChanges.push({
-          type: 'level_up',
-          player_id: playerId,
-          level_before: previousPlayer.level || 0,
-          level_after: currentPlayer.level || 0,
-          timestamp,
-        });
+      // If we're still loading historical data, queue these changes
+      if (loading) {
+        queuedChangesRef.current.push(...convertedChanges);
+        return;
       }
 
-      // Detect HP change: Health decreases (damage taken)
-      if (healthDelta < 0) {
-        const damageTaken = Math.abs(healthDelta);
-        newChanges.push({
-          type: 'hp_change',
-          player_id: playerId,
-          health_before: previousPlayer.health || 0,
-          health_after: currentPlayer.health || 0,
-          damage_taken: damageTaken,
-          round_number: currentRound?.round_number,
-          round_phase: currentRound?.round_phase,
-          timestamp,
-        });
-      }
+      // Merge new changes into existing changes and deduplicate
+      setChanges((prev) => {
+        const allChanges = [...convertedChanges, ...prev];
+        return deduplicateChanges(allChanges);
+      });
+    };
 
-      // Update previous state for this player
-      previousPlayers.set(playerId, currentPlayer);
+    window.addEventListener('player_changes' as any, handlePlayerChanges as EventListener);
+    
+    return () => {
+      window.removeEventListener('player_changes' as any, handlePlayerChanges as EventListener);
+    };
+  }, [currentMatch?.match_id, loading]);
+
+  // Helper function to deduplicate changes
+  const deduplicateChanges = (changes: Change[]): Change[] => {
+    const seen = new Set<string>();
+    return changes.filter((change) => {
+      // Create unique key: timestamp + player_id + change type + unit_id/item_id/synergy_keyword
+      const key = `${change.timestamp}-${change.player_id}-${change.type}-${
+        change.unit_id ?? change.item_id ?? change.synergy_keyword ?? ''
+      }`;
+      if (seen.has(key)) {
+        return false;
+      }
+      seen.add(key);
+      return true;
     });
-
-    // Add all new changes to the changes array
-    if (newChanges.length > 0) {
-      setChanges((prev) => [...newChanges, ...prev].slice(0, 500)); // Keep last 500 changes (increased for all players)
-    }
-  }, [validPlayers]);
+  };
 
   const handleFilterChange = (filterType: keyof typeof changeFilters) => {
     if (filterType === 'all') {
@@ -391,6 +198,13 @@ export const UnitChangesWidget = ({ storageKey, dragId, onHeaderMouseDown }: Uni
         xp_purchase: newValue,
         level_up: newValue,
         hp_change: newValue,
+        item_added: newValue,
+        item_assigned: newValue,
+        item_unassigned: newValue,
+        item_reassigned: newValue,
+        synergy_added: newValue,
+        synergy_removed: newValue,
+        synergy_level_changed: newValue,
       });
     } else {
       setChangeFilters((prev) => {
@@ -399,7 +213,9 @@ export const UnitChangesWidget = ({ storageKey, dragId, onHeaderMouseDown }: Uni
         newFilters.all = newFilters.bought && newFilters.sold && newFilters.upgraded && 
                          newFilters.benched && newFilters.deployed && newFilters.reposition && newFilters.organize_bench &&
                          newFilters.reroll && newFilters.xp_purchase && 
-                         newFilters.level_up && newFilters.hp_change;
+                         newFilters.level_up && newFilters.hp_change &&
+                         newFilters.item_added && newFilters.item_assigned && newFilters.item_unassigned && newFilters.item_reassigned &&
+                         newFilters.synergy_added && newFilters.synergy_removed && newFilters.synergy_level_changed;
         return newFilters;
       });
     }
@@ -577,6 +393,67 @@ export const UnitChangesWidget = ({ storageKey, dragId, onHeaderMouseDown }: Uni
                 </Button>
               </div>
             </div>
+
+            <div className="unit-changes-widget__filter-group">
+              <Text variant="label" className="unit-changes-widget__group-title">Items</Text>
+              <div className="unit-changes-widget__button-group">
+                <Button
+                  variant={changeFilters.item_added ? 'primary' : 'secondary'}
+                  size="small"
+                  onClick={() => handleFilterChange('item_added')}
+                >
+                  Added
+                </Button>
+                <Button
+                  variant={changeFilters.item_assigned ? 'primary' : 'secondary'}
+                  size="small"
+                  onClick={() => handleFilterChange('item_assigned')}
+                >
+                  Assigned
+                </Button>
+                <Button
+                  variant={changeFilters.item_unassigned ? 'primary' : 'secondary'}
+                  size="small"
+                  onClick={() => handleFilterChange('item_unassigned')}
+                >
+                  Unassigned
+                </Button>
+                <Button
+                  variant={changeFilters.item_reassigned ? 'primary' : 'secondary'}
+                  size="small"
+                  onClick={() => handleFilterChange('item_reassigned')}
+                >
+                  Reassigned
+                </Button>
+              </div>
+            </div>
+
+            <div className="unit-changes-widget__filter-group">
+              <Text variant="label" className="unit-changes-widget__group-title">Synergies</Text>
+              <div className="unit-changes-widget__button-group">
+                <Button
+                  variant={changeFilters.synergy_added ? 'primary' : 'secondary'}
+                  size="small"
+                  onClick={() => handleFilterChange('synergy_added')}
+                >
+                  Added
+                </Button>
+                <Button
+                  variant={changeFilters.synergy_removed ? 'primary' : 'secondary'}
+                  size="small"
+                  onClick={() => handleFilterChange('synergy_removed')}
+                >
+                  Removed
+                </Button>
+                <Button
+                  variant={changeFilters.synergy_level_changed ? 'primary' : 'secondary'}
+                  size="small"
+                  onClick={() => handleFilterChange('synergy_level_changed')}
+                >
+                  Level Changed
+                </Button>
+              </div>
+            </div>
           </div>
         </SettingsSection>
 
@@ -597,8 +474,10 @@ export const UnitChangesWidget = ({ storageKey, dragId, onHeaderMouseDown }: Uni
                   ? (player.persona_name || player.bot_persona_name || `Player ${player.account_id}`)
                   : `Player ${change.player_id}`;
                 
-                // Check if this is a unit change or player change
+                // Check if this is a unit change, item change, or synergy change
                 const isUnitChange = ['bought', 'sold', 'upgraded', 'benched', 'deployed', 'reposition', 'organize_bench'].includes(change.type);
+                const isItemChange = ['item_added', 'item_assigned', 'item_unassigned', 'item_reassigned'].includes(change.type);
+                const isSynergyChange = ['synergy_added', 'synergy_removed', 'synergy_level_changed'].includes(change.type);
                 
                 return (
                   <div 
@@ -627,6 +506,14 @@ export const UnitChangesWidget = ({ storageKey, dragId, onHeaderMouseDown }: Uni
                           </Text>
                           <PhaseIcon phase={change.round_phase} size="small" />
                         </div>
+                      ) : isItemChange ? (
+                        <div className="unit-changes-widget__item-icon">
+                          <span className="unit-changes-widget__icon">📦</span>
+                        </div>
+                      ) : isSynergyChange ? (
+                        <div className="unit-changes-widget__synergy-icon">
+                          <span className="unit-changes-widget__icon">⚡</span>
+                        </div>
                       ) : (
                         <div className="unit-changes-widget__player-action-icon">
                           {change.type === 'reroll' && <span className="unit-changes-widget__icon">🎲</span>}
@@ -649,7 +536,7 @@ export const UnitChangesWidget = ({ storageKey, dragId, onHeaderMouseDown }: Uni
                       <div className="unit-changes-widget__change-content">
                         {change.type !== 'hp_change' && (
                           <Text variant="label" className="unit-changes-widget__change-type">
-                            {change.type.charAt(0).toUpperCase() + change.type.slice(1).replace('_', ' ')}
+                            {change.type.charAt(0).toUpperCase() + change.type.slice(1).replace(/_/g, ' ')}
                           </Text>
                         )}
                         <div className="unit-changes-widget__change-info">
@@ -658,6 +545,54 @@ export const UnitChangesWidget = ({ storageKey, dragId, onHeaderMouseDown }: Uni
                             <HealthDisplay health={change.health_before} />
                             <HealthDisplay health={-change.damage_taken} />
                             <HealthDisplay health={change.health_after} />
+                          </div>
+                        )}
+                        {isItemChange && (
+                          <div className="unit-changes-widget__item-change-info">
+                            {change.item_id && (
+                              <Text variant="label" className="unit-changes-widget__item-id">
+                                Item {change.item_id}
+                              </Text>
+                            )}
+                            {change.type === 'item_assigned' && change.assigned_unit_entindex !== null && change.assigned_unit_entindex !== undefined && (
+                              <Text variant="label" className="unit-changes-widget__item-assignment">
+                                → Unit {change.assigned_unit_entindex}
+                              </Text>
+                            )}
+                            {change.type === 'item_unassigned' && change.previous_assigned_unit_entindex !== null && change.previous_assigned_unit_entindex !== undefined && (
+                              <Text variant="label" className="unit-changes-widget__item-assignment">
+                                ← Unit {change.previous_assigned_unit_entindex}
+                              </Text>
+                            )}
+                            {change.type === 'item_reassigned' && change.previous_assigned_unit_entindex !== null && change.new_assigned_unit_entindex !== undefined && (
+                              <Text variant="label" className="unit-changes-widget__item-assignment">
+                                Unit {change.previous_assigned_unit_entindex} → {change.new_assigned_unit_entindex}
+                              </Text>
+                            )}
+                          </div>
+                        )}
+                        {isSynergyChange && (
+                          <div className="unit-changes-widget__synergy-change-info">
+                            {change.synergy_keyword && (
+                              <Text variant="label" className="unit-changes-widget__synergy-keyword">
+                                Synergy {change.synergy_keyword}
+                              </Text>
+                            )}
+                            {change.type === 'synergy_level_changed' && change.level_before !== undefined && change.level_after !== undefined && (
+                              <Text variant="label" className="unit-changes-widget__synergy-level">
+                                Level {change.level_before} → {change.level_after}
+                              </Text>
+                            )}
+                            {change.type === 'synergy_added' && change.unique_unit_count !== undefined && (
+                              <Text variant="label" className="unit-changes-widget__synergy-level">
+                                Level {change.unique_unit_count}
+                              </Text>
+                            )}
+                            {change.type === 'synergy_removed' && change.unique_unit_count !== undefined && (
+                              <Text variant="label" className="unit-changes-widget__synergy-level">
+                                Was Level {change.unique_unit_count}
+                              </Text>
+                            )}
                           </div>
                         )}
                         </div>

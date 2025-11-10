@@ -72,6 +72,21 @@ class WebSocketService {
     this.socket.on('test_response', (data: WebSocketEvents['test_response']) => {
       console.log('[WebSocket] Test response:', data);
     });
+
+    this.socket.on('player_changes', (data: {
+      match_id: string;
+      account_id: number;
+      changes: any[];
+      timestamp: string;
+    }) => {
+      console.log('[WebSocket] Player changes received:', data);
+      
+      // Dispatch custom browser event for UnitChangesWidget to listen to
+      const event = new CustomEvent('player_changes', {
+        detail: data
+      });
+      window.dispatchEvent(event);
+    });
   }
 
   testConnection() {

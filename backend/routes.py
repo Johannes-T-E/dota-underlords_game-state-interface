@@ -2,12 +2,14 @@
 Flask Routes - API endpoints, WebSocket handlers, and React app serving
 """
 import os
+from typing import Dict, List
 from flask import request, jsonify, send_from_directory
 from flask_socketio import emit
 from datetime import datetime
 from .game_state import match_state, db, db_write_queue, connected_clients, stats, abandon_match, emit_realtime_update
 from .gsi_handler import process_gsi_data
 from .config import app, socketio, PRODUCTION, FRONTEND_BUILD_DIR, GSI_HOST, GSI_PORT
+from .change_detector import change_detector
 
 
 # Serve React App (Production mode)
@@ -107,6 +109,105 @@ def delete_match(match_id):
         return jsonify({
             'status': 'error',
             'message': 'Failed to delete match'
+        }), 500
+
+
+@app.route('/api/matches/<match_id>/changes', methods=['GET'])
+def get_match_changes(match_id):
+    """Get changes for a match (from buffer if active, or calculated from database if historical)."""
+    try:
+        # Get query parameters
+        account_id = request.args.get('account_id', type=int)
+        limit = request.args.get('limit', default=500, type=int)
+        round_number = request.args.get('round_number', type=int)
+        round_phase = request.args.get('round_phase', type=str)
+        
+        # Check if match is active
+        is_active_match = match_state.match_id == match_id
+        
+        if is_active_match:
+            # Active match: Retrieve from in-memory buffer
+            changes = change_detector.get_changes(match_id, account_id=account_id, limit=limit)
+        else:
+            # Historical match: Calculate from database snapshots
+            changes = []
+            
+            # Get snapshots for the match
+            if account_id is not None:
+                # Get snapshots for specific player
+                snapshots = db.get_player_snapshots(
+                    match_id, 
+                    account_id, 
+                    round_number=round_number, 
+                    round_phase=round_phase
+                )
+            else:
+                # Get snapshots for all players (or filtered list)
+                account_ids_list = None
+                if account_id is not None:
+                    account_ids_list = [account_id]
+                snapshots = db.get_match_snapshots(match_id, account_ids=account_ids_list)
+            
+            # Need at least 2 snapshots to calculate changes
+            if len(snapshots) < 2:
+                return jsonify({
+                    'status': 'success',
+                    'match_id': match_id,
+                    'changes': [],
+                    'count': 0
+                })
+            
+            # Group snapshots by account_id
+            snapshots_by_account: Dict[int, List[Dict]] = {}
+            for snapshot in snapshots:
+                acc_id = snapshot['account_id']
+                if acc_id not in snapshots_by_account:
+                    snapshots_by_account[acc_id] = []
+                snapshots_by_account[acc_id].append(snapshot)
+            
+            # Calculate changes by comparing consecutive snapshots for each player
+            for acc_id, player_snapshots in snapshots_by_account.items():
+                # Sort by sequence_number to ensure chronological order
+                player_snapshots.sort(key=lambda s: s['sequence_number'])
+                
+                # Compare each snapshot with the previous one
+                for i in range(1, len(player_snapshots)):
+                    previous_snapshot = player_snapshots[i - 1]
+                    current_snapshot = player_snapshots[i]
+                    
+                    # Detect changes between these two snapshots
+                    detected_changes = change_detector.detect_changes(
+                        previous_snapshot,
+                        current_snapshot,
+                        acc_id,
+                        match_id,
+                        round_number=current_snapshot.get('round_number'),
+                        round_phase=current_snapshot.get('round_phase')
+                    )
+                    
+                    changes.extend(detected_changes)
+            
+            # Sort changes by timestamp descending (newest first)
+            changes.sort(key=lambda c: c.get('timestamp', ''), reverse=True)
+            
+            # Apply limit
+            if limit is not None:
+                changes = changes[:limit]
+        
+        return jsonify({
+            'status': 'success',
+            'match_id': match_id,
+            'changes': changes,
+            'count': len(changes)
+        })
+    
+    except Exception as e:
+        print(f"[ERROR] Failed to get match changes: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
         }), 500
 
 
