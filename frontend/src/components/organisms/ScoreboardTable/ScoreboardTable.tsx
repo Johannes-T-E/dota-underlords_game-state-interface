@@ -4,7 +4,7 @@ import { ScoreboardPlayerRow } from '../ScoreboardPlayerRow/ScoreboardPlayerRow'
 import { ScoreboardSettings } from '../ScoreboardSettings/ScoreboardSettings';
 import { useHeroesData } from '../../../hooks/useHeroesData';
 import { useScoreboardSettings } from '../../../hooks/useSettings';
-import type { PlayerState, ScoreboardColumnConfig } from '../../../types';
+import type { PlayerState } from '../../../types';
 import type { SortField } from '../ScoreboardHeader/ScoreboardHeader';
 import './ScoreboardTable.css';
 
@@ -15,17 +15,11 @@ const getPlayerId = (player: PlayerState): string => {
 
 export interface ScoreboardTableProps {
   players: PlayerState[];
-  selectedPlayerIds: string[];
-  onPlayerSelect: (playerId: string) => void;
-  onPlayerDataUpdate?: (playerId: string, playerData: PlayerState) => void;
   className?: string;
 }
 
 export const ScoreboardTable = ({ 
   players, 
-  selectedPlayerIds,
-  onPlayerSelect,
-  onPlayerDataUpdate,
   className = ''
 }: ScoreboardTableProps) => {
   // Get settings from Redux
@@ -113,17 +107,6 @@ export const ScoreboardTable = ({
     return sorted;
   }, [players, sortField, sortDirection]);
 
-  // Update board data for selected players
-  useEffect(() => {
-    if (onPlayerDataUpdate) {
-      selectedPlayerIds.forEach(playerId => {
-        const player = players.find(p => getPlayerId(p) === playerId);
-        if (player) {
-          onPlayerDataUpdate(playerId, player);
-        }
-      });
-    }
-  }, [players, selectedPlayerIds, onPlayerDataUpdate]);
 
   if (players.length === 0) {
     return null;
@@ -159,8 +142,6 @@ export const ScoreboardTable = ({
               key={playerId}
               player={player}
               rank={index + 1}
-              isSelected={selectedPlayerIds.includes(playerId)}
-              onClick={() => onPlayerSelect(playerId)}
               heroesData={heroesData}
               visibleColumns={visibleColumns}
               columnOrder={visibleColumns.columnOrder}

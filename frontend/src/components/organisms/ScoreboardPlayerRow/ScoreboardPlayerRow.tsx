@@ -18,8 +18,6 @@ import './ScoreboardPlayerRow.css';
 export interface ScoreboardPlayerRowProps {
   player: PlayerState;
   rank: number;
-  isSelected: boolean;
-  onClick: () => void;
   heroesData: HeroesData | null;
   visibleColumns?: ScoreboardColumnConfig;
   columnOrder?: string[];
@@ -29,8 +27,6 @@ export interface ScoreboardPlayerRowProps {
 export const ScoreboardPlayerRow = memo(({ 
   player, 
   rank, 
-  isSelected, 
-  onClick,
   heroesData,
   visibleColumns,
   columnOrder,
@@ -251,9 +247,8 @@ export const ScoreboardPlayerRow = memo(({
 
   return (
     <div 
-      className={`scoreboard-player-row ${isSelected ? 'scoreboard-player-row--selected' : ''} ${className}`}
+      className={`scoreboard-player-row ${className}`}
       id={`player-${player.player_id}`}
-      onClick={onClick}
     >
       {visibleOrderedColumns.map(renderCell)}
     </div>
