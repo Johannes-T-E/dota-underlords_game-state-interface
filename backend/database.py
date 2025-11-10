@@ -37,7 +37,7 @@ class UnderlordsDatabaseManager:
         'synergies_json': 'synergies',
         'board_buddy_json': 'board_buddy',
         'units_json': 'units',
-        'items_json': 'items'
+        'item_slots_json': 'item_slots'
     }
     
     # Field mapping constants for private snapshots
@@ -70,6 +70,7 @@ class UnderlordsDatabaseManager:
         self.conn.row_factory = sqlite3.Row  # Enable column access by name
         self.create_tables()
         self.migrate_add_round_columns()
+        self.migrate_rename_items_column()
     
     def create_tables(self) -> None:
         """Create all necessary tables."""
@@ -158,7 +159,7 @@ class UnderlordsDatabaseManager:
                 
                 -- JSON data
                 units_json TEXT,
-                items_json TEXT,
+                item_slots_json TEXT,
                 
                 -- Round tracking
                 round_number INTEGER,
@@ -236,6 +237,54 @@ class UnderlordsDatabaseManager:
             cursor.execute("CREATE INDEX IF NOT EXISTS idx_public_snapshots_round ON public_player_snapshots(match_id, account_id, round_number, round_phase)")
         except sqlite3.OperationalError as e:
             print(f"[MIGRATION] Could not create round index: {e}")
+        
+        self.conn.commit()
+    
+    def migrate_rename_items_column(self) -> None:
+        """Rename items_json column to item_slots_json to match GSI field name."""
+        cursor = self.conn.cursor()
+        
+        # Check if old column exists
+        cursor.execute("PRAGMA table_info(public_player_snapshots)")
+        columns = [row[1] for row in cursor.fetchall()]
+        
+        # If old column exists and new column doesn't, rename it
+        if 'items_json' in columns and 'item_slots_json' not in columns:
+            try:
+                # SQLite doesn't support ALTER TABLE RENAME COLUMN in older versions
+                # Use a workaround: create new table, copy data, drop old, rename new
+                cursor.execute("""
+                    CREATE TABLE public_player_snapshots_new AS
+                    SELECT 
+                        snapshot_id, match_id, account_id, sequence_number, timestamp,
+                        health, gold, level, xp, next_level_xp,
+                        wins, losses, win_streak, lose_streak, net_worth,
+                        player_slot, combat_type, combat_result, combat_duration, opponent_player_slot,
+                        underlord, board_unit_limit,
+                        rank_tier, final_place, platform,
+                        vs_opponent_wins, vs_opponent_losses, vs_opponent_draws,
+                        brawny_kills_float, city_prestige_level, event_tier, owns_event, is_mirrored_match,
+                        connection_status, disconnected_time, lobby_team,
+                        underlord_talents, synergies_json, board_buddy_json, units_json,
+                        items_json AS item_slots_json,  -- Rename during copy
+                        round_number, round_phase
+                    FROM public_player_snapshots
+                """)
+                
+                # Drop old table
+                cursor.execute("DROP TABLE public_player_snapshots")
+                
+                # Rename new table
+                cursor.execute("ALTER TABLE public_player_snapshots_new RENAME TO public_player_snapshots")
+                
+                # Recreate indexes
+                cursor.execute("CREATE INDEX IF NOT EXISTS idx_public_snapshots_player ON public_player_snapshots(account_id, sequence_number)")
+                cursor.execute("CREATE INDEX IF NOT EXISTS idx_public_snapshots_match ON public_player_snapshots(match_id, timestamp)")
+                cursor.execute("CREATE INDEX IF NOT EXISTS idx_public_snapshots_round ON public_player_snapshots(match_id, account_id, round_number, round_phase)")
+                
+                print("[MIGRATION] Renamed items_json column to item_slots_json in public_player_snapshots")
+            except sqlite3.OperationalError as e:
+                print(f"[MIGRATION] Could not rename items_json column: {e}")
         
         self.conn.commit()
     
@@ -364,7 +413,7 @@ class UnderlordsDatabaseManager:
                 vs_opponent_wins, vs_opponent_losses, vs_opponent_draws,
                 brawny_kills_float, city_prestige_level, event_tier, owns_event, is_mirrored_match,
                 connection_status, disconnected_time, lobby_team,
-                underlord_talents, synergies_json, board_buddy_json, units_json, items_json,
+                underlord_talents, synergies_json, board_buddy_json, units_json, item_slots_json,
                 round_number, round_phase
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, params)

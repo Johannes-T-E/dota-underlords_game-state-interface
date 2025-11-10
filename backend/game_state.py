@@ -165,7 +165,7 @@ def process_and_store_gsi_public_player_state(account_id: int, gsi_public_player
         # Board and units
         'board_unit_limit': gsi_public_player_state.get('board_unit_limit'),
         'units': gsi_public_player_state.get('units'),
-        'items_slots': gsi_public_player_state.get('item_slots'),
+        'item_slots': gsi_public_player_state.get('item_slots'),
         'synergies': gsi_public_player_state.get('synergies'),
         
         # Underlord data
