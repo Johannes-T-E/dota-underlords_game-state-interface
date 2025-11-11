@@ -11,6 +11,7 @@ from queue import Queue
 from .database import UnderlordsDatabaseManager
 from .utils import generate_match_id, is_valid_new_player, get_highest_hp_player
 from .config import socketio
+from .change_detector import change_detector
 
 
 # ==========================================
@@ -364,6 +365,9 @@ def abandon_match(match_id: str, timestamp: datetime, reason: str = "Manual"):
     
     # Reset match state to allow new game detection
     match_state.reset()
+
+    # Clear change detector buffer and previous states for abandoned match
+    change_detector.clear_match(match_id)
     
     # Emit update to connected clients
     socketio.emit('match_abandoned', {
@@ -465,4 +469,10 @@ def process_buffered_data(match_id: str, timestamp: datetime):
         match_state.sequences['private_sequence'] = latest_private_sequence
         db_write_queue.put(('insert_snapshot', match_id, 'private_player', None, processed_private_state, latest_private_time))
         print(f"[BUFFER] Queued buffered private snapshot for match {match_id}")
+    
+    # Initialize change detector previous states with latest processed states
+    # This ensures the first real-time update can detect changes against the last buffered snapshot
+    for account_id, processed_state in match_state.latest_processed_public_player_states.items():
+        change_detector.update_previous_state(match_id, account_id, processed_state)
+        print(f"[BUFFER] Initialized change detector previous state for player {account_id}, match {match_id}")
 

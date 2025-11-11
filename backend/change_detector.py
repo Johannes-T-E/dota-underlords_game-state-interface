@@ -43,10 +43,9 @@ class ChangeDetector:
         changes: List[Dict] = []
         timestamp = datetime.now().isoformat()
         
-        # Get player_id (use account_id as string if player_id not available)
-        player_id = str(account_id)
-        if 'player_id' in current_state and current_state['player_id']:
-            player_id = str(current_state['player_id'])
+        # Extract sequence numbers from states
+        previous_sequence_number = previous_state.get('sequence_number')
+        current_sequence_number = current_state.get('sequence_number')
         
         # Calculate player stat changes
         gold_delta = (current_state.get('gold') or 0) - (previous_state.get('gold') or 0)
@@ -132,7 +131,9 @@ class ChangeDetector:
                 
                 changes.append({
                     'type': 'upgraded',
-                    'player_id': player_id,
+                    'account_id': account_id,
+                    'previous_sequence_number': previous_sequence_number,
+                    'current_sequence_number': current_sequence_number,
                     'unit_id': unit['unit_id'],
                     'entindex': unit['entindex'],
                     'previous_entindex': consumed_entindexes_list[0] if consumed_entindexes_list else None,
@@ -156,7 +157,9 @@ class ChangeDetector:
                 if not was_part_of_upgrade:
                     changes.append({
                         'type': 'bought',
-                        'player_id': player_id,
+                        'account_id': account_id,
+                        'previous_sequence_number': previous_sequence_number,
+                        'current_sequence_number': current_sequence_number,
                         'unit_id': unit['unit_id'],
                         'entindex': unit['entindex'],
                         'rank': unit['rank'],
@@ -170,7 +173,9 @@ class ChangeDetector:
                 if unit['entindex'] not in consumed_entindexes:
                     changes.append({
                         'type': 'sold',
-                        'player_id': player_id,
+                        'account_id': account_id,
+                        'previous_sequence_number': previous_sequence_number,
+                        'current_sequence_number': current_sequence_number,
                         'unit_id': unit['unit_id'],
                         'entindex': unit['entindex'],
                         'rank': unit['rank'],
@@ -216,7 +221,9 @@ class ChangeDetector:
                     
                     changes.append({
                         'type': move_type,
-                        'player_id': player_id,
+                        'account_id': account_id,
+                        'previous_sequence_number': previous_sequence_number,
+                        'current_sequence_number': current_sequence_number,
                         'unit_id': unit['unit_id'],
                         'entindex': unit['entindex'],
                         'rank': unit['rank'],
@@ -227,7 +234,7 @@ class ChangeDetector:
         
         # Detect player changes (reroll, XP purchase, level up, HP change)
         # Get changes for this player only (for reroll detection)
-        player_changes = [c for c in changes if c['player_id'] == player_id]
+        player_changes = [c for c in changes if c.get('account_id') == account_id]
         
         # Detect reroll: Gold decreases by 2, no units were bought or upgraded
         has_bought_or_upgraded = any(
@@ -238,7 +245,9 @@ class ChangeDetector:
         if gold_delta == -2 and not has_bought_or_upgraded:
             changes.append({
                 'type': 'reroll',
-                'player_id': player_id,
+                'account_id': account_id,
+                'previous_sequence_number': previous_sequence_number,
+                'current_sequence_number': current_sequence_number,
                 'gold_spent': 2,
                 'timestamp': timestamp,
             })
@@ -250,7 +259,9 @@ class ChangeDetector:
         if effective_xp_gain == 5 and gold_delta == -5:
             changes.append({
                 'type': 'xp_purchase',
-                'player_id': player_id,
+                'account_id': account_id,
+                'previous_sequence_number': previous_sequence_number,
+                'current_sequence_number': current_sequence_number,
                 'gold_spent': 5,
                 'xp_gained': 5,
                 'timestamp': timestamp,
@@ -260,7 +271,9 @@ class ChangeDetector:
         if level_delta > 0:
             changes.append({
                 'type': 'level_up',
-                'player_id': player_id,
+                'account_id': account_id,
+                'previous_sequence_number': previous_sequence_number,
+                'current_sequence_number': current_sequence_number,
                 'level_before': previous_state.get('level') or 0,
                 'level_after': current_state.get('level') or 0,
                 'timestamp': timestamp,
@@ -271,7 +284,9 @@ class ChangeDetector:
             damage_taken = abs(health_delta)
             changes.append({
                 'type': 'hp_change',
-                'player_id': player_id,
+                'account_id': account_id,
+                'previous_sequence_number': previous_sequence_number,
+                'current_sequence_number': current_sequence_number,
                 'health_before': previous_state.get('health') or 0,
                 'health_after': current_state.get('health') or 0,
                 'damage_taken': damage_taken,
@@ -292,7 +307,9 @@ class ChangeDetector:
                 item = current_items[i]
                 changes.append({
                     'type': 'item_added',
-                    'player_id': player_id,
+                    'account_id': account_id,
+                    'previous_sequence_number': previous_sequence_number,
+                    'current_sequence_number': current_sequence_number,
                     'item_id': item.get('item_id'),
                     'slot_index': item.get('slot_index'),
                     'assigned_unit_entindex': item.get('assigned_unit_entindex'),
@@ -315,7 +332,9 @@ class ChangeDetector:
             if prev_assigned is None and curr_assigned is not None:
                 changes.append({
                     'type': 'item_assigned',
-                    'player_id': player_id,
+                    'account_id': account_id,
+                    'previous_sequence_number': previous_sequence_number,
+                    'current_sequence_number': current_sequence_number,
                     'item_id': curr_item.get('item_id'),
                     'slot_index': curr_item.get('slot_index'),
                     'assigned_unit_entindex': curr_assigned,
@@ -325,7 +344,9 @@ class ChangeDetector:
             elif prev_assigned is not None and curr_assigned is None:
                 changes.append({
                     'type': 'item_unassigned',
-                    'player_id': player_id,
+                    'account_id': account_id,
+                    'previous_sequence_number': previous_sequence_number,
+                    'current_sequence_number': current_sequence_number,
                     'item_id': curr_item.get('item_id'),
                     'slot_index': curr_item.get('slot_index'),
                     'previous_assigned_unit_entindex': prev_assigned,
@@ -335,7 +356,9 @@ class ChangeDetector:
             elif prev_assigned is not None and curr_assigned is not None and prev_assigned != curr_assigned:
                 changes.append({
                     'type': 'item_reassigned',
-                    'player_id': player_id,
+                    'account_id': account_id,
+                    'previous_sequence_number': previous_sequence_number,
+                    'current_sequence_number': current_sequence_number,
                     'item_id': curr_item.get('item_id'),
                     'slot_index': curr_item.get('slot_index'),
                     'previous_assigned_unit_entindex': prev_assigned,
@@ -366,7 +389,9 @@ class ChangeDetector:
             if keyword not in prev_synergies_by_keyword:
                 changes.append({
                     'type': 'synergy_added',
-                    'player_id': player_id,
+                    'account_id': account_id,
+                    'previous_sequence_number': previous_sequence_number,
+                    'current_sequence_number': current_sequence_number,
                     'synergy_keyword': keyword,
                     'unique_unit_count': synergy.get('unique_unit_count'),
                     'timestamp': timestamp,
@@ -377,7 +402,9 @@ class ChangeDetector:
             if keyword not in curr_synergies_by_keyword:
                 changes.append({
                     'type': 'synergy_removed',
-                    'player_id': player_id,
+                    'account_id': account_id,
+                    'previous_sequence_number': previous_sequence_number,
+                    'current_sequence_number': current_sequence_number,
                     'synergy_keyword': keyword,
                     'unique_unit_count': synergy.get('unique_unit_count'),
                     'timestamp': timestamp,
@@ -392,7 +419,9 @@ class ChangeDetector:
                 if prev_count is not None and curr_count is not None and prev_count != curr_count:
                     changes.append({
                         'type': 'synergy_level_changed',
-                        'player_id': player_id,
+                        'account_id': account_id,
+                        'previous_sequence_number': previous_sequence_number,
+                        'current_sequence_number': current_sequence_number,
                         'synergy_keyword': keyword,
                         'level_before': prev_count,
                         'level_after': curr_count,
@@ -445,7 +474,7 @@ class ChangeDetector:
         if account_id is not None:
             changes = [
                 c for c in changes 
-                if c.get('player_id') == str(account_id)
+                if c.get('account_id') == account_id
             ]
         
         # Sort by timestamp descending (newest first)
