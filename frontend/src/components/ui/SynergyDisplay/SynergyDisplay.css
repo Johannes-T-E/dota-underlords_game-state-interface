@@ -1,0 +1,9 @@
+/* SynergyDisplay Component Styles */
+
+.synergy-display {
+  position: relative;
+  width: 180px;
+  height: 108px;
+  display: inline-block;
+}
+

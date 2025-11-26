@@ -4,6 +4,9 @@ import { StarIcon } from './components/StarIcon/StarIcon';
 import type { HeroesData } from '@/utils/heroHelpers';
 import { getHeroTier, getTierGlowClass } from '@/utils/heroHelpers';
 import { useHeroPortraitSettings } from '@/hooks/useSettings';
+import type { ItemSlot } from '@/types';
+import type { ItemsData } from '@/utils/itemHelpers';
+import { findEquippedItem } from '@/utils/itemHelpers';
 import './HeroPortrait.css';
 
 export interface HeroPortraitProps {
@@ -11,15 +14,29 @@ export interface HeroPortraitProps {
   rank: number;
   heroesData: HeroesData | null;
   className?: string;
+  tierColors?: {
+    primary: string;
+    secondary: string;
+  }; // Optional: override tier colors (e.g., for synergy selection)
+  entindex?: number; // Unit entity index for item matching
+  itemSlots?: ItemSlot[]; // Array of item slots from player state
+  itemsData?: ItemsData | null; // Items.json data for icon lookup
 }
 
 export const HeroPortrait = memo(({ 
   unitId, 
   rank, 
   heroesData, 
-  className = '' 
+  className = '',
+  tierColors: overrideTierColors,
+  entindex,
+  itemSlots,
+  itemsData
 }: HeroPortraitProps) => {
   const { settings } = useHeroPortraitSettings();
+  
+  // Find equipped item icon path
+  const itemIconPath = findEquippedItem(entindex, itemSlots, itemsData ?? null);
   
   // Find hero by unit ID
   const findHeroByUnitId = (id: number): string => {
@@ -39,11 +56,6 @@ export const HeroPortrait = memo(({
   const dotaUnitName = findHeroByUnitId(unitId);
   const starLevel = Math.min(Math.max(rank, 0), 3);
   
-  // Calculate tier glow class if enabled (with defensive check)
-  const tierGlowClass = settings?.enableTierGlow 
-    ? getTierGlowClass(getHeroTier(unitId, heroesData))
-    : '';
-
   // Get tier colors for dynamic styling
   const getTierColors = (tier: number) => {
     const tierColors = {
@@ -55,10 +67,18 @@ export const HeroPortrait = memo(({
     };
     return tierColors[tier as keyof typeof tierColors] || tierColors[1];
   };
-
-  const tierColors = settings?.enableTierGlow 
+  
+  // Use override tier colors if provided (e.g., for synergy selection), otherwise calculate from tier
+  const tierColors = overrideTierColors || (settings?.enableTierGlow 
     ? getTierColors(getHeroTier(unitId, heroesData))
-    : undefined;
+    : undefined);
+  
+  // Calculate tier glow class - use tier-based if enabled, or force a class if override colors are provided
+  const tierGlowClass = overrideTierColors 
+    ? 'hero-image--tier-3' // Use a tier class to enable styling when override colors are provided
+    : (settings?.enableTierGlow 
+      ? getTierGlowClass(getHeroTier(unitId, heroesData))
+      : '');
 
   return (
     <div className={`hero-portrait ${className}`}>
@@ -73,6 +93,13 @@ export const HeroPortrait = memo(({
         unitId={unitId}
         heroesData={heroesData}
       />
+      {itemIconPath && (
+        <img
+          src={itemIconPath}
+          alt="Equipped item"
+          className="hero-portrait__item-icon"
+        />
+      )}
       {starLevel > 0 && (
         <div className="hero-portrait__stars">
           {Array.from({ length: starLevel }, (_, i) => (

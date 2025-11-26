@@ -7,12 +7,13 @@ export interface Unit {
     y: number;
   };
   rank: number;
-  keywords?: string[];
+  keywords?: number[];    // Synergy keyword IDs (e.g., 8 = Human, 20 = Mage)
 }
 
 export interface Synergy {
-  keyword: string;
+  keyword: number;
   unique_unit_count: number;
+  bench_additional_unique_unit_count?: number;
 }
 
 export interface BoardBuddy {
@@ -228,6 +229,7 @@ export interface ScoreboardColumnConfig {
   underlord: boolean;       // NEW: Underlord units
   contraptions: boolean;    // NEW: Contraption units
   bench: boolean;
+  synergies: boolean;       // NEW: Synergy icons column
   columnOrder?: string[];  // NEW: Array of column keys in display order
 }
 

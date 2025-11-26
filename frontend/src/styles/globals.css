@@ -32,6 +32,7 @@
     --width-underlord: calc(var(--unit-icon-box)*2);
     --width-contraptions: calc(var(--unit-icon-box)*3);
     --width-bench: calc(var(--unit-icon-box)*8);
+    --width-synergies: 200px;
     --unit-icon-box: 60px;
 }
 

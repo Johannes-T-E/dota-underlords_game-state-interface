@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { Button, HeroPortrait, PlayerNameDisplay } from '@/components/ui';
 import { MovementTrail } from './components/MovementTrail/MovementTrail';
 import { useUnitPositions, type UnitPosition } from '@/features/player-board/hooks/useUnitPositions';
 import { useUnitAnimationSettings } from '@/hooks/useSettings';
+import { useItemsData } from '@/hooks/useItemsData';
 import { getHeroTier } from '@/utils/heroHelpers';
 import type { PlayerState } from '@/types';
 import type { HeroesData } from '@/utils/heroHelpers';
@@ -18,6 +19,7 @@ export interface PlayerBoardProps {
 export const PlayerBoard = ({ player, heroesData, onClose, className = '' }: PlayerBoardProps) => {
   const units = player.units || [];
   const { settings: animationSettings } = useUnitAnimationSettings();
+  const { itemsData } = useItemsData();
   
   // Track effective previous positions (animation targets) for queued animations
   const [effectivePreviousPositions, setEffectivePreviousPositions] = useState<Map<number, UnitPosition>>(new Map());
@@ -53,6 +55,8 @@ export const PlayerBoard = ({ player, heroesData, onClose, className = '' }: Pla
     animationDuration: number; // Duration of the animation
   }
   const activeTrailsRef = useRef<Map<TrailKey, ActiveTrail>>(new Map());
+  // Track new unit elements and their target positions for useLayoutEffect positioning
+  const newUnitElementsRef = useRef<Map<number, { element: HTMLElement; position: { x: number; y: number } }>>(new Map());
 
   const shouldShowStaticPortrait = (
     unit: { entindex: number } | undefined,
@@ -249,6 +253,18 @@ export const PlayerBoard = ({ player, heroesData, onClose, className = '' }: Pla
     if (pruned) setAnimationRerenderTick(v => v + 1);
   }, [animationSettings.enablePositionAnimation, animationSettings.enableMovementTrail, animationSettings.animationDuration]);
 
+  // Use useLayoutEffect to position new units after DOM layout but before paint
+  useLayoutEffect(() => {
+    if (newUnitElementsRef.current.size > 0) {
+      newUnitElementsRef.current.forEach(({ element, position }) => {
+        element.style.left = `${position.x}px`;
+        element.style.top = `${position.y}px`;
+      });
+      // Clear the ref after positioning
+      newUnitElementsRef.current.clear();
+    }
+  });
+
   // Calculate position for animation - unified coordinate system
   const calculatePosition = (x: number, y: number) => {
     const cellSize = 80;
@@ -287,6 +303,9 @@ export const PlayerBoard = ({ player, heroesData, onClose, className = '' }: Pla
               unitId={unit.unit_id}
               rank={unit.rank || 0}
               heroesData={heroesData}
+              entindex={unit.entindex}
+              itemSlots={player.item_slots}
+              itemsData={itemsData}
             />
           )}
         </div>
@@ -438,12 +457,23 @@ export const PlayerBoard = ({ player, heroesData, onClose, className = '' }: Pla
                 style.animation = `fadeIn ${animationSettings.animationDuration}ms ease-out forwards`;
               }
 
-              // Use useLayoutEffect for new units to position immediately, setTimeout for others
-              if (animationState?.isNew) {
-                // For new units, position is already set correctly in style (startPosition = finalPosition)
-                // No need for setTimeout since position is correct from the start
-              } else {
-                // Trigger animation to final position after a small delay for moving units
+              // For new units, use ref callback to register element for useLayoutEffect positioning
+              // For moving units, use setTimeout to trigger animation after render
+              const refCallback = animationState?.isNew 
+                ? (element: HTMLDivElement | null) => {
+                    if (element) {
+                      newUnitElementsRef.current.set(unit.entindex, {
+                        element,
+                        position: finalPosition
+                      });
+                    } else {
+                      newUnitElementsRef.current.delete(unit.entindex);
+                    }
+                  }
+                : undefined;
+
+              // Trigger animation to final position after a small delay for moving units
+              if (!animationState?.isNew) {
                 setTimeout(() => {
                   const element = document.querySelector(`[data-entindex="${unit.entindex}"]`) as HTMLElement;
                   if (element) {
@@ -456,6 +486,7 @@ export const PlayerBoard = ({ player, heroesData, onClose, className = '' }: Pla
               return (
                 <div
                   key={`animated-${unit.entindex}`}
+                  ref={refCallback}
                   className="player-board__animated-unit"
                   style={style}
                   data-entindex={unit.entindex}

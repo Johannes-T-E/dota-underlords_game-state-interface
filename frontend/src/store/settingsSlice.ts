@@ -40,6 +40,7 @@ export interface GeneralSettings {
   theme?: string;
   heroPortrait: HeroPortraitSettings;
   unitAnimation: UnitAnimationSettings;
+  showSynergyPips: boolean;
 }
 
 export interface SettingsState {
@@ -64,7 +65,8 @@ const defaultScoreboardSettings: ScoreboardSettings = {
     underlord: true,
     contraptions: true,
     bench: true,
-    columnOrder: ['place', 'playerName', 'level', 'gold', 'streak', 'health', 'record', 'networth', 'roster', 'underlord', 'contraptions', 'bench']
+    synergies: true,
+    columnOrder: ['place', 'playerName', 'level', 'gold', 'streak', 'health', 'record', 'networth', 'synergies', 'roster', 'underlord', 'contraptions', 'bench']
   },
   sortField: 'health',
   sortDirection: 'desc'
@@ -100,7 +102,8 @@ const initialState: SettingsState = {
   scoreboards: {}, // Per-widget settings, initialized on first access
   general: {
     heroPortrait: defaultHeroPortraitSettings,
-    unitAnimation: defaultUnitAnimationSettings
+    unitAnimation: defaultUnitAnimationSettings,
+    showSynergyPips: false
   }
 };
 
@@ -144,6 +147,11 @@ const migrateSettings = (settings: any): SettingsState => {
   // Ensure unitAnimation settings exist
   if (!settings.general.unitAnimation) {
     settings.general.unitAnimation = defaultUnitAnimationSettings;
+  }
+
+  // Ensure showSynergyPips setting exists
+  if (settings.general.showSynergyPips === undefined) {
+    settings.general.showSynergyPips = false;
   }
 
   return settings;
@@ -261,13 +269,19 @@ const settingsSlice = createSlice({
       state.general.unitAnimation = defaultUnitAnimationSettings;
     },
 
+    // Synergy Settings
+    updateShowSynergyPips: (state, action: PayloadAction<boolean>) => {
+      state.general.showSynergyPips = action.payload;
+    },
+
     // Global Actions
     resetAllSettings: (state) => {
       state.health = DEFAULT_HEALTH_DISPLAY_SETTINGS;
       state.scoreboards = {};
       state.general = {
         heroPortrait: defaultHeroPortraitSettings,
-        unitAnimation: defaultUnitAnimationSettings
+        unitAnimation: defaultUnitAnimationSettings,
+        showSynergyPips: false
       };
       state.version = SETTINGS_VERSION;
     },
@@ -319,6 +333,7 @@ export const {
   resetHeroPortraitSettings,
   updateUnitAnimationSettings,
   resetUnitAnimationSettings,
+  updateShowSynergyPips,
   resetAllSettings,
   loadSettings,
   importSettings
@@ -338,4 +353,5 @@ export const selectScoreboardSettings = (widgetId: string) => (state: { settings
 export const selectGeneralSettings = (state: { settings: SettingsState }) => state.settings.general;
 export const selectHeroPortraitSettings = (state: { settings: SettingsState }) => state.settings.general.heroPortrait;
 export const selectUnitAnimationSettings = (state: { settings: SettingsState }) => state.settings.general.unitAnimation;
+export const selectShowSynergyPips = (state: { settings: SettingsState }) => state.settings.general.showSynergyPips;
 

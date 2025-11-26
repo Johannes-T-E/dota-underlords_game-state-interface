@@ -136,3 +136,11 @@
   flex-shrink: 0;
 }
 
+.scoreboard-header__col--synergies {
+  width: var(--width-synergies-dynamic, var(--width-synergies));
+  flex-shrink: 0;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+

@@ -70,20 +70,34 @@ export const HeroImage = ({
 
   // Build dynamic styles for opacity
   const getTierGlowStyles = () => {
-    if (!tierGlowClass || !tierGlowConfig || !tierColors) return {};
+    if (!tierColors) return {};
+    
+    // If tierColors is provided but no tierGlowConfig, use default config (for synergy selection)
+    // This allows synergy colors to show even when tier glow is disabled in settings
+    const defaultConfig = {
+      enableBorder: true,
+      enableDropShadow: true,
+      borderOpacity: 1,
+      dropShadowOpacity: 1
+    };
+    const config = tierGlowConfig || defaultConfig;
+    
+    // Apply styles if tierGlowClass is set (normal tier glow with config) 
+    // OR if tierColors is provided without tierGlowClass (synergy selection override)
+    if (!tierGlowClass && tierGlowConfig) return {}; // Only skip if config exists but no class
     
     const styles: React.CSSProperties & { [key: string]: any } = {};
     
-    if (tierGlowConfig.enableBorder) {
+    if (config.enableBorder) {
       // Convert hex to rgba with opacity
-      const borderColor = hexToRgba(tierColors.secondary, tierGlowConfig.borderOpacity);
+      const borderColor = hexToRgba(tierColors.secondary, config.borderOpacity);
       styles.border = `1px solid ${borderColor}`;
     }
     
-    if (tierGlowConfig.enableDropShadow) {
+    if (config.enableDropShadow) {
       // Convert hex to rgba with opacity for both shadows
-      const primaryShadow = hexToRgba(tierColors.primary, tierGlowConfig.dropShadowOpacity);
-      const secondaryShadow = hexToRgba(tierColors.secondary, tierGlowConfig.dropShadowOpacity);
+      const primaryShadow = hexToRgba(tierColors.primary, config.dropShadowOpacity);
+      const secondaryShadow = hexToRgba(tierColors.secondary, config.dropShadowOpacity);
       styles.filter = `drop-shadow(0 0 3px ${primaryShadow}) drop-shadow(0 0 6px ${secondaryShadow})`;
     }
     

@@ -6,12 +6,16 @@ import './ScoreboardSettings.css';
 export interface ScoreboardSettingsProps {
   config: ScoreboardColumnConfig;
   onChange: (config: ScoreboardColumnConfig) => void;
+  showSynergyPips?: boolean;
+  onShowSynergyPipsChange?: (show: boolean) => void;
   className?: string;
 }
 
 export const ScoreboardSettings = ({ 
   config, 
   onChange,
+  showSynergyPips = false,
+  onShowSynergyPipsChange,
   className = '' 
 }: ScoreboardSettingsProps) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,6 +36,7 @@ export const ScoreboardSettings = ({
     underlord: config.underlord ?? true,
     contraptions: config.contraptions ?? true,
     bench: config.bench ?? true,
+    synergies: config.synergies ?? true,
     columnOrder: config.columnOrder
   };
 
@@ -70,6 +75,7 @@ export const ScoreboardSettings = ({
       underlord: true,
       contraptions: true,
       bench: true,
+      synergies: true,
       columnOrder: undefined
     };
     onChange(defaultConfig);
@@ -162,6 +168,21 @@ export const ScoreboardSettings = ({
             enabled={safeConfig.bench}
             onChange={(enabled) => updateConfig('bench', enabled)}
           />
+          <ColumnToggle
+            label="Synergies"
+            enabled={safeConfig.synergies}
+            onChange={(enabled) => updateConfig('synergies', enabled)}
+          />
+          {safeConfig.synergies && onShowSynergyPipsChange && (
+            <>
+              <hr style={{ margin: '0.5rem 0', borderColor: 'var(--border-color)' }} />
+              <ColumnToggle
+                label="Show Synergy Pips"
+                enabled={showSynergyPips}
+                onChange={onShowSynergyPipsChange}
+              />
+            </>
+          )}
         </div>
       )}
     </div>

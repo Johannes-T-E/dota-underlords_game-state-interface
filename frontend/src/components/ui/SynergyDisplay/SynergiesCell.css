@@ -1,0 +1,93 @@
+/* SynergiesCell Component Styles - Slot-based layout like roster */
+
+.synergies-cell {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px; /* Small gap between synergies */
+  height: 100%;
+  overflow: visible; /* Allow pips to extend on hover */
+  padding: 0;
+  margin: 0;
+}
+
+.synergies-cell--empty {
+  min-width: 20px;
+}
+
+/* Synergy item slot - similar to .scoreboard-player-row__unit */
+.synergies-cell__item {
+  width: var(--unit-icon-box, 60px);
+  height: var(--row-height, 80px);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+}
+
+/* Compact mode (icon-only) - scale 108px icon to fit 60px slot */
+.synergies-cell--compact .synergies-cell__item {
+  width: var(--unit-icon-box, 60px);
+}
+
+.synergies-cell--compact .synergies-cell__item > * {
+  transform: scale(0.556);
+  transform-origin: left center;
+}
+
+/* With pips mode - wider slot for icon + progress bars */
+/* Actual content: icon (108px) + 3 pips (last pip at 114px + 65px = 179px total) */
+/* Scaled: 179px × 0.556 = 99.4px (base), 179px × 0.6 = 107.4px (hover) */
+.synergies-cell--with-pips .synergies-cell__item {
+  width: 90px; /* Matches actual content width at hover scale (107.4px rounded up) */
+  overflow: visible; /* Allow pips to extend on hover */
+}
+
+.synergies-cell--with-pips .synergies-cell__item > * {
+  transform: scale(0.556);
+  transform-origin: left center;
+}
+
+/* Tier-based styling (optional visual enhancement) */
+.synergies-cell__item--tier-1 {
+  opacity: 0.9;
+}
+
+.synergies-cell__item--tier-2 {
+  opacity: 1;
+}
+
+.synergies-cell__item--tier-3 {
+  opacity: 1;
+  filter: brightness(1.1);
+}
+
+/* Hover effect */
+.synergies-cell__item {
+  cursor: default;
+  transition: opacity 0.15s ease, filter 0.15s ease, transform 0.15s ease;
+}
+
+.synergies-cell__item:hover {
+  z-index: 10;
+}
+
+.synergies-cell__item:hover > * {
+  transform: scale(0.6);
+  transform-origin: left center;
+}
+/* Selected state - visual feedback for selected synergy */
+.synergies-cell__item--selected {
+  opacity: 1;
+  filter: brightness(1.2);
+  z-index: 5;
+}
+
+.synergies-cell__item--selected > * {
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.5));
+}

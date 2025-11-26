@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { 
   PlayerNameDisplay, 
   StatDisplay, 
@@ -8,8 +8,11 @@ import {
   LevelXpIndicator,
   HealthDisplay,
   NetWorthDisplay,
-  GoldDisplay
+  GoldDisplay,
+  SynergiesCell
 } from '@/components/ui';
+import { getSynergyNameByKeyword } from '@/components/ui/SynergyDisplay/utils';
+import { useItemsData } from '@/hooks/useItemsData';
 import type { PlayerState, ScoreboardColumnConfig, Unit } from '@/types';
 import type { HeroesData } from '@/utils/heroHelpers';
 import { getHeroTier } from '@/utils/heroHelpers';
@@ -24,6 +27,42 @@ export interface ScoreboardPlayerRowProps {
   className?: string;
   selectedUnitIds?: Set<number>;
   onUnitClick?: (unitId: number) => void;
+  selectedSynergyKeyword?: number | null;
+  onSynergyClick?: (keyword: number | null) => void;
+  showSynergyPips?: boolean;
+}
+
+/**
+ * Check if a unit has a specific synergy keyword
+ */
+function unitHasSynergyKeyword(unit: Unit, keyword: number): boolean {
+  return unit.keywords?.includes(keyword) ?? false;
+}
+
+/**
+ * Get computed color value from CSS variable
+ */
+function getComputedColor(varName: string, fallback: string = '#888888'): string {
+  if (typeof window === 'undefined') return fallback;
+  const value = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+  return value || fallback;
+}
+
+/**
+ * Get synergy color from keyword
+ */
+function getSynergyColor(keyword: number): { primary: string; secondary: string } | undefined {
+  const synergyName = getSynergyNameByKeyword(keyword);
+  if (!synergyName) return undefined;
+  
+  const cssVar = synergyName.toLowerCase();
+  const colorVar = `--synergy-${cssVar}-color`;
+  const brightColorVar = `--synergy-${cssVar}-color-bright`;
+  
+  const primary = getComputedColor(colorVar);
+  const secondary = getComputedColor(brightColorVar) || primary;
+  
+  return { primary, secondary };
 }
 
 export const ScoreboardPlayerRow = memo(({ 
@@ -34,8 +73,12 @@ export const ScoreboardPlayerRow = memo(({
   columnOrder,
   className = '',
   selectedUnitIds = new Set<number>(),
-  onUnitClick
+  onUnitClick,
+  selectedSynergyKeyword = null,
+  onSynergyClick,
+  showSynergyPips = false
 }: ScoreboardPlayerRowProps) => {
+  const { itemsData } = useItemsData();
   const defaultVisible: ScoreboardColumnConfig = {
     place: true,
     player: false,
@@ -49,13 +92,14 @@ export const ScoreboardPlayerRow = memo(({
     roster: true,
     underlord: true,
     contraptions: true,
-    bench: true
+    bench: true,
+    synergies: true
   };
   
   const config = visibleColumns || defaultVisible;
   
   // Use provided columnOrder or default order
-  const DEFAULT_COLUMN_ORDER = ['place', 'playerName', 'level', 'gold', 'streak', 'health', 'record', 'networth', 'roster', 'underlord', 'contraptions', 'bench'];
+  const DEFAULT_COLUMN_ORDER = ['place', 'playerName', 'level', 'gold', 'streak', 'health', 'record', 'networth', 'synergies', 'roster', 'underlord', 'contraptions', 'bench'];
   const currentOrder = columnOrder || DEFAULT_COLUMN_ORDER;
   
   // Filter visible columns in the specified order
@@ -83,15 +127,26 @@ export const ScoreboardPlayerRow = memo(({
         return rankB - rankA; // Higher rank first
       }
       
-      // If same rank, sort by tier descending (tier 4 → tier 3 → tier 2 → tier 1)
+      // If same rank, sort by tier descending (tier 5 → tier 4 → tier 3 → tier 2 → tier 1)
       const tierA = getHeroTier(a.unit_id, heroesData);
       const tierB = getHeroTier(b.unit_id, heroesData);
       
-      return tierB - tierA; // Higher tier first within same rank
+      if (tierB !== tierA) {
+        return tierB - tierA; // Higher tier first within same rank
+      }
+      
+      // If same tier, sort by hero ID (ascending: lower ID first)
+      return a.unit_id - b.unit_id;
     });
   const benchUnits = units
     .filter(unit => unit.position && unit.position.y === -1 && !isUnderlord(unit) && !isContraption(unit))
     .sort((a, b) => (a.position?.x || 0) - (b.position?.x || 0)); // Sort by x-position ascending (0 → 7)
+  
+  // Get synergy color if a synergy is selected
+  const synergyColors = useMemo(() => {
+    if (!selectedSynergyKeyword) return null;
+    return getSynergyColor(selectedSynergyKeyword);
+  }, [selectedSynergyKeyword]);
 
   const renderCell = (columnKey: string) => {
     switch (columnKey) {
@@ -189,7 +244,19 @@ export const ScoreboardPlayerRow = memo(({
           <div key={columnKey} className="scoreboard-player-row__roster">
             {rosterUnits.map((unit, idx) => {
               const isSelected = selectedUnitIds.has(unit.unit_id);
-              const isDimmed = selectedUnitIds.size > 0 && !isSelected;
+              const isDimmedByUnit = selectedUnitIds.size > 0 && !isSelected;
+              
+              // Check synergy selection
+              const hasSelectedSynergy = selectedSynergyKeyword !== null 
+                ? unitHasSynergyKeyword(unit, selectedSynergyKeyword)
+                : false;
+              const isDimmedBySynergy = selectedSynergyKeyword !== null && !hasSelectedSynergy;
+              
+              const isDimmed = isDimmedByUnit || isDimmedBySynergy;
+              
+              // Use synergy colors if unit has selected synergy, otherwise use tier colors (default)
+              const tierColors = hasSelectedSynergy && synergyColors ? synergyColors : undefined;
+              
               return (
                 <div 
                   key={idx} 
@@ -201,6 +268,10 @@ export const ScoreboardPlayerRow = memo(({
                     unitId={unit.unit_id}
                     rank={unit.rank || 0}
                     heroesData={heroesData}
+                    tierColors={tierColors}
+                    entindex={unit.entindex}
+                    itemSlots={player.item_slots}
+                    itemsData={itemsData}
                   />
                 </div>
               );
@@ -217,6 +288,9 @@ export const ScoreboardPlayerRow = memo(({
                   unitId={unit.unit_id}
                   rank={unit.rank || 0}
                   heroesData={heroesData}
+                  entindex={unit.entindex}
+                  itemSlots={player.item_slots}
+                  itemsData={itemsData}
                 />
               </div>
             ))}
@@ -232,6 +306,9 @@ export const ScoreboardPlayerRow = memo(({
                   unitId={unit.unit_id}
                   rank={unit.rank || 0}
                   heroesData={heroesData}
+                  entindex={unit.entindex}
+                  itemSlots={player.item_slots}
+                  itemsData={itemsData}
                 />
               </div>
             ))}
@@ -243,7 +320,19 @@ export const ScoreboardPlayerRow = memo(({
           <div key={columnKey} className="scoreboard-player-row__bench">
             {benchUnits.map((unit, idx) => {
               const isSelected = selectedUnitIds.has(unit.unit_id);
-              const isDimmed = selectedUnitIds.size > 0 && !isSelected;
+              const isDimmedByUnit = selectedUnitIds.size > 0 && !isSelected;
+              
+              // Check synergy selection
+              const hasSelectedSynergy = selectedSynergyKeyword !== null 
+                ? unitHasSynergyKeyword(unit, selectedSynergyKeyword)
+                : false;
+              const isDimmedBySynergy = selectedSynergyKeyword !== null && !hasSelectedSynergy;
+              
+              const isDimmed = isDimmedByUnit || isDimmedBySynergy;
+              
+              // Use synergy colors if unit has selected synergy, otherwise use tier colors (default)
+              const tierColors = hasSelectedSynergy && synergyColors ? synergyColors : undefined;
+              
               return (
                 <div 
                   key={idx} 
@@ -255,10 +344,27 @@ export const ScoreboardPlayerRow = memo(({
                     unitId={unit.unit_id}
                     rank={unit.rank || 0}
                     heroesData={heroesData}
+                    tierColors={tierColors}
+                    entindex={unit.entindex}
+                    itemSlots={player.item_slots}
+                    itemsData={itemsData}
                   />
                 </div>
               );
             })}
+          </div>
+        );
+      
+      case 'synergies':
+        return (
+          <div key={columnKey} className="scoreboard-player-row__synergies">
+            <SynergiesCell
+              synergies={player.synergies || []}
+              showPips={showSynergyPips}
+              onlyActive={true}
+              selectedSynergyKeyword={selectedSynergyKeyword}
+              onSynergyClick={onSynergyClick}
+            />
           </div>
         );
       

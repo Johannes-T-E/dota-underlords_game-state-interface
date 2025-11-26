@@ -66,9 +66,11 @@
   
   /* Brawny */
   --synergy-brawny-color: #a61b1b;
+  --synergy-brawny-color-bright: #ff3600;
   
   /* Savage */
   --synergy-savage-color: #b2411a;
+  --synergy-savage-color-bright: #fd4a1a;
   
   /* Insect */
   --synergy-insect-color: #4d69ff;
@@ -87,10 +89,11 @@
   
   /* Wild */
   --synergy-wild-color: #2e6340;
-  --synergy-wild-color-bright: #7fb790;
+  --synergy-wild-color-bright: #57956a;
   
   /* Magus */
   --synergy-magus-color: #4d69ff;
+  --synergy-magus-color-bright: #90a1ff;
   
   /* ============================================
      MEGA RACE SYNERGIES

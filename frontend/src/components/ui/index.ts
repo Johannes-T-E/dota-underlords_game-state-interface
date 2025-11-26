@@ -33,8 +33,33 @@ export type { HealthDisplayProps } from './HealthDisplay/HealthDisplay';
 export { HeroPortrait } from './HeroPortrait/HeroPortrait';
 export type { HeroPortraitProps } from './HeroPortrait/HeroPortrait';
 
-export { SynergyIcon } from './SynergyIcon/SynergyIcon';
-export type { SynergyIconProps } from './SynergyIcon/SynergyIcon';
+// SynergyDisplay components and utilities
+export { 
+  SynergyDisplay, 
+  SynergyIcon, 
+  SynergyPip,
+  SynergiesCell,
+  // Utility functions
+  getSynergyLevels,
+  getSynergyLevelsByKeyword,
+  getSynergyNameByKeyword,
+  getKeywordBySynergyName,
+  convertSynergyToDisplayData,
+  convertSynergiesToDisplayData,
+  getSynergyTier,
+  isSynergyActive,
+  getNextThreshold,
+  getUnitsToNextThreshold,
+} from './SynergyDisplay';
+export type { 
+  SynergyDisplayProps, 
+  SynergyLevel, 
+  SynergyIconProps, 
+  SynergyPipProps, 
+  PipState,
+  SynergyDisplayData,
+  SynergiesCellProps,
+} from './SynergyDisplay';
 
 export { StatDisplay } from './StatDisplay/StatDisplay';
 export type { StatDisplayProps } from './StatDisplay/StatDisplay';

@@ -1,9 +1,12 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useRef } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { ScoreboardHeader } from '@/features/scoreboard/components/ScoreboardHeader/ScoreboardHeader';
 import { ScoreboardPlayerRow } from '@/features/scoreboard/components/ScoreboardPlayerRow/ScoreboardPlayerRow';
 import { ScoreboardSettings } from '@/features/scoreboard/components/ScoreboardSettings/ScoreboardSettings';
 import { useHeroesDataContext } from '@/contexts/HeroesDataContext';
 import { useScoreboardSettings } from '@/features/scoreboard/hooks/useScoreboardSettings';
+import { selectShowSynergyPips, updateShowSynergyPips } from '@/store/settingsSlice';
+import { isSynergyActive } from '@/components/ui/SynergyDisplay/utils';
 import type { PlayerState } from '@/types';
 import type { SortField } from '@/features/scoreboard/components/ScoreboardHeader/ScoreboardHeader';
 import './ScoreboardTable.css';
@@ -12,26 +15,51 @@ export interface ScoreboardTableProps {
   players: PlayerState[];
   widgetId: string; // Widget identifier for per-widget settings
   className?: string;
+  selectedUnitIds?: Set<number>; // Optional: shared selection state
+  onUnitClick?: (unitId: number) => void; // Optional: shared click handler
+  selectedSynergyKeyword?: number | null; // Optional: shared synergy selection state
+  onSynergyClick?: (keyword: number | null) => void; // Optional: shared synergy click handler
 }
 
 export const ScoreboardTable = ({ 
   players,
   widgetId,
-  className = ''
+  className = '',
+  selectedUnitIds: externalSelectedUnitIds,
+  onUnitClick: externalOnUnitClick,
+  selectedSynergyKeyword: externalSelectedSynergyKeyword,
+  onSynergyClick: externalOnSynergyClick
 }: ScoreboardTableProps) => {
   // Get settings from Redux for this specific widget
   const { settings, updateColumns, updateSort } = useScoreboardSettings(widgetId);
   const { columns: visibleColumns, sortField, sortDirection } = settings;
   
+  // Get global synergy pips setting
+  const dispatch = useDispatch();
+  const showSynergyPips = useSelector(selectShowSynergyPips);
+  
+  const handleShowSynergyPipsChange = (show: boolean) => {
+    dispatch(updateShowSynergyPips(show));
+  };
+  
   const tableRef = useRef<HTMLDivElement>(null);
   const { heroesData } = useHeroesDataContext();
   
-  // State for unit highlighting - support multiple selections
-  const [selectedUnitIds, setSelectedUnitIds] = useState<Set<number>>(new Set());
+  // State for unit highlighting - support multiple selections (fallback for backward compatibility)
+  const [localSelectedUnitIds, setLocalSelectedUnitIds] = useState<Set<number>>(new Set());
   
-  const handleUnitClick = (unitId: number) => {
+  // State for synergy selection (fallback for backward compatibility)
+  const [localSelectedSynergyKeyword, setLocalSelectedSynergyKeyword] = useState<number | null>(null);
+  
+  // Use external props if provided, otherwise use local state
+  const selectedUnitIds = externalSelectedUnitIds ?? localSelectedUnitIds;
+  const selectedSynergyKeyword = externalSelectedSynergyKeyword ?? localSelectedSynergyKeyword;
+  
+  const handleUnitClick = externalOnUnitClick ?? ((unitId: number) => {
+    // Clear synergy selection when clicking a unit
+    setLocalSelectedSynergyKeyword(null);
     // Toggle: if unit is already selected, remove it; otherwise add it
-    setSelectedUnitIds(prev => {
+    setLocalSelectedUnitIds(prev => {
       const next = new Set(prev);
       if (next.has(unitId)) {
         next.delete(unitId);
@@ -40,7 +68,14 @@ export const ScoreboardTable = ({
       }
       return next;
     });
-  };
+  });
+  
+  const handleSynergyClick = externalOnSynergyClick ?? ((keyword: number | null) => {
+    // Clear unit selection when clicking a synergy
+    setLocalSelectedUnitIds(new Set());
+    // Toggle synergy selection: if same keyword clicked, deselect; otherwise select
+    setLocalSelectedSynergyKeyword(prev => prev === keyword ? null : keyword);
+  });
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -53,6 +88,30 @@ export const ScoreboardTable = ({
   const handleColumnReorder = (newOrder: string[]) => {
     updateColumns({ columnOrder: newOrder });
   };
+
+  // Calculate max active synergies across all players for dynamic column width
+  const maxActiveSynergies = useMemo(() => {
+    return players.reduce((max, player) => {
+      const activeSynergies = (player.synergies || []).filter(s => isSynergyActive(s));
+      return Math.max(max, activeSynergies.length);
+    }, 0);
+  }, [players]);
+
+  // Calculate synergies column width based on max active synergies
+  // Slot-based like roster: each synergy gets a fixed-width slot with gap between them
+  const synergiesColumnWidth = useMemo(() => {
+    // Slot width matches CSS: 60px for icon-only, 108px for icon+pips (actual content width)
+    const slotWidth = showSynergyPips ? 90 : 60;
+    const gap = 4; // Gap between synergies (matches CSS gap)
+    const minWidth = 60; // Minimum column width
+    
+    if (maxActiveSynergies === 0) return minWidth;
+    
+    // Width = (numSynergies * slotWidth) + ((numSynergies - 1) * gap)
+    const totalSlotWidth = maxActiveSynergies * slotWidth;
+    const totalGapWidth = (maxActiveSynergies - 1) * gap;
+    return totalSlotWidth + totalGapWidth;
+  }, [maxActiveSynergies, showSynergyPips]);
 
   const sortedPlayers = useMemo(() => {
     const sorted = [...players];
@@ -101,16 +160,24 @@ export const ScoreboardTable = ({
     return null;
   }
 
+  // CSS custom property for dynamic synergies column width
+  const tableStyle = {
+    '--width-synergies-dynamic': `${synergiesColumnWidth}px`,
+  } as React.CSSProperties;
+
   return (
     <div 
       ref={tableRef}
       className={`scoreboard-table ${className}`}
+      style={tableStyle}
     >
       <div className="scoreboard-table__controls">
         <div className="scoreboard-table__controls-spacer" />
         <ScoreboardSettings 
           config={visibleColumns}
           onChange={updateColumns}
+          showSynergyPips={showSynergyPips}
+          onShowSynergyPipsChange={handleShowSynergyPipsChange}
         />
       </div>
       <ScoreboardHeader
@@ -134,6 +201,9 @@ export const ScoreboardTable = ({
               columnOrder={visibleColumns.columnOrder}
               selectedUnitIds={selectedUnitIds}
               onUnitClick={handleUnitClick}
+              selectedSynergyKeyword={selectedSynergyKeyword}
+              onSynergyClick={handleSynergyClick}
+              showSynergyPips={showSynergyPips}
             />
           );
         })}
