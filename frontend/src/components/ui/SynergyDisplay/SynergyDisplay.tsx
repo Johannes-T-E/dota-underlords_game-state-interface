@@ -24,7 +24,8 @@ export interface SynergyDisplayProps {
  */
 function getPipsPerBar(levels: SynergyLevel[]): number {
   if (!levels?.length) return 0;
-  const unitsPerLevel = levels[0].unitcount;
+  const unitsPerLevel = levels[0]?.unitcount;
+  if (!unitsPerLevel) return 0;
   if (unitsPerLevel === 1) return 1;
   if (unitsPerLevel === 2) return 2;
   return 3;
