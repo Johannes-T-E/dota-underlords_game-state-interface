@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { ApiMatch } from '../types';
+import type { ApiMatch } from '@/types';
 
 interface MatchesState {
   matches: ApiMatch[];

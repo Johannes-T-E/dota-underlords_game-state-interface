@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { HeroesData } from '../utils/heroHelpers';
+import type { HeroesData } from '@/utils/heroHelpers';
 
 // Module-level cache to avoid re-fetching large JSON
 let cachedHeroesData: HeroesData | null = null;

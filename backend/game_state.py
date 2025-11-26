@@ -11,6 +11,7 @@ from queue import Queue
 from .database import UnderlordsDatabaseManager
 from .utils import generate_match_id, is_valid_new_player, get_highest_hp_player
 from .config import socketio
+from .change_detector import change_detector
 
 
 # ==========================================
@@ -53,6 +54,9 @@ class MatchState:
         self.public_player_buffer = []
         # private_player_buffer: (gsi_state, timestamp) tuples
         self.private_player_buffer = []
+        
+        # Match counts for players (calculated at match start)
+        self.player_match_counts = {}  # account_id -> match_count
 
     def reset(self):
         """Reset to initial state."""
@@ -63,6 +67,7 @@ class MatchState:
         self.sequences = {}
         self.public_player_buffer = []
         self.private_player_buffer = []
+        self.player_match_counts = {}
         
         # Reset round tracking
         self.tracked_player_account_id = None
@@ -165,7 +170,7 @@ def process_and_store_gsi_public_player_state(account_id: int, gsi_public_player
         # Board and units
         'board_unit_limit': gsi_public_player_state.get('board_unit_limit'),
         'units': gsi_public_player_state.get('units'),
-        'items_slots': gsi_public_player_state.get('item_slots'),
+        'item_slots': gsi_public_player_state.get('item_slots'),
         'synergies': gsi_public_player_state.get('synergies'),
         
         # Underlord data
@@ -206,7 +211,10 @@ def process_and_store_gsi_public_player_state(account_id: int, gsi_public_player
         
         # Round tracking
         'round_number': match_state.round_number,
-        'round_phase': match_state.round_phase
+        'round_phase': match_state.round_phase,
+        
+        # Match count (how many previous matches we've seen this player in)
+        'match_count': match_state.player_match_counts.get(account_id, 0)
     }
     
     # Store in match state
@@ -289,8 +297,28 @@ def start_new_match(players_data: List[Dict], timestamp: datetime) -> str:
     # Generate match_id
     match_id = generate_match_id(players_data)
     
+    # Calculate match counts for each player BEFORE creating the match
+    # This ensures the count excludes the current match
+    from .utils import generate_bot_account_id
+    player_match_counts = {}
+    for player in players_data:
+        is_human = player.get('is_human_player')
+        if is_human is False:
+            # Bot player - generate account_id
+            account_id = generate_bot_account_id(player)
+        else:
+            # Human player - use account_id directly from raw data
+            account_id = player.get('account_id')
+        
+        if account_id:
+            match_count = db.get_player_match_count(account_id)
+            player_match_counts[account_id] = match_count
+    
     # Create match in database
     db.create_match(match_id, players_data, timestamp)
+    
+    # Store match counts in match state for use when processing player states
+    match_state.player_match_counts = player_match_counts
     
     # Update match state
     match_state.match_id = match_id
@@ -364,6 +392,9 @@ def abandon_match(match_id: str, timestamp: datetime, reason: str = "Manual"):
     
     # Reset match state to allow new game detection
     match_state.reset()
+
+    # Clear change detector buffer and previous states for abandoned match
+    change_detector.clear_match(match_id)
     
     # Emit update to connected clients
     socketio.emit('match_abandoned', {
@@ -465,4 +496,10 @@ def process_buffered_data(match_id: str, timestamp: datetime):
         match_state.sequences['private_sequence'] = latest_private_sequence
         db_write_queue.put(('insert_snapshot', match_id, 'private_player', None, processed_private_state, latest_private_time))
         print(f"[BUFFER] Queued buffered private snapshot for match {match_id}")
+    
+    # Initialize change detector previous states with latest processed states
+    # This ensures the first real-time update can detect changes against the last buffered snapshot
+    for account_id, processed_state in match_state.latest_processed_public_player_states.items():
+        change_detector.update_previous_state(match_id, account_id, processed_state)
+        print(f"[BUFFER] Initialized change detector previous state for player {account_id}, match {match_id}")
 

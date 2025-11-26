@@ -32,7 +32,10 @@ else:
     # Development: use default Flask setup (React runs separately)
     app = Flask(__name__)
     # Enable CORS for development (React dev server runs on different port)
-    CORS(app, resources={r"/*": {"origins": ["http://localhost:5173", "http://127.0.0.1:5173"]}})
+    CORS(app, 
+         resources={r"/*": {"origins": ["http://localhost:5173", "http://127.0.0.1:5173"], 
+                           "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+                           "allow_headers": ["Content-Type", "Authorization"]}})
 
 app.config['SECRET_KEY'] = SECRET_KEY
 socketio = SocketIO(

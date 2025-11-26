@@ -3,9 +3,6 @@ import { useAppDispatch, useAppSelector } from './redux';
 import {
   updateHealthSettings,
   resetHealthSettings,
-  updateScoreboardColumns,
-  updateScoreboardSort,
-  resetScoreboardSettings,
   updateGeneralSettings,
   updateHeroPortraitSettings,
   updateTierGlowConfig,
@@ -15,14 +12,12 @@ import {
   resetAllSettings,
   importSettings,
   selectHealthSettings,
-  selectScoreboardSettings,
   selectGeneralSettings,
   selectHeroPortraitSettings,
   selectUnitAnimationSettings
-} from '../store/settingsSlice';
-import type { HealthDisplaySettings } from '../components/molecules/HealthDisplay/HealthDisplaySettings';
-import type { ScoreboardColumnConfig } from '../types';
-import type { HeroPortraitSettings, TierGlowConfig, UnitAnimationSettings } from '../store/settingsSlice';
+} from '@/store/settingsSlice';
+import type { HealthDisplaySettings } from '@/components/ui/HealthDisplay/HealthDisplaySettings';
+import type { HeroPortraitSettings, TierGlowConfig, UnitAnimationSettings } from '@/store/settingsSlice';
 
 /**
  * Hook for managing Health Display settings
@@ -49,38 +44,8 @@ export const useHealthSettings = () => {
   };
 };
 
-/**
- * Hook for managing Scoreboard settings
- */
-export const useScoreboardSettings = () => {
-  const dispatch = useAppDispatch();
-  const settings = useAppSelector(selectScoreboardSettings);
-
-  const updateColumns = useCallback(
-    (columns: Partial<ScoreboardColumnConfig>) => {
-      dispatch(updateScoreboardColumns(columns));
-    },
-    [dispatch]
-  );
-
-  const updateSort = useCallback(
-    (sortConfig: { field?: 'health' | 'record' | 'networth'; direction?: 'asc' | 'desc' }) => {
-      dispatch(updateScoreboardSort(sortConfig));
-    },
-    [dispatch]
-  );
-
-  const resetSettings = useCallback(() => {
-    dispatch(resetScoreboardSettings());
-  }, [dispatch]);
-
-  return {
-    settings,
-    updateColumns,
-    updateSort,
-    resetSettings
-  };
-};
+// useScoreboardSettings moved to features/scoreboard/hooks/useScoreboardSettings.ts
+// Import from '@/features/scoreboard/hooks/useScoreboardSettings' instead
 
 /**
  * Hook for managing general app settings

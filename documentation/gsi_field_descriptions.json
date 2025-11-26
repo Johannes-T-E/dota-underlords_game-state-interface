@@ -311,7 +311,7 @@
     "examples": [3, 4, 5, 6, 7]
   },
   "block.data.public_player_state.combat_type": {
-    "description": "Combat type: 0=normal PvP, 1=PvE, 2=event, 3=other.",
+    "description": "Combat type: 0=preparation phase (no combat), 1=(fighting agaist opponent-bot, not real opponent), 2=(fighting opponent on home-turf), 3=(fighting opponent on away-turf).",
     "type": "integer",
     "examples": [0, 1, 2, 3]
   },

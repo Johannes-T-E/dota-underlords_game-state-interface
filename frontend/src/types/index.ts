@@ -7,20 +7,26 @@ export interface Unit {
     y: number;
   };
   rank: number;
-  keywords?: string[];
+  keywords?: number[];    // Synergy keyword IDs (e.g., 8 = Human, 20 = Mage)
 }
 
 export interface Synergy {
-  keyword: string;
+  keyword: number;
   unique_unit_count: number;
+  bench_additional_unique_unit_count?: number;
 }
 
 export interface BoardBuddy {
   board_buddy_id?: number;
 }
 
+export interface ItemSlot {
+  item_id: number;
+  slot_index: number;
+  assigned_unit_entindex: number | null;
+}
+
 export interface PlayerState {
-  player_id: string;
   account_id: number;
   persona_name?: string;
   bot_persona_name?: string;
@@ -51,7 +57,7 @@ export interface PlayerState {
   // Board and units
   board_unit_limit: number;
   units: Unit[];
-  items: number[];
+  item_slots: ItemSlot[];
   synergies: Synergy[];
   
   // Underlord data
@@ -87,6 +93,13 @@ export interface PlayerState {
   // Technical
   sequence_number: number;
   timestamp: string;
+  
+  // Round tracking (added by backend)
+  round_number: number;
+  round_phase: 'prep' | 'combat';
+  
+  // Match history
+  match_count?: number;
 }
 
 export interface ShopUnit {
@@ -148,8 +161,9 @@ export interface ApiMatch {
   ended_at: string | null;
   player_count: number;
   players?: {
-    player_id: string;
+    account_id: number;
     persona_name?: string;
+    bot_persona_name?: string;
     final_place: number;
   }[];
 }
@@ -190,6 +204,12 @@ export interface WebSocketEvents {
     reason: string;
     timestamp: string;
   };
+  player_changes: {
+    match_id: string;
+    account_id: number;
+    changes: Change[];
+    timestamp: string;
+  };
   test_response: {
     status: string;
     message: string;
@@ -212,14 +232,21 @@ export interface ScoreboardColumnConfig {
   underlord: boolean;       // NEW: Underlord units
   contraptions: boolean;    // NEW: Contraption units
   bench: boolean;
+  synergies: boolean;       // NEW: Synergy icons column
   columnOrder?: string[];  // NEW: Array of column keys in display order
 }
 
 export interface Change {
-  type: 'bought' | 'sold' | 'upgraded' | 'benched' | 'deployed' | 'reposition' | 'organize_bench' | 'reroll' | 'xp_purchase' | 'level_up' | 'hp_change';
+  type: 'bought' | 'sold' | 'upgraded' | 'benched' | 'deployed' | 'reposition' | 'organize_bench' | 
+        'reroll' | 'xp_purchase' | 'level_up' | 'hp_change' |
+        'item_added' | 'item_assigned' | 'item_unassigned' | 'item_reassigned' |
+        'synergy_added' | 'synergy_removed' | 'synergy_level_changed';
   // Player identification
-  player_id: string;
-  // Unit change fields (optional for player changes)
+  account_id: number;
+  // Sequence numbers
+  previous_sequence_number?: number;
+  current_sequence_number?: number;
+  // Unit change fields (optional for non-unit changes)
   unit_id?: number;
   entindex?: number | null; // null for upgrades where entity changes
   previous_entindex?: number; // for upgrades
@@ -227,11 +254,11 @@ export interface Change {
   previous_rank?: number; // for upgrades
   position?: { x: number; y: number };
   previous_position?: { x: number; y: number }; // for moves
-  // Player change fields (optional for unit changes)
+  // Player change fields (optional for non-player changes)
   gold_spent?: number; // for reroll, xp_purchase
   xp_gained?: number; // for xp_purchase
-  level_before?: number; // for level_up
-  level_after?: number; // for level_up
+  level_before?: number; // for level_up, synergy_level_changed
+  level_after?: number; // for level_up, synergy_level_changed
   // HP change fields
   health_before?: number; // for hp_change
   health_after?: number; // for hp_change
@@ -239,7 +266,16 @@ export interface Change {
   // Round info (for hp_change)
   round_number?: number; // for hp_change
   round_phase?: 'prep' | 'combat'; // for hp_change
-  timestamp: number;
+  // Item change fields (optional)
+  item_id?: number;
+  slot_index?: number;
+  assigned_unit_entindex?: number | null;
+  previous_assigned_unit_entindex?: number | null;
+  new_assigned_unit_entindex?: number; // for item_reassigned
+  // Synergy change fields (optional)
+  synergy_keyword?: number;
+  unique_unit_count?: number; // for synergy_added, synergy_removed
+  timestamp: string; // ISO string from backend (converted to number in components for display)
 }
 
 // Keep UnitChange as an alias for backward compatibility

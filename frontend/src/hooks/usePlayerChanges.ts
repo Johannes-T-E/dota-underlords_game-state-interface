@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { PlayerState } from '../types';
+import { PlayerState } from '@/types';
 
 export interface ChangeEvent {
   type: 'gold' | 'health' | 'level' | 'units';

@@ -1,0 +1,13 @@
+.player-name-display-wrapper {
+  display: inline-flex;
+  align-items: center;
+}
+
+.player-name-display {
+  font-size: 1.5rem;
+  font-weight: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+

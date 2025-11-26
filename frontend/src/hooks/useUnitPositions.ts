@@ -1,5 +1,5 @@
 import { useRef, useMemo } from 'react';
-import type { Unit } from '../types';
+import type { Unit } from '@/types';
 
 export interface UnitPosition {
   x: number;

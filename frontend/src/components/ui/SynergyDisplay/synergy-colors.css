@@ -1,0 +1,214 @@
+/* Synergy Colors - CSS Custom Properties */
+/* Generated from synergies.json */
+
+:root {
+  /* ============================================
+     RACE SYNERGIES
+     ============================================ */
+  
+  /* Beast */
+  --synergy-beast-color: #b2411a;
+  --synergy-beast-color-bright: #fd4a1a;
+  
+  /* Demon */
+  --synergy-demon-color: #9e1d74;
+  --synergy-demon-color-bright: #c826a8;
+  
+  /* Dragon */
+  --synergy-dragon-color: #ff511b;
+  --synergy-dragon-color-bright: #ff8b36;
+  
+  /* Dwarf */
+  --synergy-dwarf-color: #c29315;
+  --synergy-dwarf-color-bright: #fcbb0b;
+  
+  /* Element */
+  --synergy-element-color: teal;
+  --synergy-element-color-bright: #06c5e1;
+  
+  /* Elf */
+  --synergy-elf-color: #5f97d0;
+  --synergy-elf-color-bright: #5bd8f3;
+  
+  /* Goblin */
+  --synergy-goblin-color: #b8c72c;
+  --synergy-goblin-color-bright: #bcf366;
+  
+  /* Human */
+  --synergy-human-color: #02c89c;
+  --synergy-human-color-bright: #04f9eb;
+  
+  /* Naga */
+  --synergy-naga-color: #483fa2;
+  --synergy-naga-color-bright: #7878ff;
+  
+  /* Ogre */
+  --synergy-ogre-color: #961f1c;
+  --synergy-ogre-color-bright: #de6767;
+  
+  /* Orc */
+  --synergy-orc-color: #a61b1b;
+  --synergy-orc-color-bright: #ff3600;
+  
+  /* Troll */
+  --synergy-troll-color: #9e6e4a;
+  --synergy-troll-color-bright: #d4945b;
+  
+  /* Undead */
+  --synergy-undead-color: #7fa09a;
+  --synergy-undead-color-bright: #b5eccb;
+  
+  /* Satyr */
+  --synergy-satyr-color: rgb(192, 192, 192);
+  
+  /* Primordial */
+  --synergy-primordial-color: teal;
+  
+  /* Brawny */
+  --synergy-brawny-color: #a61b1b;
+  --synergy-brawny-color-bright: #ff3600;
+  
+  /* Savage */
+  --synergy-savage-color: #b2411a;
+  --synergy-savage-color-bright: #fd4a1a;
+  
+  /* Insect */
+  --synergy-insect-color: #4d69ff;
+  --synergy-insect-color-bright: #4d69ff;
+  
+  /* Wisp */
+  --synergy-wisp-color: rgb(242, 242, 242);
+  
+  /* SpiritBrother */
+  --synergy-spiritbrother-color: #636aa9;
+  --synergy-spiritbrother-color-bright: #bebbff;
+  
+  /* Fallen */
+  --synergy-fallen-color: #e46ed5;
+  --synergy-fallen-color-bright: #ff84fb;
+  
+  /* Wild */
+  --synergy-wild-color: #2e6340;
+  --synergy-wild-color-bright: #57956a;
+  
+  /* Magus */
+  --synergy-magus-color: #4d69ff;
+  --synergy-magus-color-bright: #90a1ff;
+  
+  /* ============================================
+     MEGA RACE SYNERGIES
+     ============================================ */
+  
+  /* MegaBloodbound */
+  --synergy-megabloodbound-color: rgb(85, 107, 47);
+  
+  /* MegaElusive */
+  --synergy-megaelusive-color: #5f97d0;
+  
+  /* MegaScaled */
+  --synergy-megascaled-color: #483fa2;
+  
+  /* MegaTroll */
+  --synergy-megatroll-color: #9e6e4a;
+  
+  /* MegaDemon */
+  --synergy-megademon-color: rgb(222, 33, 33);
+  
+  /* ============================================
+     CLASS SYNERGIES
+     ============================================ */
+  
+  /* Assassin */
+  --synergy-assassin-color: #5a3d68;
+  --synergy-assassin-color-bright: #a35fa6;
+  
+  /* DemonHunter */
+  --synergy-demonhunter-color: darkmagenta;
+  --synergy-demonhunter-color-bright: #c826a8;
+  
+  /* Druid */
+  --synergy-druid-color: #2e6340;
+  --synergy-druid-color-bright: #7fb790;
+  
+  /* Hunter */
+  --synergy-hunter-color: #ff7652;
+  --synergy-hunter-color-bright: #ffa56f;
+  
+  /* Knight */
+  --synergy-knight-color: #ffe327;
+  --synergy-knight-color-bright: #f6ff6b;
+  
+  /* Mage */
+  --synergy-mage-color: #58dde9;
+  --synergy-mage-color-bright: #8afffb;
+  
+  /* Mech */
+  --synergy-mech-color: #fb8e14;
+  --synergy-mech-color-bright: #ffb81f;
+  
+  /* Shaman */
+  --synergy-shaman-color: #6c985b;
+  --synergy-shaman-color-bright: #bbbe53;
+  
+  /* Warlock */
+  --synergy-warlock-color: #e46ed5;
+  --synergy-warlock-color-bright: #ff84fb;
+  
+  /* Warrior */
+  --synergy-warrior-color: #1c67b4;
+  --synergy-warrior-color-bright: #17a4c7;
+  
+  /* Inventor */
+  --synergy-inventor-color: #fb8e14;
+  --synergy-inventor-color-bright: #ffb81f;
+  
+  /* Champion */
+  --synergy-champion-color: #ac89e0;
+  --synergy-champion-color-bright: #dccee5;
+  
+  /* Brutal */
+  --synergy-brutal-color: #8b7765;
+  --synergy-brutal-color-bright: #ceb6a1;
+  
+  /* Healer */
+  --synergy-healer-color: #4fd565;
+  --synergy-healer-color-bright: #52fd9b;
+  
+  /* Summoner */
+  --synergy-summoner-color: #f17214;
+  --synergy-summoner-color-bright: #e9995e;
+  
+  /* Vigilant */
+  --synergy-vigilant-color: #5f97d0;
+  --synergy-vigilant-color-bright: #5bd8f3;
+  
+  /* Void */
+  --synergy-void-color: #695d6a;
+  --synergy-void-color-bright: #a0a6c1;
+  
+  /* Swordsman */
+  --synergy-swordsman-color: #c29315;
+  --synergy-swordsman-color-bright: #fcbb0b;
+  
+  /* Rogue */
+  --synergy-rogue-color: #961f1c;
+  --synergy-rogue-color-bright: #de6767;
+  
+  /* Poisoner */
+  --synergy-poisoner-color: teal;
+  --synergy-poisoner-color-bright: #06c5e1;
+  
+  /* ============================================
+     MEGA CLASS SYNERGIES
+     ============================================ */
+  
+  /* MegaWarrior */
+  --synergy-megawarrior-color: #1c67b4;
+  
+  /* MegaAssassin */
+  --synergy-megaassassin-color: rgb(153, 50, 204);
+  
+  /* MegaWarlock */
+  --synergy-megawarlock-color: #e46ed5;
+}
+

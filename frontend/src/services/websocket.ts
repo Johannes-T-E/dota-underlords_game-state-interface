@@ -1,8 +1,9 @@
 import { io, Socket } from 'socket.io-client';
 import type { Store } from '@reduxjs/toolkit';
-import { setConnectionStatus } from '../store/connectionSlice';
-import { updateMatch, abandonMatch } from '../store/matchSlice';
-import type { MatchData, WebSocketEvents } from '../types';
+import { setConnectionStatus } from '@/store/connectionSlice';
+import { updateMatch, abandonMatch } from '@/store/matchSlice';
+import { addChanges } from '@/store/changesSlice';
+import type { MatchData, WebSocketEvents } from '@/types';
 
 class WebSocketService {
   private socket: Socket | null = null;
@@ -71,6 +72,14 @@ class WebSocketService {
 
     this.socket.on('test_response', (data: WebSocketEvents['test_response']) => {
       console.log('[WebSocket] Test response:', data);
+    });
+
+    this.socket.on('player_changes', (data: WebSocketEvents['player_changes']) => {
+      console.log('[WebSocket] Player changes received:', data);
+      
+      // Dispatch changes to Redux store (only for current active match)
+      // Frontend is stateless - only stores data for current active match
+      this.store?.dispatch(addChanges(data.changes));
     });
   }
 

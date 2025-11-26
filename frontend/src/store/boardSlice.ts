@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { PlayerState } from '../types';
+import { clearMatch, abandonMatch } from './matchSlice';
+import type { PlayerState } from '@/types';
 
 interface BoardState {
   selectedPlayerIds: string[];
@@ -43,6 +44,18 @@ const boardSlice = createSlice({
       state.selectedPlayerIds = state.selectedPlayerIds.filter(id => id !== playerId);
       delete state.boardData[playerId];
     },
+  },
+  extraReducers: (builder) => {
+    // Frontend is stateless - clear all board data when match ends or abandons
+    builder
+      .addCase(clearMatch, (state) => {
+        state.selectedPlayerIds = [];
+        state.boardData = {};
+      })
+      .addCase(abandonMatch, (state) => {
+        state.selectedPlayerIds = [];
+        state.boardData = {};
+      });
   },
 });
 

@@ -1,0 +1,224 @@
+.scoreboard-player-row {
+  height: var(--row-height);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  background: var(--primary-color);
+  transition: background 0.2s ease;
+}
+
+.scoreboard-player-row:nth-child(even) {
+  background: var(--secondary-color);
+}
+
+.scoreboard-player-row:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.scoreboard-player-row--selected {
+  background: rgba(255, 255, 255, 0.046) !important;
+}
+
+/* Place column */
+.scoreboard-player-row__place {
+  width: var(--width-place);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding-left: 0px;
+}
+
+.scoreboard-player-row__rank {
+  font-size: 1.2rem;
+  text-align: center;
+  color: white;
+  font-weight: bold;
+  flex: 1;
+}
+
+/* Player column */
+.scoreboard-player-row__player {
+  width: var(--width-player);
+  flex-shrink: 0;
+}
+
+/* Separate player info columns */
+.scoreboard-player-row__player-name {
+  width: var(--width-player-name);
+  height: 100%;
+  flex-shrink: 0;
+  padding: 0px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.scoreboard-player-row__level {
+  width: var(--width-level);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scoreboard-player-row__gold {
+  width: var(--width-gold);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  padding-right: 10px;
+}
+
+.scoreboard-player-row__streak {
+  width: var(--width-streak);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scoreboard-player-row__name-container {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.scoreboard-player-row__name {
+  display: block;
+  align-items: center;
+}
+
+.scoreboard-player-row__stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+/* Health column */
+.scoreboard-player-row__health {
+  width: var(--width-health);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  padding-right: 16px;
+}
+
+/* Record column */
+.scoreboard-player-row__record {
+  width: var(--width-record);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Net Worth column */
+.scoreboard-player-row__networth {
+  width: var(--width-networth);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Roster column */
+.scoreboard-player-row__roster {
+  margin-right: 40px;
+  width: var(--width-roster);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: var(--row-height);
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* Underlord column */
+.scoreboard-player-row__underlord {
+  width: var(--width-underlord);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: var(--row-height);
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* Contraptions column */
+.scoreboard-player-row__contraptions {
+  width: var(--width-contraptions);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: var(--row-height);
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.scoreboard-player-row__unit {
+  width: var(--unit-icon-box);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+  flex-shrink: 0;
+  transition: filter 0.3s ease;
+}
+
+.scoreboard-player-row__unit--bench {
+  filter: saturate(1) brightness(1);
+  transition: filter 0.3s ease;
+}
+
+.scoreboard-player-row__unit--dimmed {
+  filter: grayscale(100%) brightness(0.5) !important;
+  transition: filter 0.3s ease !important;
+}
+
+.scoreboard-player-row__unit--dimmed.scoreboard-player-row__unit--bench {
+  filter: grayscale(100%) brightness(0.5) !important;
+  transition: filter 0.3s ease !important;
+}
+
+.scoreboard-player-row__unit--selected {
+  filter: none !important;
+}
+
+.scoreboard-player-row__unit--selected.scoreboard-player-row__unit--bench {
+  filter: none !important;
+}
+
+/* Bench column */
+.scoreboard-player-row__bench {
+  width: var(--width-bench);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: var(--row-height);
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+/* Synergies column - styled like roster column */
+.scoreboard-player-row__synergies {
+  width: var(--width-synergies-dynamic, var(--width-synergies));
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  height: var(--row-height);
+  overflow: visible; /* Allow pips to extend on hover */
+}
+

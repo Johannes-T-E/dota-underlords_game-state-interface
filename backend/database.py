@@ -20,46 +20,79 @@ class UnderlordsDatabaseManager:
     """Manages SQLite database for Underlords GSI data."""
     
     # Field mapping constants for public snapshots
+    # Single source of truth: (db_column_name, gsi_field_name, is_json)
+    # Order matches INSERT statement exactly
     PUBLIC_SNAPSHOT_FIELDS = [
-        'sequence_number', 'health', 'gold', 'level', 'xp', 'next_level_xp',
-        'wins', 'losses', 'win_streak', 'lose_streak', 'net_worth',
-        'player_slot', 'combat_type', 'combat_result', 'combat_duration', 'opponent_player_slot',
-        'underlord', 'board_unit_limit',
-        'rank_tier', 'final_place', 'platform',
-        'vs_opponent_wins', 'vs_opponent_losses', 'vs_opponent_draws',
-        'brawny_kills_float', 'city_prestige_level', 'event_tier', 'owns_event', 'is_mirrored_match',
-        'connection_status', 'disconnected_time', 'lobby_team',
-        'round_number', 'round_phase'
+        # Direct fields
+        ('sequence_number', 'sequence_number', False),
+        ('health', 'health', False),
+        ('gold', 'gold', False),
+        ('level', 'level', False),
+        ('xp', 'xp', False),
+        ('next_level_xp', 'next_level_xp', False),
+        ('wins', 'wins', False),
+        ('losses', 'losses', False),
+        ('win_streak', 'win_streak', False),
+        ('lose_streak', 'lose_streak', False),
+        ('net_worth', 'net_worth', False),
+        ('player_slot', 'player_slot', False),
+        ('combat_type', 'combat_type', False),
+        ('combat_result', 'combat_result', False),
+        ('combat_duration', 'combat_duration', False),
+        ('opponent_player_slot', 'opponent_player_slot', False),
+        ('underlord', 'underlord', False),
+        ('board_unit_limit', 'board_unit_limit', False),
+        ('rank_tier', 'rank_tier', False),
+        ('final_place', 'final_place', False),
+        ('platform', 'platform', False),
+        ('vs_opponent_wins', 'vs_opponent_wins', False),
+        ('vs_opponent_losses', 'vs_opponent_losses', False),
+        ('vs_opponent_draws', 'vs_opponent_draws', False),
+        ('brawny_kills_float', 'brawny_kills_float', False),
+        ('city_prestige_level', 'city_prestige_level', False),
+        ('event_tier', 'event_tier', False),
+        ('owns_event', 'owns_event', False),
+        ('is_mirrored_match', 'is_mirrored_match', False),
+        ('connection_status', 'connection_status', False),
+        ('disconnected_time', 'disconnected_time', False),
+        ('lobby_team', 'lobby_team', False),
+        # JSON fields
+        ('underlord_talents', 'underlord_selected_talents', True),
+        ('synergies_json', 'synergies', True),
+        ('board_buddy_json', 'board_buddy', True),
+        ('units_json', 'units', True),
+        ('item_slots_json', 'item_slots', True),
+        # Round fields
+        ('round_number', 'round_number', False),
+        ('round_phase', 'round_phase', False),
     ]
-    
-    PUBLIC_SNAPSHOT_JSON_FIELDS = {
-        'underlord_talents': 'underlord_selected_talents',
-        'synergies_json': 'synergies',
-        'board_buddy_json': 'board_buddy',
-        'units_json': 'units',
-        'items_json': 'items'
-    }
     
     # Field mapping constants for private snapshots
-    # Order: all direct fields first, then all JSON fields (matches public snapshot pattern)
+    # Single source of truth: (db_column_name, gsi_field_name, is_json)
+    # Order matches INSERT statement exactly
     PRIVATE_SNAPSHOT_FIELDS = [
-        'sequence_number', 'player_slot',
-        'shop_locked', 'reroll_cost', 'gold_earned_this_round', 'shop_generation_id',
-        'can_select_underlord',
-        'unclaimed_reward_count', 'used_item_reward_reroll_this_round', 'grants_rewards'
+        # Direct fields
+        ('sequence_number', 'sequence_number', False),
+        ('player_slot', 'player_slot', False),
+        ('shop_locked', 'shop_locked', False),
+        ('reroll_cost', 'reroll_cost', False),
+        ('gold_earned_this_round', 'gold_earned_this_round', False),
+        ('shop_generation_id', 'shop_generation_id', False),
+        ('can_select_underlord', 'can_select_underlord', False),
+        ('unclaimed_reward_count', 'unclaimed_reward_count', False),
+        ('used_item_reward_reroll_this_round', 'used_item_reward_reroll_this_round', False),
+        ('grants_rewards', 'grants_rewards', False),
+        # JSON fields
+        ('shop_units_json', 'shop_units', True),
+        ('underlord_picker_offering_json', 'underlord_picker_offering', True),
+        ('oldest_unclaimed_reward_json', 'oldest_unclaimed_reward', True),
     ]
-    
-    PRIVATE_SNAPSHOT_JSON_FIELDS = {
-        'shop_units_json': 'shop_units',
-        'underlord_picker_offering_json': 'underlord_picker_offering',
-        'oldest_unclaimed_reward_json': 'oldest_unclaimed_reward'
-    }
     
     
     def __init__(self, db_path: Optional[str] = None) -> None:
         # Default to parent directory if not specified
         if db_path is None:
-            db_path = os.path.join(os.path.dirname(__file__), '..', 'underlords_gsi_v4.db')
+            db_path = os.path.join(os.path.dirname(__file__), '..', 'underlords_gsi_v5.db')
         self.db_path = db_path
         self.conn = None
         self.init_database()
@@ -70,6 +103,7 @@ class UnderlordsDatabaseManager:
         self.conn.row_factory = sqlite3.Row  # Enable column access by name
         self.create_tables()
         self.migrate_add_round_columns()
+        self.migrate_rename_items_column()
     
     def create_tables(self) -> None:
         """Create all necessary tables."""
@@ -158,7 +192,7 @@ class UnderlordsDatabaseManager:
                 
                 -- JSON data
                 units_json TEXT,
-                items_json TEXT,
+                item_slots_json TEXT,
                 
                 -- Round tracking
                 round_number INTEGER,
@@ -236,6 +270,54 @@ class UnderlordsDatabaseManager:
             cursor.execute("CREATE INDEX IF NOT EXISTS idx_public_snapshots_round ON public_player_snapshots(match_id, account_id, round_number, round_phase)")
         except sqlite3.OperationalError as e:
             print(f"[MIGRATION] Could not create round index: {e}")
+        
+        self.conn.commit()
+    
+    def migrate_rename_items_column(self) -> None:
+        """Rename items_json column to item_slots_json to match GSI field name."""
+        cursor = self.conn.cursor()
+        
+        # Check if old column exists
+        cursor.execute("PRAGMA table_info(public_player_snapshots)")
+        columns = [row[1] for row in cursor.fetchall()]
+        
+        # If old column exists and new column doesn't, rename it
+        if 'items_json' in columns and 'item_slots_json' not in columns:
+            try:
+                # SQLite doesn't support ALTER TABLE RENAME COLUMN in older versions
+                # Use a workaround: create new table, copy data, drop old, rename new
+                cursor.execute("""
+                    CREATE TABLE public_player_snapshots_new AS
+                    SELECT 
+                        snapshot_id, match_id, account_id, sequence_number, timestamp,
+                        health, gold, level, xp, next_level_xp,
+                        wins, losses, win_streak, lose_streak, net_worth,
+                        player_slot, combat_type, combat_result, combat_duration, opponent_player_slot,
+                        underlord, board_unit_limit,
+                        rank_tier, final_place, platform,
+                        vs_opponent_wins, vs_opponent_losses, vs_opponent_draws,
+                        brawny_kills_float, city_prestige_level, event_tier, owns_event, is_mirrored_match,
+                        connection_status, disconnected_time, lobby_team,
+                        underlord_talents, synergies_json, board_buddy_json, units_json,
+                        items_json AS item_slots_json,  -- Rename during copy
+                        round_number, round_phase
+                    FROM public_player_snapshots
+                """)
+                
+                # Drop old table
+                cursor.execute("DROP TABLE public_player_snapshots")
+                
+                # Rename new table
+                cursor.execute("ALTER TABLE public_player_snapshots_new RENAME TO public_player_snapshots")
+                
+                # Recreate indexes
+                cursor.execute("CREATE INDEX IF NOT EXISTS idx_public_snapshots_player ON public_player_snapshots(account_id, sequence_number)")
+                cursor.execute("CREATE INDEX IF NOT EXISTS idx_public_snapshots_match ON public_player_snapshots(match_id, timestamp)")
+                cursor.execute("CREATE INDEX IF NOT EXISTS idx_public_snapshots_round ON public_player_snapshots(match_id, account_id, round_number, round_phase)")
+                
+                print("[MIGRATION] Renamed items_json column to item_slots_json in public_player_snapshots")
+            except sqlite3.OperationalError as e:
+                print(f"[MIGRATION] Could not rename items_json column: {e}")
         
         self.conn.commit()
     
@@ -317,31 +399,33 @@ class UnderlordsDatabaseManager:
     def _build_public_snapshot_values(self, player_data: Dict) -> tuple:
         """Build values tuple for public snapshot insert, handling missing fields."""
         values = []
-        # Direct fields - use .get() with None as default for missing fields
-        for field in self.PUBLIC_SNAPSHOT_FIELDS:
-            values.append(player_data.get(field))
-        # JSON fields - use .get() with None as default, serialize None as "null"
-        for db_column, gsi_field in self.PUBLIC_SNAPSHOT_JSON_FIELDS.items():
+        for db_column, gsi_field, is_json in self.PUBLIC_SNAPSHOT_FIELDS:
             field_value = player_data.get(gsi_field)
-            if field_value is None:
-                values.append("null")
+            if is_json:
+                # JSON fields - serialize None as "null"
+                if field_value is None:
+                    values.append("null")
+                else:
+                    values.append(self._serialize_json_field(field_value))
             else:
-                values.append(self._serialize_json_field(field_value))
+                # Direct fields - use None as default for missing fields
+                values.append(field_value)
         return tuple(values)
     
     def _build_private_snapshot_values(self, private_data: Dict) -> tuple:
         """Build values tuple for private snapshot insert, handling missing fields."""
         values = []
-        # Direct fields - use .get() with None as default for missing fields
-        for field in self.PRIVATE_SNAPSHOT_FIELDS:
-            values.append(private_data.get(field))
-        # JSON fields - use .get() with None as default, serialize None as "null"
-        for db_column, gsi_field in self.PRIVATE_SNAPSHOT_JSON_FIELDS.items():
+        for db_column, gsi_field, is_json in self.PRIVATE_SNAPSHOT_FIELDS:
             field_value = private_data.get(gsi_field)
-            if field_value is None:
-                values.append("null")
+            if is_json:
+                # JSON fields - serialize None as "null"
+                if field_value is None:
+                    values.append("null")
+                else:
+                    values.append(self._serialize_json_field(field_value))
             else:
-                values.append(self._serialize_json_field(field_value))
+                # Direct fields - use None as default for missing fields
+                values.append(field_value)
         return tuple(values)
     
     def _insert_public_snapshot(self, match_id: str, account_id: int, player_data: Dict, timestamp: datetime) -> int:
@@ -353,20 +437,17 @@ class UnderlordsDatabaseManager:
         # field_values starts with sequence_number, so we need to insert timestamp after it
         params = (match_id, account_id, field_values[0], timestamp, *field_values[1:])
         
-        cursor.execute("""
-            INSERT INTO public_player_snapshots (
-                match_id, account_id, sequence_number, timestamp,
-                health, gold, level, xp, next_level_xp,
-                wins, losses, win_streak, lose_streak, net_worth,
-                player_slot, combat_type, combat_result, combat_duration, opponent_player_slot,
-                underlord, board_unit_limit,
-                rank_tier, final_place, platform,
-                vs_opponent_wins, vs_opponent_losses, vs_opponent_draws,
-                brawny_kills_float, city_prestige_level, event_tier, owns_event, is_mirrored_match,
-                connection_status, disconnected_time, lobby_team,
-                underlord_talents, synergies_json, board_buddy_json, units_json, items_json,
-                round_number, round_phase
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        # Build column list from field definitions
+        columns = ['match_id', 'account_id'] + [db_column for db_column, _, _ in self.PUBLIC_SNAPSHOT_FIELDS]
+        columns.insert(3, 'timestamp')  # Insert timestamp after sequence_number
+        
+        # Build placeholders
+        placeholders = ', '.join(['?'] * len(columns))
+        column_list = ', '.join(columns)
+        
+        cursor.execute(f"""
+            INSERT INTO public_player_snapshots ({column_list})
+            VALUES ({placeholders})
         """, params)
         
         return cursor.lastrowid
@@ -416,13 +497,17 @@ class UnderlordsDatabaseManager:
         # field_values starts with sequence_number, so we need to insert timestamp after it
         params = (match_id, field_values[0], timestamp, *field_values[1:])
         
-        cursor.execute("""
-            INSERT INTO private_player_snapshots (
-                match_id, sequence_number, timestamp, player_slot,
-                shop_locked, reroll_cost, gold_earned_this_round, shop_generation_id,
-                can_select_underlord, unclaimed_reward_count, used_item_reward_reroll_this_round, grants_rewards,
-                shop_units_json, underlord_picker_offering_json, oldest_unclaimed_reward_json
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        # Build column list from field definitions
+        columns = ['match_id'] + [db_column for db_column, _, _ in self.PRIVATE_SNAPSHOT_FIELDS]
+        columns.insert(2, 'timestamp')  # Insert timestamp after sequence_number
+        
+        # Build placeholders
+        placeholders = ', '.join(['?'] * len(columns))
+        column_list = ', '.join(columns)
+        
+        cursor.execute(f"""
+            INSERT INTO private_player_snapshots ({column_list})
+            VALUES ({placeholders})
         """, params)
         
         return cursor.lastrowid
@@ -527,6 +612,189 @@ class UnderlordsDatabaseManager:
             })
         
         return matches
+
+    def get_player_snapshots(
+        self, 
+        match_id: str, 
+        account_id: int, 
+        round_number: Optional[int] = None, 
+        round_phase: Optional[str] = None
+    ) -> List[Dict]:
+        """
+        Query snapshots for a specific player in a match.
+        
+        Args:
+            match_id: Match identifier
+            account_id: Player account ID
+            round_number: Optional filter by round number
+            round_phase: Optional filter by round phase
+            
+        Returns:
+            List of snapshot dictionaries with parsed JSON fields
+        """
+        cursor = self.conn.cursor()
+        
+        # Build SELECT columns from field definitions
+        select_columns = ['snapshot_id', 'match_id', 'account_id'] + [db_column for db_column, _, _ in self.PUBLIC_SNAPSHOT_FIELDS]
+        select_columns.insert(4, 'timestamp')  # Insert timestamp after sequence_number
+        column_list = ', '.join(select_columns)
+        
+        # Build query with optional filters
+        query = f"""
+            SELECT {column_list}
+            FROM public_player_snapshots
+            WHERE match_id = ? AND account_id = ?
+        """
+        params = [match_id, account_id]
+        
+        if round_number is not None:
+            query += " AND round_number = ?"
+            params.append(round_number)
+        
+        if round_phase is not None:
+            query += " AND round_phase = ?"
+            params.append(round_phase)
+        
+        query += " ORDER BY sequence_number ASC"
+        
+        cursor.execute(query, params)
+        rows = cursor.fetchall()
+        
+        snapshots = []
+        for row in rows:
+            snapshot = {
+                'snapshot_id': row[0],
+                'match_id': row[1],
+                'account_id': row[2],
+            }
+            
+            # Parse fields using field definitions
+            # Row structure: snapshot_id(0), match_id(1), account_id(2), sequence_number(3), timestamp(4), then rest of fields
+            # Handle timestamp separately (it's inserted at index 4, after sequence_number)
+            snapshot['timestamp'] = row[4]
+            
+            # Parse fields: start at index 3 for sequence_number, skip index 4 (timestamp), continue from index 5
+            row_index = 3
+            for db_column, gsi_field, is_json in self.PUBLIC_SNAPSHOT_FIELDS:
+                if is_json:
+                    # JSON fields - parse and use GSI field name
+                    if row[row_index]:
+                        snapshot[gsi_field] = json.loads(row[row_index])
+                    else:
+                        snapshot[gsi_field] = None
+                else:
+                    # Direct fields - use as-is
+                    snapshot[gsi_field] = row[row_index]
+                
+                row_index += 1
+                # Skip timestamp column (index 4) - it's already handled above
+                if row_index == 4:
+                    row_index += 1
+            
+            snapshots.append(snapshot)
+        
+        return snapshots
+    
+    def get_match_snapshots(
+        self, 
+        match_id: str, 
+        account_ids: Optional[List[int]] = None, 
+        limit: Optional[int] = None
+    ) -> List[Dict]:
+        """
+        Query snapshots for all players (or filtered list) in a match.
+        
+        Args:
+            match_id: Match identifier
+            account_ids: Optional list of account IDs to filter by
+            limit: Optional limit on number of snapshots to return
+            
+        Returns:
+            List of snapshot dictionaries with parsed JSON fields, ordered by sequence_number ascending
+        """
+        cursor = self.conn.cursor()
+        
+        # Build SELECT columns from field definitions
+        select_columns = ['snapshot_id', 'match_id', 'account_id'] + [db_column for db_column, _, _ in self.PUBLIC_SNAPSHOT_FIELDS]
+        select_columns.insert(4, 'timestamp')  # Insert timestamp after sequence_number
+        column_list = ', '.join(select_columns)
+        
+        # Build query with optional filters
+        query = f"""
+            SELECT {column_list}
+            FROM public_player_snapshots
+            WHERE match_id = ?
+        """
+        params = [match_id]
+        
+        if account_ids is not None:
+            placeholders = ','.join(['?'] * len(account_ids))
+            query += f" AND account_id IN ({placeholders})"
+            params.extend(account_ids)
+        
+        query += " ORDER BY sequence_number ASC"
+        
+        if limit is not None:
+            query += f" LIMIT {limit}"
+        
+        cursor.execute(query, params)
+        rows = cursor.fetchall()
+        
+        snapshots = []
+        for row in rows:
+            snapshot = {
+                'snapshot_id': row[0],
+                'match_id': row[1],
+                'account_id': row[2],
+            }
+            
+            # Parse fields using field definitions
+            # Row structure: snapshot_id(0), match_id(1), account_id(2), sequence_number(3), timestamp(4), then rest of fields
+            # Handle timestamp separately (it's inserted at index 4, after sequence_number)
+            snapshot['timestamp'] = row[4]
+            
+            # Parse fields: start at index 3 for sequence_number, skip index 4 (timestamp), continue from index 5
+            row_index = 3
+            for db_column, gsi_field, is_json in self.PUBLIC_SNAPSHOT_FIELDS:
+                if is_json:
+                    # JSON fields - parse and use GSI field name
+                    if row[row_index]:
+                        snapshot[gsi_field] = json.loads(row[row_index])
+                    else:
+                        snapshot[gsi_field] = None
+                else:
+                    # Direct fields - use as-is
+                    snapshot[gsi_field] = row[row_index]
+                
+                row_index += 1
+                # Skip timestamp column (index 4) - it's already handled above
+                if row_index == 4:
+                    row_index += 1
+            
+            snapshots.append(snapshot)
+        
+        return snapshots
+
+    def get_player_match_count(self, account_id: int) -> int:
+        """
+        Get the count of distinct matches a player has appeared in.
+        This excludes the current match (if it exists).
+        
+        Args:
+            account_id: Player account ID
+            
+        Returns:
+            Count of distinct matches the player has appeared in
+        """
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            SELECT COUNT(DISTINCT match_id) 
+            FROM match_players 
+            WHERE account_id = ?
+        """, (account_id,))
+        
+        result = cursor.fetchone()
+        return result[0] if result else 0
 
     def close(self) -> None:
         """Close database connection."""
