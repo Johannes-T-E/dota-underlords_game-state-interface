@@ -775,6 +775,27 @@ class UnderlordsDatabaseManager:
         
         return snapshots
 
+    def get_player_match_count(self, account_id: int) -> int:
+        """
+        Get the count of distinct matches a player has appeared in.
+        This excludes the current match (if it exists).
+        
+        Args:
+            account_id: Player account ID
+            
+        Returns:
+            Count of distinct matches the player has appeared in
+        """
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            SELECT COUNT(DISTINCT match_id) 
+            FROM match_players 
+            WHERE account_id = ?
+        """, (account_id,))
+        
+        result = cursor.fetchone()
+        return result[0] if result else 0
+
     def close(self) -> None:
         """Close database connection."""
         if self.conn:

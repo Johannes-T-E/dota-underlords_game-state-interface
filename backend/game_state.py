@@ -54,6 +54,9 @@ class MatchState:
         self.public_player_buffer = []
         # private_player_buffer: (gsi_state, timestamp) tuples
         self.private_player_buffer = []
+        
+        # Match counts for players (calculated at match start)
+        self.player_match_counts = {}  # account_id -> match_count
 
     def reset(self):
         """Reset to initial state."""
@@ -64,6 +67,7 @@ class MatchState:
         self.sequences = {}
         self.public_player_buffer = []
         self.private_player_buffer = []
+        self.player_match_counts = {}
         
         # Reset round tracking
         self.tracked_player_account_id = None
@@ -207,7 +211,10 @@ def process_and_store_gsi_public_player_state(account_id: int, gsi_public_player
         
         # Round tracking
         'round_number': match_state.round_number,
-        'round_phase': match_state.round_phase
+        'round_phase': match_state.round_phase,
+        
+        # Match count (how many previous matches we've seen this player in)
+        'match_count': match_state.player_match_counts.get(account_id, 0)
     }
     
     # Store in match state
@@ -290,8 +297,28 @@ def start_new_match(players_data: List[Dict], timestamp: datetime) -> str:
     # Generate match_id
     match_id = generate_match_id(players_data)
     
+    # Calculate match counts for each player BEFORE creating the match
+    # This ensures the count excludes the current match
+    from .utils import generate_bot_account_id
+    player_match_counts = {}
+    for player in players_data:
+        is_human = player.get('is_human_player')
+        if is_human is False:
+            # Bot player - generate account_id
+            account_id = generate_bot_account_id(player)
+        else:
+            # Human player - use account_id directly from raw data
+            account_id = player.get('account_id')
+        
+        if account_id:
+            match_count = db.get_player_match_count(account_id)
+            player_match_counts[account_id] = match_count
+    
     # Create match in database
     db.create_match(match_id, players_data, timestamp)
+    
+    # Store match counts in match state for use when processing player states
+    match_state.player_match_counts = player_match_counts
     
     # Update match state
     match_state.match_id = match_id

@@ -165,6 +165,7 @@ export const ScoreboardPlayerRow = memo(({
                 personaName={player.persona_name}
                 botPersonaName={player.bot_persona_name}
                 className="scoreboard-player-row__name"
+                matchCount={player.match_count}
               />
               <div className="scoreboard-player-row__stats">
                 <StatDisplay type="level" value={player.level || 0} size="small" />
@@ -185,6 +186,7 @@ export const ScoreboardPlayerRow = memo(({
               personaName={player.persona_name}
               botPersonaName={player.bot_persona_name}
               className="scoreboard-player-row__name"
+              matchCount={player.match_count}
             />
           </div>
         );

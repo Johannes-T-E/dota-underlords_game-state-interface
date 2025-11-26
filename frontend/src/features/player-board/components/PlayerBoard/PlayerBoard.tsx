@@ -344,6 +344,7 @@ export const PlayerBoard = ({ player, heroesData, onClose, className = '' }: Pla
           personaName={player.persona_name}
           botPersonaName={player.bot_persona_name}
           className="player-board__name"
+          matchCount={player.match_count}
         />
         <Button
           variant="ghost"

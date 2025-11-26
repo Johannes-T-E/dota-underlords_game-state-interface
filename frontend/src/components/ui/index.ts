@@ -89,6 +89,9 @@ export type { DurationDisplayProps } from './DurationDisplay/DurationDisplay';
 export { PlayerNameDisplay } from './PlayerNameDisplay/PlayerNameDisplay';
 export type { PlayerNameDisplayProps } from './PlayerNameDisplay/PlayerNameDisplay';
 
+export { MatchCountChip } from './MatchCountChip/MatchCountChip';
+export type { MatchCountChipProps } from './MatchCountChip/MatchCountChip';
+
 export { SortableHeader } from './SortableHeader/SortableHeader';
 export type { SortableHeaderProps } from './SortableHeader/SortableHeader';
 

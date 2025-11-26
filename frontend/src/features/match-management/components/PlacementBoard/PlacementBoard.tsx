@@ -6,6 +6,7 @@ export interface PlacementPlayer {
   persona_name?: string;
   bot_persona_name?: string;
   final_place: number;
+  match_count?: number;
 }
 
 export interface PlacementBoardProps {
@@ -45,6 +46,7 @@ export const PlacementBoard = ({ players, className = '' }: PlacementBoardProps)
                   personaName={player.persona_name}
                   botPersonaName={player.bot_persona_name}
                   fallback={`Player ${player.account_id}`}
+                  matchCount={player.match_count}
                 />
               </td>
               <td className="placement-board__type">

@@ -97,6 +97,9 @@ export interface PlayerState {
   // Round tracking (added by backend)
   round_number: number;
   round_phase: 'prep' | 'combat';
+  
+  // Match history
+  match_count?: number;
 }
 
 export interface ShopUnit {

@@ -1,5 +1,6 @@
 import { Text } from '@/components/ui';
 import { useBotNames } from '@/hooks/useBotNames';
+import { MatchCountChip } from '../MatchCountChip/MatchCountChip';
 import './PlayerNameDisplay.css';
 
 export interface PlayerNameDisplayProps {
@@ -7,13 +8,15 @@ export interface PlayerNameDisplayProps {
   botPersonaName?: string;
   fallback?: string;
   className?: string;
+  matchCount?: number;
 }
 
 export const PlayerNameDisplay = ({ 
   personaName, 
   botPersonaName, 
   fallback = 'Unknown Player',
-  className = '' 
+  className = '',
+  matchCount
 }: PlayerNameDisplayProps) => {
   const { getBotName } = useBotNames();
   
@@ -23,13 +26,16 @@ export const PlayerNameDisplay = ({
   const name = personaName || translatedBotName || botPersonaName || fallback;
 
   return (
-    <Text 
-      variant="body" 
-      className={`player-name-display ${className}`}
-      title={name}
-    >
-      {name}
-    </Text>
+    <span className={`player-name-display-wrapper ${className}`}>
+      <MatchCountChip count={matchCount || 0} />
+      <Text 
+        variant="body" 
+        className="player-name-display"
+        title={name}
+      >
+        {name}
+      </Text>
+    </span>
   );
 };
 
