@@ -19,8 +19,13 @@ export interface BoardBuddy {
   board_buddy_id?: number;
 }
 
+export interface ItemSlot {
+  item_id: number;
+  slot_index: number;
+  assigned_unit_entindex: number | null;
+}
+
 export interface PlayerState {
-  player_id: string;
   account_id: number;
   persona_name?: string;
   bot_persona_name?: string;
@@ -51,7 +56,7 @@ export interface PlayerState {
   // Board and units
   board_unit_limit: number;
   units: Unit[];
-  items: number[];
+  item_slots: ItemSlot[];
   synergies: Synergy[];
   
   // Underlord data
@@ -87,6 +92,10 @@ export interface PlayerState {
   // Technical
   sequence_number: number;
   timestamp: string;
+  
+  // Round tracking (added by backend)
+  round_number: number;
+  round_phase: 'prep' | 'combat';
 }
 
 export interface ShopUnit {
@@ -148,8 +157,9 @@ export interface ApiMatch {
   ended_at: string | null;
   player_count: number;
   players?: {
-    player_id: string;
+    account_id: number;
     persona_name?: string;
+    bot_persona_name?: string;
     final_place: number;
   }[];
 }
@@ -190,6 +200,12 @@ export interface WebSocketEvents {
     reason: string;
     timestamp: string;
   };
+  player_changes: {
+    match_id: string;
+    account_id: number;
+    changes: Change[];
+    timestamp: string;
+  };
   test_response: {
     status: string;
     message: string;
@@ -221,7 +237,10 @@ export interface Change {
         'item_added' | 'item_assigned' | 'item_unassigned' | 'item_reassigned' |
         'synergy_added' | 'synergy_removed' | 'synergy_level_changed';
   // Player identification
-  player_id: string;
+  account_id: number;
+  // Sequence numbers
+  previous_sequence_number?: number;
+  current_sequence_number?: number;
   // Unit change fields (optional for non-unit changes)
   unit_id?: number;
   entindex?: number | null; // null for upgrades where entity changes
@@ -251,7 +270,7 @@ export interface Change {
   // Synergy change fields (optional)
   synergy_keyword?: number;
   unique_unit_count?: number; // for synergy_added, synergy_removed
-  timestamp: number;
+  timestamp: string; // ISO string from backend (converted to number in components for display)
 }
 
 // Keep UnitChange as an alias for backward compatibility

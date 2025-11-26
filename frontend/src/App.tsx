@@ -3,8 +3,9 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './store/store';
 import { websocketService } from './services/websocket';
+import { HeroesDataProvider } from './contexts/HeroesDataContext';
 import { Dashboard } from './pages/Dashboard';
-import { Matches } from './pages/Matches';
+import { MatchManagement } from './pages/MatchManagement';
 
 function AppContent() {
   useEffect(() => {
@@ -22,7 +23,7 @@ function AppContent() {
       <Routes>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/matches" element={<Matches />} />
+        <Route path="/match-management" element={<MatchManagement />} />
       </Routes>
     </BrowserRouter>
   );
@@ -31,7 +32,9 @@ function AppContent() {
 function App() {
   return (
     <Provider store={store}>
-      <AppContent />
+      <HeroesDataProvider>
+        <AppContent />
+      </HeroesDataProvider>
     </Provider>
   );
 }

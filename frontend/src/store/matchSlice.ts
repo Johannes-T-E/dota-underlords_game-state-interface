@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { MatchData, PlayerState, PrivatePlayerState, RoundInfo, MatchInfo } from '../types';
+import type { MatchData, PlayerState, PrivatePlayerState, RoundInfo, MatchInfo } from '@/types';
 
 interface MatchState {
   currentMatch: MatchInfo | null;
@@ -38,19 +38,18 @@ const matchSlice = createSlice({
       state.currentRound = {
         round_number: 1,
         round_phase: 'prep',
-        is_combat_phase: false,
       };
       state.lastUpdate = null;
     },
     abandonMatch: (state) => {
-      // Keep the match data but mark it as ended
+      // Frontend is stateless - clear all match data when match is abandoned
+      // Backend is the source of truth for all historical data
       state.currentMatch = null;
       state.players = [];
       state.privatePlayer = null;
       state.currentRound = {
         round_number: 1,
         round_phase: 'prep',
-        is_combat_phase: false,
       };
     },
   },

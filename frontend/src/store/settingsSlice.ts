@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { HealthDisplaySettings } from '../components/molecules/HealthDisplay/HealthDisplaySettings';
-import type { ScoreboardColumnConfig } from '../types';
-import { DEFAULT_HEALTH_DISPLAY_SETTINGS } from '../components/molecules/HealthDisplay/HealthDisplaySettings';
+import type { HealthDisplaySettings } from '@/components/ui/HealthDisplay/HealthDisplaySettings';
+import type { ScoreboardColumnConfig } from '@/types';
+import { DEFAULT_HEALTH_DISPLAY_SETTINGS } from '@/components/ui/HealthDisplay/HealthDisplaySettings';
 
 // Current settings version for migration purposes
 const SETTINGS_VERSION = 1;
@@ -45,7 +45,7 @@ export interface GeneralSettings {
 export interface SettingsState {
   version: number;
   health: HealthDisplaySettings;
-  scoreboard: ScoreboardSettings;
+  scoreboards: Record<string, ScoreboardSettings>; // Map of widgetId -> settings
   general: GeneralSettings;
 }
 
@@ -97,7 +97,7 @@ const defaultUnitAnimationSettings: UnitAnimationSettings = {
 const initialState: SettingsState = {
   version: SETTINGS_VERSION,
   health: DEFAULT_HEALTH_DISPLAY_SETTINGS,
-  scoreboard: defaultScoreboardSettings,
+  scoreboards: {}, // Per-widget settings, initialized on first access
   general: {
     heroPortrait: defaultHeroPortraitSettings,
     unitAnimation: defaultUnitAnimationSettings
@@ -114,31 +114,18 @@ const migrateSettings = (settings: any): SettingsState => {
   // Handle future migrations here
   if (settings.version < SETTINGS_VERSION) {
     // Perform migrations based on version
-    // Migration for version 1: Add new column properties
-    if (settings.scoreboard && settings.scoreboard.columns) {
-      // Ensure new column properties exist with default values
-      if (settings.scoreboard.columns.underlord === undefined) {
-        settings.scoreboard.columns.underlord = true;
-      }
-      if (settings.scoreboard.columns.contraptions === undefined) {
-        settings.scoreboard.columns.contraptions = true;
-      }
-      
-      // Update column order if it doesn't include new columns
-      if (settings.scoreboard.columns.columnOrder) {
-        const currentOrder = settings.scoreboard.columns.columnOrder;
-        const rosterIndex = currentOrder.indexOf('roster');
-        const benchIndex = currentOrder.indexOf('bench');
-        
-        if (rosterIndex !== -1 && benchIndex !== -1 && 
-            !currentOrder.includes('underlord') && !currentOrder.includes('contraptions')) {
-          // Insert new columns between roster and bench
-          currentOrder.splice(rosterIndex + 1, 0, 'underlord', 'contraptions');
-        }
-      }
+    // Migration: Convert old single scoreboard to per-widget structure
+    if (settings.scoreboard && !settings.scoreboards) {
+      // Old format - convert to new format (but we're wiping per user request)
+      settings.scoreboards = {};
     }
     
     settings.version = SETTINGS_VERSION;
+  }
+
+  // Ensure scoreboards exists (new structure)
+  if (!settings.scoreboards) {
+    settings.scoreboards = {};
   }
 
   // Ensure heroPortrait settings exist
@@ -197,25 +184,42 @@ const settingsSlice = createSlice({
       state.health = DEFAULT_HEALTH_DISPLAY_SETTINGS;
     },
 
-    // Scoreboard Settings
-    updateScoreboardColumns: (state, action: PayloadAction<Partial<ScoreboardColumnConfig>>) => {
-      state.scoreboard.columns = {
-        ...state.scoreboard.columns,
-        ...action.payload
+    // Scoreboard Settings (per-widget)
+    updateScoreboardColumns: (state, action: PayloadAction<{ widgetId: string; columns: Partial<ScoreboardColumnConfig> }>) => {
+      const { widgetId, columns } = action.payload;
+      // Initialize widget settings if they don't exist
+      if (!state.scoreboards[widgetId]) {
+        state.scoreboards[widgetId] = { ...defaultScoreboardSettings };
+      }
+      state.scoreboards[widgetId].columns = {
+        ...state.scoreboards[widgetId].columns,
+        ...columns
       };
     },
 
-    updateScoreboardSort: (state, action: PayloadAction<{ field?: 'health' | 'record' | 'networth'; direction?: 'asc' | 'desc' }>) => {
-      if (action.payload.field) {
-        state.scoreboard.sortField = action.payload.field;
+    updateScoreboardSort: (state, action: PayloadAction<{ widgetId: string; field?: 'health' | 'record' | 'networth'; direction?: 'asc' | 'desc' }>) => {
+      const { widgetId, field, direction } = action.payload;
+      // Initialize widget settings if they don't exist
+      if (!state.scoreboards[widgetId]) {
+        state.scoreboards[widgetId] = { ...defaultScoreboardSettings };
       }
-      if (action.payload.direction) {
-        state.scoreboard.sortDirection = action.payload.direction;
+      if (field) {
+        state.scoreboards[widgetId].sortField = field;
+      }
+      if (direction) {
+        state.scoreboards[widgetId].sortDirection = direction;
       }
     },
 
-    resetScoreboardSettings: (state) => {
-      state.scoreboard = defaultScoreboardSettings;
+    resetScoreboardSettings: (state, action: PayloadAction<string | undefined>) => {
+      const widgetId = action.payload;
+      if (widgetId) {
+        // Reset specific widget
+        state.scoreboards[widgetId] = { ...defaultScoreboardSettings };
+      } else {
+        // Reset all widgets
+        state.scoreboards = {};
+      }
     },
 
     // General Settings
@@ -260,7 +264,7 @@ const settingsSlice = createSlice({
     // Global Actions
     resetAllSettings: (state) => {
       state.health = DEFAULT_HEALTH_DISPLAY_SETTINGS;
-      state.scoreboard = defaultScoreboardSettings;
+      state.scoreboards = {};
       state.general = {
         heroPortrait: defaultHeroPortraitSettings,
         unitAnimation: defaultUnitAnimationSettings
@@ -271,7 +275,13 @@ const settingsSlice = createSlice({
     loadSettings: (state, action: PayloadAction<SettingsState>) => {
       const migrated = migrateSettings(action.payload);
       state.health = migrated.health;
-      state.scoreboard = migrated.scoreboard;
+      // Migrate old single scoreboard to per-widget structure if needed
+      if (migrated.scoreboard && !migrated.scoreboards) {
+        // If old format exists, convert to new format (but we're wiping settings per user request)
+        state.scoreboards = {};
+      } else {
+        state.scoreboards = migrated.scoreboards || {};
+      }
       state.general = migrated.general;
       state.version = migrated.version;
     },
@@ -282,7 +292,12 @@ const settingsSlice = createSlice({
         const parsed = JSON.parse(action.payload);
         const migrated = migrateSettings(parsed);
         state.health = migrated.health;
-        state.scoreboard = migrated.scoreboard;
+        // Migrate old single scoreboard to per-widget structure if needed
+        if (migrated.scoreboard && !migrated.scoreboards) {
+          state.scoreboards = {};
+        } else {
+          state.scoreboards = migrated.scoreboards || {};
+        }
         state.general = migrated.general;
         state.version = migrated.version;
       } catch (error) {
@@ -313,7 +328,13 @@ export default settingsSlice.reducer;
 
 // Selector helpers
 export const selectHealthSettings = (state: { settings: SettingsState }) => state.settings.health;
-export const selectScoreboardSettings = (state: { settings: SettingsState }) => state.settings.scoreboard;
+export const selectScoreboardSettings = (widgetId: string) => (state: { settings: SettingsState }): ScoreboardSettings => {
+  // Return widget-specific settings or default if not initialized
+  if (!state.settings.scoreboards[widgetId]) {
+    return defaultScoreboardSettings;
+  }
+  return state.settings.scoreboards[widgetId];
+};
 export const selectGeneralSettings = (state: { settings: SettingsState }) => state.settings.general;
 export const selectHeroPortraitSettings = (state: { settings: SettingsState }) => state.settings.general.heroPortrait;
 export const selectUnitAnimationSettings = (state: { settings: SettingsState }) => state.settings.general.unitAnimation;

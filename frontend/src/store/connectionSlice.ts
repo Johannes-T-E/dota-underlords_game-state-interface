@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { ConnectionStatus } from '../types';
+import type { ConnectionStatus } from '@/types';
 
 interface ConnectionState {
   status: ConnectionStatus;
