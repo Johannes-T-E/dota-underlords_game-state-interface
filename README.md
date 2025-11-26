@@ -2,7 +2,7 @@
 
 A real-time scoreboard and match tracker for Dota Underlords using the Game State Integration (GSI) API.
 
-![Development Log - October 23, 2025](dev_log_img/2025-10-23.png)
+![Development Log - October 23, 2025](dev_log_img/2025-11-26.png)
 
 *Real-time match tracking with live player stats, WebSocket updates, and comprehensive game state monitoring*
 
