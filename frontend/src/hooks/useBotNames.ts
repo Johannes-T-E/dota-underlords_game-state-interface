@@ -5,13 +5,17 @@ export const useBotNames = () => {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
+
     // Check localStorage first
     const cached = localStorage.getItem('botNames');
     if (cached) {
       try {
         const data = JSON.parse(cached);
-        setBotNames(data);
-        setLoaded(true);
+        if (!cancelled) {
+          setBotNames(data);
+          setLoaded(true);
+        }
         return;
       } catch (err) {
         console.error('Failed to parse cached bot names:', err);
@@ -22,15 +26,23 @@ export const useBotNames = () => {
     fetch('/dac_botnames.json')
       .then(res => res.json())
       .then(data => {
-        // Store in localStorage for future use
-        localStorage.setItem('botNames', JSON.stringify(data));
-        setBotNames(data);
-        setLoaded(true);
+        if (!cancelled) {
+          // Store in localStorage for future use
+          localStorage.setItem('botNames', JSON.stringify(data));
+          setBotNames(data);
+          setLoaded(true);
+        }
       })
       .catch(err => {
         console.error('Failed to load bot names:', err);
-        setLoaded(true);
+        if (!cancelled) {
+          setLoaded(true);
+        }
       });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const getBotName = (botPersonaName?: string): string | undefined => {
@@ -44,4 +56,3 @@ export const useBotNames = () => {
 
   return { getBotName, loaded };
 };
-

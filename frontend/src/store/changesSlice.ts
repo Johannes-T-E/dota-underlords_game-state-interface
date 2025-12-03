@@ -14,6 +14,9 @@ const initialState: ChangesState = {
   currentMatchId: null,
 };
 
+// Maximum number of changes to keep in memory
+const MAX_CHANGES = 500;
+
 // Helper function to deduplicate changes
 // Uses the same logic as the component: timestamp + account_id + type + unit_id/item_id/synergy_keyword
 const deduplicateChanges = (changes: Change[]): Change[] => {
@@ -44,7 +47,8 @@ const changesSlice = createSlice({
       const allChanges = [...newChanges, ...state.changes];
       const uniqueChanges = deduplicateChanges(allChanges);
       
-      state.changes = uniqueChanges;
+      // Limit to MAX_CHANGES, keeping the most recent
+      state.changes = uniqueChanges.slice(0, MAX_CHANGES);
       state.lastUpdate = Date.now();
     },
     
@@ -56,7 +60,8 @@ const changesSlice = createSlice({
       // Deduplicate the changes from API
       const uniqueChanges = deduplicateChanges(changes);
       
-      state.changes = uniqueChanges;
+      // Limit to MAX_CHANGES, keeping the most recent
+      state.changes = uniqueChanges.slice(0, MAX_CHANGES);
       state.lastUpdate = Date.now();
     },
     

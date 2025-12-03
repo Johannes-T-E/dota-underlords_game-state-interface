@@ -278,6 +278,4 @@ export interface Change {
   timestamp: string; // ISO string from backend (converted to number in components for display)
 }
 
-// Keep UnitChange as an alias for backward compatibility
-export type UnitChange = Change;
 

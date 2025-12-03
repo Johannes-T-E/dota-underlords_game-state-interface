@@ -16,6 +16,27 @@ export interface PlayerBoardProps {
   className?: string;
 }
 
+// Define types outside component to avoid recreation
+interface ActiveAnimation {
+  entindex: number;
+  startPosition: UnitPosition;
+  endPosition: UnitPosition;
+  startTime: number;
+  expiryAt: number;
+  unitId?: number;
+}
+
+type TrailKey = string;
+interface ActiveTrail {
+  key: TrailKey;
+  entindex: number;
+  from: { x: number; y: number };
+  to: { x: number; y: number };
+  unitId?: number;
+  animationStartTime: number;
+  animationDuration: number;
+}
+
 export const PlayerBoard = ({ player, heroesData, onClose, className = '' }: PlayerBoardProps) => {
   const units = player.units || [];
   const { settings: animationSettings } = useUnitAnimationSettings();
@@ -29,34 +50,41 @@ export const PlayerBoard = ({ player, heroesData, onClose, className = '' }: Pla
   // Dynamic scaling state
   const [scale, setScale] = useState(1);
   const boardRef = useRef<HTMLDivElement>(null);
+  
+  // Track all timeouts for cleanup on unmount
+  const timeoutsRef = useRef<Set<ReturnType<typeof setTimeout>>>(new Set());
+  
   // Track active animations with their start and end positions
-  interface ActiveAnimation {
-    entindex: number;
-    startPosition: UnitPosition;
-    endPosition: UnitPosition;
-    startTime: number;
-    expiryAt: number;
-    unitId?: number;
-  }
-  const activeAnimationsRef = useRef<Map<number, ActiveAnimation>>(new Map()); // entindex -> ActiveAnimation
+  const activeAnimationsRef = useRef<Map<number, ActiveAnimation>>(new Map());
   // Queue of pending movements for units that are currently animating
-  const movementQueueRef = useRef<Map<number, UnitPosition[]>>(new Map()); // entindex -> array of queued target positions
-  // Force re-render when animations are cleaned up (value is intentionally unused, setter triggers re-render)
+  const movementQueueRef = useRef<Map<number, UnitPosition[]>>(new Map());
+  // Force re-render when animations are cleaned up
   const [, setAnimationRerenderTick] = useState(0);
   // Track in-flight trails - tied to active animations
-  type TrailKey = string;
-  interface ActiveTrail {
-    key: TrailKey;
-    entindex: number;
-    from: { x: number; y: number };
-    to: { x: number; y: number };
-    unitId?: number;
-    animationStartTime: number; // When the animation started
-    animationDuration: number; // Duration of the animation
-  }
   const activeTrailsRef = useRef<Map<TrailKey, ActiveTrail>>(new Map());
   // Track new unit elements and their target positions for useLayoutEffect positioning
   const newUnitElementsRef = useRef<Map<number, { element: HTMLElement; position: { x: number; y: number } }>>(new Map());
+  // Track pending position updates for animated units (set in render, applied in useLayoutEffect)
+  const pendingAnimationUpdatesRef = useRef<Map<number, { x: number; y: number }>>(new Map());
+  
+  // Clear all animation state when player changes
+  useEffect(() => {
+    // Reset all animation-related refs when player changes
+    activeAnimationsRef.current.clear();
+    movementQueueRef.current.clear();
+    activeTrailsRef.current.clear();
+    newUnitElementsRef.current.clear();
+    pendingAnimationUpdatesRef.current.clear();
+    setEffectivePreviousPositions(new Map());
+  }, [player.account_id]);
+  
+  // Cleanup all timeouts on unmount
+  useEffect(() => {
+    return () => {
+      timeoutsRef.current.forEach(id => clearTimeout(id));
+      timeoutsRef.current.clear();
+    };
+  }, []);
 
   const shouldShowStaticPortrait = (
     unit: { entindex: number } | undefined,
@@ -152,7 +180,10 @@ export const PlayerBoard = ({ player, heroesData, onClose, className = '' }: Pla
     });
 
     // Schedule cleanup and process queue after animation completes
-    window.setTimeout(() => {
+    const timeoutId = window.setTimeout(() => {
+      // Remove this timeout from tracking
+      timeoutsRef.current.delete(timeoutId);
+      
       const currentAnimation = activeAnimationsRef.current.get(entindex);
       if (currentAnimation && currentAnimation.expiryAt <= Date.now()) {
         // Animation completed
@@ -188,6 +219,9 @@ export const PlayerBoard = ({ player, heroesData, onClose, className = '' }: Pla
         setAnimationRerenderTick(t => t + 1);
       }
     }, duration + 16);
+    
+    // Track this timeout for cleanup
+    timeoutsRef.current.add(timeoutId);
   }, [animationSettings.animationDuration, animationSettings.enablePositionAnimation, animationSettings.enableMovementTrail]);
 
   // Maintain a per-unit "in-flight" animation window equal to the transition duration.
@@ -255,13 +289,32 @@ export const PlayerBoard = ({ player, heroesData, onClose, className = '' }: Pla
 
   // Use useLayoutEffect to position new units after DOM layout but before paint
   useLayoutEffect(() => {
+    // Position new units immediately
     if (newUnitElementsRef.current.size > 0) {
       newUnitElementsRef.current.forEach(({ element, position }) => {
         element.style.left = `${position.x}px`;
         element.style.top = `${position.y}px`;
       });
-      // Clear the ref after positioning
       newUnitElementsRef.current.clear();
+    }
+    
+    // Apply pending animation position updates after a microtask
+    // This allows the initial position to be painted first, then the animation triggers
+    if (pendingAnimationUpdatesRef.current.size > 0) {
+      const updates = new Map(pendingAnimationUpdatesRef.current);
+      pendingAnimationUpdatesRef.current.clear();
+      
+      // Use requestAnimationFrame to ensure the initial position is painted
+      // before we update to the final position (which triggers the CSS transition)
+      requestAnimationFrame(() => {
+        updates.forEach((position, entindex) => {
+          const element = document.querySelector(`[data-entindex="${entindex}"]`) as HTMLElement;
+          if (element) {
+            element.style.left = `${position.x}px`;
+            element.style.top = `${position.y}px`;
+          }
+        });
+      });
     }
   });
 
@@ -459,7 +512,7 @@ export const PlayerBoard = ({ player, heroesData, onClose, className = '' }: Pla
               }
 
               // For new units, use ref callback to register element for useLayoutEffect positioning
-              // For moving units, use setTimeout to trigger animation after render
+              // For moving units, queue position update for useLayoutEffect
               const refCallback = animationState?.isNew 
                 ? (element: HTMLDivElement | null) => {
                     if (element) {
@@ -471,18 +524,12 @@ export const PlayerBoard = ({ player, heroesData, onClose, className = '' }: Pla
                       newUnitElementsRef.current.delete(unit.entindex);
                     }
                   }
-                : undefined;
-
-              // Trigger animation to final position after a small delay for moving units
-              if (!animationState?.isNew) {
-                setTimeout(() => {
-                  const element = document.querySelector(`[data-entindex="${unit.entindex}"]`) as HTMLElement;
-                  if (element) {
-                    element.style.left = `${finalPosition.x}px`;
-                    element.style.top = `${finalPosition.y}px`;
-                  }
-                }, 10);
-              }
+                : (element: HTMLDivElement | null) => {
+                    // For moving units, queue position update for useLayoutEffect
+                    if (element) {
+                      pendingAnimationUpdatesRef.current.set(unit.entindex, finalPosition);
+                    }
+                  };
 
               return (
                 <div

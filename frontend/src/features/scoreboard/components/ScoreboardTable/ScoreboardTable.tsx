@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { ScoreboardHeader } from '@/features/scoreboard/components/ScoreboardHeader/ScoreboardHeader';
 import { ScoreboardPlayerRow } from '@/features/scoreboard/components/ScoreboardPlayerRow/ScoreboardPlayerRow';
@@ -13,22 +13,22 @@ import './ScoreboardTable.css';
 
 export interface ScoreboardTableProps {
   players: PlayerState[];
-  widgetId: string; // Widget identifier for per-widget settings
+  widgetId: string;
   className?: string;
-  selectedUnitIds?: Set<number>; // Optional: shared selection state
-  onUnitClick?: (unitId: number) => void; // Optional: shared click handler
-  selectedSynergyKeyword?: number | null; // Optional: shared synergy selection state
-  onSynergyClick?: (keyword: number | null) => void; // Optional: shared synergy click handler
+  selectedUnitIds: Set<number>;
+  onUnitClick: (unitId: number) => void;
+  selectedSynergyKeyword: number | null;
+  onSynergyClick: (keyword: number | null) => void;
 }
 
 export const ScoreboardTable = ({ 
   players,
   widgetId,
   className = '',
-  selectedUnitIds: externalSelectedUnitIds,
-  onUnitClick: externalOnUnitClick,
-  selectedSynergyKeyword: externalSelectedSynergyKeyword,
-  onSynergyClick: externalOnSynergyClick
+  selectedUnitIds,
+  onUnitClick,
+  selectedSynergyKeyword,
+  onSynergyClick
 }: ScoreboardTableProps) => {
   // Get settings from Redux for this specific widget
   const { settings, updateColumns, updateSort } = useScoreboardSettings(widgetId);
@@ -44,38 +44,6 @@ export const ScoreboardTable = ({
   
   const tableRef = useRef<HTMLDivElement>(null);
   const { heroesData } = useHeroesDataContext();
-  
-  // State for unit highlighting - support multiple selections (fallback for backward compatibility)
-  const [localSelectedUnitIds, setLocalSelectedUnitIds] = useState<Set<number>>(new Set());
-  
-  // State for synergy selection (fallback for backward compatibility)
-  const [localSelectedSynergyKeyword, setLocalSelectedSynergyKeyword] = useState<number | null>(null);
-  
-  // Use external props if provided, otherwise use local state
-  const selectedUnitIds = externalSelectedUnitIds ?? localSelectedUnitIds;
-  const selectedSynergyKeyword = externalSelectedSynergyKeyword ?? localSelectedSynergyKeyword;
-  
-  const handleUnitClick = externalOnUnitClick ?? ((unitId: number) => {
-    // Clear synergy selection when clicking a unit
-    setLocalSelectedSynergyKeyword(null);
-    // Toggle: if unit is already selected, remove it; otherwise add it
-    setLocalSelectedUnitIds(prev => {
-      const next = new Set(prev);
-      if (next.has(unitId)) {
-        next.delete(unitId);
-      } else {
-        next.add(unitId);
-      }
-      return next;
-    });
-  });
-  
-  const handleSynergyClick = externalOnSynergyClick ?? ((keyword: number | null) => {
-    // Clear unit selection when clicking a synergy
-    setLocalSelectedUnitIds(new Set());
-    // Toggle synergy selection: if same keyword clicked, deselect; otherwise select
-    setLocalSelectedSynergyKeyword(prev => prev === keyword ? null : keyword);
-  });
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -200,9 +168,9 @@ export const ScoreboardTable = ({
               visibleColumns={visibleColumns}
               columnOrder={visibleColumns.columnOrder}
               selectedUnitIds={selectedUnitIds}
-              onUnitClick={handleUnitClick}
+              onUnitClick={onUnitClick}
               selectedSynergyKeyword={selectedSynergyKeyword}
-              onSynergyClick={handleSynergyClick}
+              onSynergyClick={onSynergyClick}
               showSynergyPips={showSynergyPips}
             />
           );

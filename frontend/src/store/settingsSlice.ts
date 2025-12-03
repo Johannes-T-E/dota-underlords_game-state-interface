@@ -3,8 +3,7 @@ import type { HealthDisplaySettings } from '@/components/ui/HealthDisplay/Health
 import type { ScoreboardColumnConfig } from '@/types';
 import { DEFAULT_HEALTH_DISPLAY_SETTINGS } from '@/components/ui/HealthDisplay/HealthDisplaySettings';
 
-// Current settings version for migration purposes
-const SETTINGS_VERSION = 1;
+const SETTINGS_VERSION = 2;
 
 export interface ScoreboardSettings {
   columns: ScoreboardColumnConfig;
@@ -15,8 +14,8 @@ export interface ScoreboardSettings {
 export interface TierGlowConfig {
   enableBorder: boolean;
   enableDropShadow: boolean;
-  borderOpacity: number; // 0-1
-  dropShadowOpacity: number; // 0-1
+  borderOpacity: number;
+  dropShadowOpacity: number;
 }
 
 export interface HeroPortraitSettings {
@@ -26,14 +25,14 @@ export interface HeroPortraitSettings {
 
 export interface UnitAnimationSettings {
   enablePositionAnimation: boolean;
-  animationDuration: number; // in ms
+  animationDuration: number;
   enableNewUnitFade: boolean;
   enableMovementTrail: boolean;
   trailLength: number;
-  trailColor: string; // Trail color (hex or rgba)
-  trailOpacity: number; // Trail opacity (0-1)
-  trailThickness: number; // Trail line thickness (1-5)
-  useTierColor: boolean; // Use hero tier color for trail
+  trailColor: string;
+  trailOpacity: number;
+  trailThickness: number;
+  useTierColor: boolean;
 }
 
 export interface GeneralSettings {
@@ -46,7 +45,7 @@ export interface GeneralSettings {
 export interface SettingsState {
   version: number;
   health: HealthDisplaySettings;
-  scoreboards: Record<string, ScoreboardSettings>; // Map of widgetId -> settings
+  scoreboards: Record<string, ScoreboardSettings>;
   general: GeneralSettings;
 }
 
@@ -99,7 +98,7 @@ const defaultUnitAnimationSettings: UnitAnimationSettings = {
 const initialState: SettingsState = {
   version: SETTINGS_VERSION,
   health: DEFAULT_HEALTH_DISPLAY_SETTINGS,
-  scoreboards: {}, // Per-widget settings, initialized on first access
+  scoreboards: {},
   general: {
     heroPortrait: defaultHeroPortraitSettings,
     unitAnimation: defaultUnitAnimationSettings,
@@ -107,54 +106,30 @@ const initialState: SettingsState = {
   }
 };
 
-// Migration function for settings versions
-const migrateSettings = (settings: any): SettingsState => {
-  if (!settings || !settings.version) {
-    // No version or invalid data, return defaults
+// Validate and ensure settings have required structure
+const validateSettings = (settings: unknown): SettingsState => {
+  if (!settings || typeof settings !== 'object') {
     return initialState;
   }
-
-  // Handle future migrations here
-  if (settings.version < SETTINGS_VERSION) {
-    // Perform migrations based on version
-    // Migration: Convert old single scoreboard to per-widget structure
-    if (settings.scoreboard && !settings.scoreboards) {
-      // Old format - convert to new format (but we're wiping per user request)
-      settings.scoreboards = {};
+  
+  const s = settings as Partial<SettingsState>;
+  
+  // If version doesn't match, reset to defaults (no migration)
+  if (s.version !== SETTINGS_VERSION) {
+    return initialState;
+  }
+  
+  return {
+    version: SETTINGS_VERSION,
+    health: s.health ?? DEFAULT_HEALTH_DISPLAY_SETTINGS,
+    scoreboards: s.scoreboards ?? {},
+    general: {
+      theme: s.general?.theme,
+      heroPortrait: s.general?.heroPortrait ?? defaultHeroPortraitSettings,
+      unitAnimation: s.general?.unitAnimation ?? defaultUnitAnimationSettings,
+      showSynergyPips: s.general?.showSynergyPips ?? false
     }
-    
-    settings.version = SETTINGS_VERSION;
-  }
-
-  // Ensure scoreboards exists (new structure)
-  if (!settings.scoreboards) {
-    settings.scoreboards = {};
-  }
-
-  // Ensure heroPortrait settings exist
-  if (!settings.general) {
-    settings.general = {};
-  }
-  if (!settings.general.heroPortrait) {
-    settings.general.heroPortrait = defaultHeroPortraitSettings;
-  } else {
-    // Migrate existing heroPortrait settings to new structure
-    if (settings.general.heroPortrait.enableTierGlow !== undefined && !settings.general.heroPortrait.tierGlowConfig) {
-      settings.general.heroPortrait.tierGlowConfig = defaultTierGlowConfig;
-    }
-  }
-
-  // Ensure unitAnimation settings exist
-  if (!settings.general.unitAnimation) {
-    settings.general.unitAnimation = defaultUnitAnimationSettings;
-  }
-
-  // Ensure showSynergyPips setting exists
-  if (settings.general.showSynergyPips === undefined) {
-    settings.general.showSynergyPips = false;
-  }
-
-  return settings;
+  };
 };
 
 // Load settings from localStorage
@@ -163,7 +138,7 @@ const loadPersistedSettings = (): SettingsState => {
     const saved = localStorage.getItem('appSettings');
     if (saved) {
       const parsed = JSON.parse(saved);
-      return migrateSettings(parsed);
+      return validateSettings(parsed);
     }
   } catch (error) {
     console.warn('Failed to load persisted settings:', error);
@@ -175,7 +150,6 @@ const settingsSlice = createSlice({
   name: 'settings',
   initialState: loadPersistedSettings(),
   reducers: {
-    // Health Display Settings
     updateHealthSettings: (state, action: PayloadAction<Partial<HealthDisplaySettings>>) => {
       state.health = {
         ...state.health,
@@ -192,10 +166,8 @@ const settingsSlice = createSlice({
       state.health = DEFAULT_HEALTH_DISPLAY_SETTINGS;
     },
 
-    // Scoreboard Settings (per-widget)
     updateScoreboardColumns: (state, action: PayloadAction<{ widgetId: string; columns: Partial<ScoreboardColumnConfig> }>) => {
       const { widgetId, columns } = action.payload;
-      // Initialize widget settings if they don't exist
       if (!state.scoreboards[widgetId]) {
         state.scoreboards[widgetId] = { ...defaultScoreboardSettings };
       }
@@ -207,7 +179,6 @@ const settingsSlice = createSlice({
 
     updateScoreboardSort: (state, action: PayloadAction<{ widgetId: string; field?: 'health' | 'record' | 'networth'; direction?: 'asc' | 'desc' }>) => {
       const { widgetId, field, direction } = action.payload;
-      // Initialize widget settings if they don't exist
       if (!state.scoreboards[widgetId]) {
         state.scoreboards[widgetId] = { ...defaultScoreboardSettings };
       }
@@ -222,15 +193,12 @@ const settingsSlice = createSlice({
     resetScoreboardSettings: (state, action: PayloadAction<string | undefined>) => {
       const widgetId = action.payload;
       if (widgetId) {
-        // Reset specific widget
         state.scoreboards[widgetId] = { ...defaultScoreboardSettings };
       } else {
-        // Reset all widgets
         state.scoreboards = {};
       }
     },
 
-    // General Settings
     updateGeneralSettings: (state, action: PayloadAction<Partial<GeneralSettings>>) => {
       state.general = {
         ...state.general,
@@ -238,7 +206,6 @@ const settingsSlice = createSlice({
       };
     },
 
-    // Hero Portrait Settings
     updateHeroPortraitSettings: (state, action: PayloadAction<Partial<HeroPortraitSettings>>) => {
       state.general.heroPortrait = {
         ...state.general.heroPortrait,
@@ -257,7 +224,6 @@ const settingsSlice = createSlice({
       state.general.heroPortrait = defaultHeroPortraitSettings;
     },
 
-    // Unit Animation Settings
     updateUnitAnimationSettings: (state, action: PayloadAction<Partial<UnitAnimationSettings>>) => {
       state.general.unitAnimation = {
         ...state.general.unitAnimation,
@@ -269,12 +235,10 @@ const settingsSlice = createSlice({
       state.general.unitAnimation = defaultUnitAnimationSettings;
     },
 
-    // Synergy Settings
     updateShowSynergyPips: (state, action: PayloadAction<boolean>) => {
       state.general.showSynergyPips = action.payload;
     },
 
-    // Global Actions
     resetAllSettings: (state) => {
       state.health = DEFAULT_HEALTH_DISPLAY_SETTINGS;
       state.scoreboards = {};
@@ -287,33 +251,21 @@ const settingsSlice = createSlice({
     },
 
     loadSettings: (state, action: PayloadAction<SettingsState>) => {
-      const migrated = migrateSettings(action.payload);
-      state.health = migrated.health;
-      // Migrate old single scoreboard to per-widget structure if needed
-      if (migrated.scoreboard && !migrated.scoreboards) {
-        // If old format exists, convert to new format (but we're wiping settings per user request)
-        state.scoreboards = {};
-      } else {
-        state.scoreboards = migrated.scoreboards || {};
-      }
-      state.general = migrated.general;
-      state.version = migrated.version;
+      const validated = validateSettings(action.payload);
+      state.health = validated.health;
+      state.scoreboards = validated.scoreboards;
+      state.general = validated.general;
+      state.version = validated.version;
     },
 
-    // Import/Export
     importSettings: (state, action: PayloadAction<string>) => {
       try {
         const parsed = JSON.parse(action.payload);
-        const migrated = migrateSettings(parsed);
-        state.health = migrated.health;
-        // Migrate old single scoreboard to per-widget structure if needed
-        if (migrated.scoreboard && !migrated.scoreboards) {
-          state.scoreboards = {};
-        } else {
-          state.scoreboards = migrated.scoreboards || {};
-        }
-        state.general = migrated.general;
-        state.version = migrated.version;
+        const validated = validateSettings(parsed);
+        state.health = validated.health;
+        state.scoreboards = validated.scoreboards;
+        state.general = validated.general;
+        state.version = validated.version;
       } catch (error) {
         console.error('Failed to import settings:', error);
       }
@@ -341,10 +293,9 @@ export const {
 
 export default settingsSlice.reducer;
 
-// Selector helpers
+// Selectors
 export const selectHealthSettings = (state: { settings: SettingsState }) => state.settings.health;
 export const selectScoreboardSettings = (widgetId: string) => (state: { settings: SettingsState }): ScoreboardSettings => {
-  // Return widget-specific settings or default if not initialized
   if (!state.settings.scoreboards[widgetId]) {
     return defaultScoreboardSettings;
   }
@@ -354,4 +305,3 @@ export const selectGeneralSettings = (state: { settings: SettingsState }) => sta
 export const selectHeroPortraitSettings = (state: { settings: SettingsState }) => state.settings.general.heroPortrait;
 export const selectUnitAnimationSettings = (state: { settings: SettingsState }) => state.settings.general.unitAnimation;
 export const selectShowSynergyPips = (state: { settings: SettingsState }) => state.settings.general.showSynergyPips;
-

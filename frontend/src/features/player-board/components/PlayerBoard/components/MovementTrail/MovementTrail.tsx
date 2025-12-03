@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { getTierColor } from '@/utils/tierColors';
 import './MovementTrail.css';
 
@@ -33,6 +33,9 @@ export const MovementTrail = ({
 }: MovementTrailProps) => {
   const [isVisible, setIsVisible] = useState(true);
   const [animationId] = useState(() => Math.random().toString(36).substr(2, 9));
+  
+  // Track inner timeout for proper cleanup
+  const innerTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Calculate the actual trail color based on settings
   const actualTrailColor = useTierColor && unitId ? getTierColor(unitId) : trailColor;
@@ -51,13 +54,16 @@ export const MovementTrail = ({
     const timer = setTimeout(() => {
       setIsVisible(false);
       // Add a small delay before calling onComplete to ensure fade-out completes
-      setTimeout(() => {
+      innerTimeoutRef.current = setTimeout(() => {
         onComplete?.();
       }, 100);
     }, duration);
 
     return () => {
       clearTimeout(timer);
+      if (innerTimeoutRef.current) {
+        clearTimeout(innerTimeoutRef.current);
+      }
     };
   }, [duration, onComplete]);
 

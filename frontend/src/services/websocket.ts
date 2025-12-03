@@ -11,6 +11,12 @@ class WebSocketService {
   private captureNextUpdate: boolean = false;
 
   initialize(store: Store) {
+    // Disconnect existing socket if already initialized to prevent duplicate listeners
+    if (this.socket) {
+      this.socket.disconnect();
+      this.socket = null;
+    }
+
     this.store = store;
     
     // Determine the socket URL
