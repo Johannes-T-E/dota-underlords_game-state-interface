@@ -17,7 +17,7 @@ export { Spinner } from './Spinner/Spinner';
 export type { SpinnerProps, SpinnerSize } from './Spinner/Spinner';
 
 export { StatusIndicator } from './StatusIndicator/StatusIndicator';
-export type { StatusIndicatorProps, ConnectionStatus } from './StatusIndicator/StatusIndicator';
+export type { StatusIndicatorProps, ConnectionStatus as StatusIndicatorConnectionStatus } from './StatusIndicator/StatusIndicator';
 
 export { PhaseIcon } from './PhaseIcon/PhaseIcon';
 export type { PhaseIconProps } from './PhaseIcon/PhaseIcon';
@@ -55,8 +55,7 @@ export type {
   SynergyDisplayProps, 
   SynergyLevel, 
   SynergyIconProps, 
-  SynergyPipProps, 
-  PipState,
+  SynergyPipProps,
   SynergyDisplayData,
   SynergiesCellProps,
 } from './SynergyDisplay';

@@ -1,0 +1,43 @@
+/* Z-index utility classes */
+.z-0 { z-index: 0; }
+.z-1 { z-index: 1; }
+.z-2 { z-index: 2; }
+.z-3 { z-index: 3; }
+.z-100 { z-index: 100; }
+.z-101 { z-index: 101; }
+
+/* Opacity classes */
+.opacity-1 { opacity: 1; }
+.opacity-80 { opacity: 0.60; }
+
+/* Color classes */
+.color-fill { background-color: var(--fill-color); }
+.color-background { background-color: var(--background-color); }
+.color-border { background-color: rgba(255, 255, 255, 0.11); }
+
+/* Base layer classes */
+.pip-state-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.pip-state-mask {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    mask-size: 100%;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+}
+

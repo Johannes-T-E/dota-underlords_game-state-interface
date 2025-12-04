@@ -7,109 +7,87 @@ export interface UnitPosition {
 }
 
 export interface UnitAnimationState {
-  entindex: number;       // Use entindex for unique unit identification
-  isMoving: boolean;
+  entindex: number;
   isNew: boolean;
-  oldPosition?: UnitPosition;
-  newPosition: UnitPosition;
+  previousPosition: UnitPosition | null;
+  currentPosition: UnitPosition;
 }
 
 /**
- * Hook to track unit position changes and detect animations
+ * Hook to track unit positions and detect new units
+ * Simplified version that lets CSS transitions handle animation
+ * 
  * @param units - Current units array
- * @param effectivePreviousPositions - Optional map of effective previous positions (e.g., animation targets) that override stored positions
+ * @returns Array of animation states for each unit
  */
-export const useUnitPositions = (
-  units: Unit[],
-  effectivePreviousPositions?: Map<number, UnitPosition>
-) => {
-  const previousUnitsRef = useRef<Map<number, UnitPosition>>(new Map());
-  const previousUnitsSetRef = useRef<Set<number>>(new Set());
+export const useUnitPositions = (units: Unit[]): UnitAnimationState[] => {
+  const previousPositionsRef = useRef<Map<number, UnitPosition>>(new Map());
+  const knownUnitsRef = useRef<Set<number>>(new Set());
   const isInitializedRef = useRef<boolean>(false);
 
   const animationStates = useMemo(() => {
-    const currentUnitsMap = new Map<number, UnitPosition>();
-    const currentUnitsSet = new Set<number>();
     const states: UnitAnimationState[] = [];
+    const currentPositions = new Map<number, UnitPosition>();
+    const currentEntindexes = new Set<number>();
 
-    // Build current units map
-    units.forEach(unit => {
-      if (unit.position) {
-        const position = { x: unit.position.x, y: unit.position.y };
-        currentUnitsMap.set(unit.entindex, position);
-        currentUnitsSet.add(unit.entindex);
-      }
-    });
-
-    // On initial load, initialize previous positions with current positions
-    // This prevents all units from being marked as "new" on first render
-    if (!isInitializedRef.current && currentUnitsMap.size > 0) {
-      previousUnitsRef.current = new Map(currentUnitsMap);
-      previousUnitsSetRef.current = new Set(currentUnitsSet);
-      isInitializedRef.current = true;
+    // Build current state
+    for (const unit of units) {
+      if (!unit.position) continue;
+      
+      const position: UnitPosition = { x: unit.position.x, y: unit.position.y };
+      currentPositions.set(unit.entindex, position);
+      currentEntindexes.add(unit.entindex);
     }
 
-    // Check each current unit for animation state
-    units.forEach(unit => {
-      if (!unit.position) return;
-
-      const currentPosition = { x: unit.position.x, y: unit.position.y };
-      // Use effective previous position if provided (for queued animations), otherwise use stored previous position
-      const previousPosition = effectivePreviousPositions?.get(unit.entindex) || previousUnitsRef.current.get(unit.entindex);
-      const wasInPreviousSet = previousUnitsSetRef.current.has(unit.entindex);
-
-      let isMoving = false;
-      let isNew = false;
-      let oldPosition: UnitPosition | undefined;
-
-      if (!wasInPreviousSet) {
-        // Unit is new
-        isNew = true;
-      } else if (previousPosition) {
-        // Unit existed before, check if position changed
-        const positionChanged = 
-          previousPosition.x !== currentPosition.x || 
-          previousPosition.y !== currentPosition.y;
-        
-        if (positionChanged) {
-          isMoving = true;
-          oldPosition = previousPosition;
-        }
+    // On first render with data, initialize refs without marking units as new
+    if (!isInitializedRef.current && currentPositions.size > 0) {
+      previousPositionsRef.current = new Map(currentPositions);
+      knownUnitsRef.current = new Set(currentEntindexes);
+      isInitializedRef.current = true;
+      
+      // Return states with no animations on initial render
+      for (const unit of units) {
+        if (!unit.position) continue;
+        states.push({
+          entindex: unit.entindex,
+          isNew: false,
+          previousPosition: null,
+          currentPosition: { x: unit.position.x, y: unit.position.y }
+        });
       }
+      return states;
+    }
+
+    // Check each unit's state
+    for (const unit of units) {
+      if (!unit.position) continue;
+
+      const currentPosition: UnitPosition = { x: unit.position.x, y: unit.position.y };
+      const wasKnown = knownUnitsRef.current.has(unit.entindex);
+      const previousPosition = previousPositionsRef.current.get(unit.entindex) ?? null;
+
+      const isNew = !wasKnown;
+      
+      // Only include previousPosition if it's different (for trails)
+      const hasMoved = previousPosition && (
+        previousPosition.x !== currentPosition.x || 
+        previousPosition.y !== currentPosition.y
+      );
 
       states.push({
         entindex: unit.entindex,
-        isMoving,
         isNew,
-        oldPosition,
-        newPosition: currentPosition
+        previousPosition: hasMoved ? previousPosition : null,
+        currentPosition
       });
-    });
-
-    // Update refs for next render - create new instances to ensure proper updates
-    // Only update if we're not using effective positions (to preserve queue state)
-    if (!effectivePreviousPositions || effectivePreviousPositions.size === 0) {
-      previousUnitsRef.current = new Map(currentUnitsMap);
-      previousUnitsSetRef.current = new Set(currentUnitsSet);
-    } else {
-      // Update refs but use effective positions where available
-      const newPreviousMap = new Map(previousUnitsRef.current);
-      effectivePreviousPositions.forEach((pos, entindex) => {
-        newPreviousMap.set(entindex, pos);
-      });
-      // Also update with current positions for units not in effective positions
-      currentUnitsMap.forEach((pos, entindex) => {
-        if (!effectivePreviousPositions.has(entindex)) {
-          newPreviousMap.set(entindex, pos);
-        }
-      });
-      previousUnitsRef.current = newPreviousMap;
-      previousUnitsSetRef.current = new Set(currentUnitsSet);
     }
 
+    // Update refs for next render
+    previousPositionsRef.current = currentPositions;
+    knownUnitsRef.current = currentEntindexes;
+
     return states;
-  }, [units, effectivePreviousPositions]);
+  }, [units]);
 
   return animationStates;
 };
-

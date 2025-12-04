@@ -67,11 +67,26 @@ export const ScoreboardTable = ({
 
   // Calculate synergies column width based on max active synergies
   // Slot-based like roster: each synergy gets a fixed-width slot with gap between them
+  // Uses row-height based sizing (same as SynergyDisplay component)
   const synergiesColumnWidth = useMemo(() => {
-    // Slot width matches CSS: 60px for icon-only, 108px for icon+pips (actual content width)
-    const slotWidth = showSynergyPips ? 90 : 60;
+    // Get row height from CSS variable (defaults to 80px)
+    const rowHeight = typeof window !== 'undefined' 
+      ? parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--row-height').trim()) || 80
+      : 80;
+    
+    // Aspect ratios (matching SynergyDisplay constants)
+    const ICON_ASPECT_RATIO = 1; // Square icon
+    const PIP_ASPECT_RATIO = 26 / 128; // 0.203125
+    
+    // Calculate slot width based on row height
+    // Icon-only: square (height = width)
+    // With pips: icon (square) + pips (always 3 levels)
+    const iconWidth = rowHeight * ICON_ASPECT_RATIO;
+    const pipWidth = showSynergyPips ? rowHeight * PIP_ASPECT_RATIO * 3 : 0;
+    const slotWidth = iconWidth + pipWidth;
+    
     const gap = 4; // Gap between synergies (matches CSS gap)
-    const minWidth = 60; // Minimum column width
+    const minWidth = rowHeight; // Minimum column width (one icon)
     
     if (maxActiveSynergies === 0) return minWidth;
     

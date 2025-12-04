@@ -2,8 +2,23 @@
 
 .synergy-display {
   position: relative;
-  width: 180px;
-  height: 108px;
-  display: inline-block;
+  height: 80%; /* Driven by parent (row height) */
+  width: auto; /* Calculated dynamically from content */
+  display: flex; /* Use flexbox to layout icon and pips */
+  align-items: center;
+  gap: 0; /* No gap between icon and pips */
 }
 
+/* Icon-only mode (no pips) - square aspect ratio */
+.synergy-display--icon-only {
+  aspect-ratio: 1; /* Square icon */
+}
+
+/* PipDisplay container - positioned next to the icon */
+.synergy-display__pips {
+  position: relative; /* Position after icon in flex layout */
+  width: auto;
+  height: 100%;
+  flex-shrink: 0;
+  margin-left: -8%; /* Overlap slightly with icon for alignment */
+}

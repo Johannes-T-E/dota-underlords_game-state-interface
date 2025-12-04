@@ -1,13 +1,13 @@
-// SynergyDisplay Component Exports
+// Main SynergyDisplay component
 export { default as SynergyDisplay } from './SynergyDisplay';
-export { default as SynergyIcon } from './SynergyIcon';
-export { default as SynergyPip } from './SynergyPip';
-export { default as SynergiesCell } from './SynergiesCell';
-
-// Type exports
 export type { SynergyDisplayProps, SynergyLevel } from './SynergyDisplay';
-export type { SynergyIconProps } from './SynergyIcon';
-export type { SynergyPipProps, PipState } from './SynergyPip';
+
+// Subcomponents for direct usage
+export { SynergyIcon, SynergyPip } from './components';
+export type { SynergyIconProps, SynergyPipProps } from './components';
+
+// SynergiesCell component
+export { default as SynergiesCell } from './SynergiesCell';
 export type { SynergiesCellProps } from './SynergiesCell';
 
 // Utility exports
@@ -24,4 +24,3 @@ export {
   getUnitsToNextThreshold,
 } from './utils';
 export type { SynergyDisplayData } from './utils';
-

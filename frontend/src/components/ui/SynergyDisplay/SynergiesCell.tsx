@@ -8,13 +8,11 @@
 import React, { useMemo } from 'react';
 import type { Synergy } from '@/types';
 import SynergyDisplay from './SynergyDisplay';
-import SynergyIcon from './SynergyIcon';
+import { SynergyIcon } from './components';
 import { 
   convertSynergiesToDisplayData, 
-  getSynergyTier,
-  type SynergyDisplayData 
+  getSynergyTier
 } from './utils';
-import keywordMappings from './data/synergy-keyword-mappings.json';
 import synergyStyles from './data/synergy-styles.json';
 import synergyIconMap from './data/synergy-icon-map.json';
 import './SynergiesCell.css';

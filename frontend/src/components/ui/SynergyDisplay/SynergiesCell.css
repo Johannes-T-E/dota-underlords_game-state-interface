@@ -18,39 +18,27 @@
 
 /* Synergy item slot - similar to .scoreboard-player-row__unit */
 .synergies-cell__item {
-  width: var(--unit-icon-box, 60px);
-  height: var(--row-height, 80px);
+  height: 100%; /* Row height drives sizing */
+  width: auto; /* Calculated from content aspect ratios */
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: flex-start;
   position: relative;
-  overflow: hidden;
+  overflow: visible; /* Allow pips to extend */
   padding: 0;
   margin: 0;
 }
 
-/* Compact mode (icon-only) - scale 108px icon to fit 60px slot */
+/* Compact mode (icon-only) - square aspect ratio */
 .synergies-cell--compact .synergies-cell__item {
-  width: var(--unit-icon-box, 60px);
+  aspect-ratio: 1; /* Square icon */
 }
 
-.synergies-cell--compact .synergies-cell__item > * {
-  transform: scale(0.556);
-  transform-origin: left center;
-}
-
-/* With pips mode - wider slot for icon + progress bars */
-/* Actual content: icon (108px) + 3 pips (last pip at 114px + 65px = 179px total) */
-/* Scaled: 179px × 0.556 = 99.4px (base), 179px × 0.6 = 107.4px (hover) */
+/* With pips mode - width calculated by SynergyDisplay component */
 .synergies-cell--with-pips .synergies-cell__item {
-  width: 90px; /* Matches actual content width at hover scale (107.4px rounded up) */
-  overflow: visible; /* Allow pips to extend on hover */
-}
-
-.synergies-cell--with-pips .synergies-cell__item > * {
-  transform: scale(0.556);
-  transform-origin: left center;
+  /* Width is calculated dynamically by SynergyDisplay based on row height */
+  overflow: visible; /* Allow pips to extend */
 }
 
 /* Tier-based styling (optional visual enhancement) */
@@ -70,16 +58,12 @@
 /* Hover effect */
 .synergies-cell__item {
   cursor: default;
-  transition: opacity 0.15s ease, filter 0.15s ease, transform 0.15s ease;
+  transition: opacity 0.15s ease, filter 0.15s ease;
 }
 
 .synergies-cell__item:hover {
   z-index: 10;
-}
-
-.synergies-cell__item:hover > * {
-  transform: scale(0.6);
-  transform-origin: left center;
+  filter: brightness(1.1);
 }
 /* Selected state - visual feedback for selected synergy */
 .synergies-cell__item--selected {
