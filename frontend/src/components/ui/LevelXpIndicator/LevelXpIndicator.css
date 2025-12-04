@@ -5,6 +5,7 @@
   justify-content: center;
   width: 2.6em;
   height: 2.6em;
+  user-select: none;
 }
 
 .level-circle {

@@ -47,8 +47,12 @@ export const usePlayerChanges = (_playerId: string, currentPlayer: PlayerState |
       });
     }
 
-    // Check for units changes (simplified - just check if units array changed)
-    const unitsChanged = JSON.stringify(currentPlayer.units) !== JSON.stringify(previousPlayer.units);
+    // Check for units changes - compare length and entindex sets to avoid expensive JSON.stringify
+    const currentUnits = currentPlayer.units || [];
+    const previousUnits = previousPlayer.units || [];
+    const unitsChanged = 
+      currentUnits.length !== previousUnits.length ||
+      new Set(currentUnits.map(u => u.entindex)).size !== new Set(previousUnits.map(u => u.entindex)).size;
     if (unitsChanged) {
       newEvents.push({
         type: 'units',

@@ -13,7 +13,7 @@ export const GoldDisplay = memo(({ gold, className = '' }: GoldDisplayProps) => 
         {gold !== null ? gold : '—'}
       </div>
       <div className="gold-display__icon">
-        🪙
+      ●
       </div>
     </div>
   );

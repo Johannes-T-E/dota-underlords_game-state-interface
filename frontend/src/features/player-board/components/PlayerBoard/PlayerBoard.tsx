@@ -52,7 +52,7 @@ export const PlayerBoard = ({ player, heroesData, onClose, className = '' }: Pla
   const boardRef = useRef<HTMLDivElement>(null);
   
   // Track all timeouts for cleanup on unmount
-  const timeoutsRef = useRef<Set<ReturnType<typeof setTimeout>>>(new Set());
+  const timeoutsRef = useRef<Set<number>>(new Set());
   
   // Track active animations with their start and end positions
   const activeAnimationsRef = useRef<Map<number, ActiveAnimation>>(new Map());

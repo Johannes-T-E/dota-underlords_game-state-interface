@@ -45,7 +45,6 @@ export const PlacementBoard = ({ players, className = '' }: PlacementBoardProps)
                 <PlayerNameDisplay
                   personaName={player.persona_name}
                   botPersonaName={player.bot_persona_name}
-                  fallback={`Player ${player.account_id}`}
                   matchCount={player.match_count}
                 />
               </td>

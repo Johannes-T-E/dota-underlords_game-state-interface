@@ -2,16 +2,17 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 18px;
-  height: 18px;
+  min-width: 24px;
+  height: 24px;
   padding: 0 6px;
   border-radius: 9px;
-  font-size: 11px;
+  font-size: 1rem;
   font-weight: 600;
-  background: rgba(128, 128, 128, 0.2);
-  color: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(128, 128, 128, 0.3);
-  margin-right: 6px;
+  background: rgba(20, 20, 20, 0.2);
+  color: rgba(255, 251, 0, 0.843);
+  border: 1px solid rgba(255, 255, 255, 0.577);
+  margin-left: 1rem;
   line-height: 1;
+  user-select: none;
 }
 

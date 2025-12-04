@@ -434,8 +434,8 @@ export const UnitChanges = () => {
                     ) : change.type === 'level_up' && change.level_after !== undefined && player ? (
                       <LevelXpIndicator
                         level={change.level_after}
-                        xp={player.xp || 0}
-                        nextLevelXp={player.next_level_xp || 0}
+                        xp={player.xp}
+                        nextLevelXp={player.next_level_xp}
                         showXpText={false}
                       />
                     ) : change.type === 'hp_change' && change.round_number !== undefined && change.round_phase ? (

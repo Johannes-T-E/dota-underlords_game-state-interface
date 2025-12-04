@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { clearMatch, abandonMatch } from './matchSlice';
+import { clearMatch, abandonMatch, updateMatch } from './matchSlice';
 import type { PlayerState } from '@/types';
 
 interface BoardState {
@@ -55,6 +55,17 @@ const boardSlice = createSlice({
       .addCase(abandonMatch, (state) => {
         state.selectedPlayerIds = [];
         state.boardData = {};
+      })
+      .addCase(updateMatch, (state, action) => {
+        // Update boardData for currently selected players with fresh data from match update
+        // This prevents stale references and ensures boardData stays in sync
+        const updatedPlayers = action.payload.public_player_states || [];
+        updatedPlayers.forEach((player: PlayerState) => {
+          const playerId = String(player.account_id);
+          if (state.selectedPlayerIds.includes(playerId)) {
+            state.boardData[playerId] = player;
+          }
+        });
       });
   },
 });

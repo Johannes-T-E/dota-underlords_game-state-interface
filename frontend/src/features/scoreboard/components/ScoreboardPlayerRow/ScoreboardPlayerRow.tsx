@@ -195,9 +195,9 @@ export const ScoreboardPlayerRow = memo(({
         return (
           <div key={columnKey} className="scoreboard-player-row__level">
             <LevelXpIndicator 
-              level={player.level || 0} 
-              xp={player.xp || 0} 
-              nextLevelXp={player.next_level_xp || 1} 
+              level={player.level} 
+              xp={player.xp} 
+              nextLevelXp={player.next_level_xp} 
               showXpText={false}
             />
           </div>
