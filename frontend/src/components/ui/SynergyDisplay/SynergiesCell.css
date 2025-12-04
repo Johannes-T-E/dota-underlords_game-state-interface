@@ -43,7 +43,7 @@
 
 /* Tier-based styling (optional visual enhancement) */
 .synergies-cell__item--tier-1 {
-  opacity: 0.9;
+  opacity: 1;
 }
 
 .synergies-cell__item--tier-2 {
@@ -52,7 +52,6 @@
 
 .synergies-cell__item--tier-3 {
   opacity: 1;
-  filter: brightness(1.1);
 }
 
 /* Hover effect */
@@ -73,5 +72,5 @@
 }
 
 .synergies-cell__item--selected > * {
-  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.5));
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.707));
 }

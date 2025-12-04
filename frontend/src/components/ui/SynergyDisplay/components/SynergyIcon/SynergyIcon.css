@@ -41,7 +41,7 @@
 /* Color wash overlay for capsule layers */
 .capsule-color-wash {
   position: absolute;
-  inset: 0.5%;
+  inset: 0%;
   mix-blend-mode: multiply;
   pointer-events: none;
   z-index: 1;

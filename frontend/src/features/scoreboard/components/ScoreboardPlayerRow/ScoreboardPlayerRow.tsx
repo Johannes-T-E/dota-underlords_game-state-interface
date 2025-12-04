@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react';
+import { memo, useMemo, useCallback } from 'react';
 import { 
   PlayerNameDisplay, 
   StatDisplay, 
@@ -102,10 +102,12 @@ export const ScoreboardPlayerRow = memo(({
   const DEFAULT_COLUMN_ORDER = ['place', 'playerName', 'level', 'gold', 'streak', 'health', 'record', 'networth', 'synergies', 'roster', 'underlord', 'contraptions', 'bench'];
   const currentOrder = columnOrder || DEFAULT_COLUMN_ORDER;
   
-  // Filter visible columns in the specified order
-  const visibleOrderedColumns = currentOrder.filter(columnKey => 
-    config[columnKey as keyof ScoreboardColumnConfig] === true
-  );
+  // Filter visible columns in the specified order - memoize to prevent recalculation
+  const visibleOrderedColumns = useMemo(() => {
+    return currentOrder.filter(columnKey => 
+      config[columnKey as keyof ScoreboardColumnConfig] === true
+    );
+  }, [currentOrder, config]);
   
   const units = player.units || [];
   
@@ -113,42 +115,54 @@ export const ScoreboardPlayerRow = memo(({
   const isUnderlord = (unit: Unit) => unit.unit_id > 1000;
   const isContraption = (unit: Unit) => [117, 143, 127].includes(unit.unit_id);
   
-  // Categorize units
-  const underlordUnits = units.filter(unit => isUnderlord(unit));
-  const contraptionUnits = units.filter(unit => isContraption(unit));
-  const rosterUnits = units
-    .filter(unit => unit.position && unit.position.y >= 0 && !isUnderlord(unit) && !isContraption(unit))
-    .sort((a, b) => {
-      // Sort by rank first (descending: 3-star → 2-star → 1-star)
-      const rankA = a.rank || 0;
-      const rankB = b.rank || 0;
-      
-      if (rankA !== rankB) {
-        return rankB - rankA; // Higher rank first
-      }
-      
-      // If same rank, sort by tier descending (tier 5 → tier 4 → tier 3 → tier 2 → tier 1)
-      const tierA = getHeroTier(a.unit_id, heroesData);
-      const tierB = getHeroTier(b.unit_id, heroesData);
-      
-      if (tierB !== tierA) {
-        return tierB - tierA; // Higher tier first within same rank
-      }
-      
-      // If same tier, sort by hero ID (ascending: lower ID first)
-      return a.unit_id - b.unit_id;
-    });
-  const benchUnits = units
-    .filter(unit => unit.position && unit.position.y === -1 && !isUnderlord(unit) && !isContraption(unit))
-    .sort((a, b) => (a.position?.x || 0) - (b.position?.x || 0)); // Sort by x-position ascending (0 → 7)
+  // Memoize unit arrays to prevent recalculation on every render
+  const underlordUnits = useMemo(() => {
+    return units.filter(unit => isUnderlord(unit));
+  }, [units]);
   
-  // Get synergy color if a synergy is selected
+  const contraptionUnits = useMemo(() => {
+    return units.filter(unit => isContraption(unit));
+  }, [units]);
+  
+  const rosterUnits = useMemo(() => {
+    return units
+      .filter(unit => unit.position && unit.position.y >= 0 && !isUnderlord(unit) && !isContraption(unit))
+      .sort((a, b) => {
+        // Sort by rank first (descending: 3-star → 2-star → 1-star)
+        const rankA = a.rank || 0;
+        const rankB = b.rank || 0;
+        
+        if (rankA !== rankB) {
+          return rankB - rankA; // Higher rank first
+        }
+        
+        // If same rank, sort by tier descending (tier 5 → tier 4 → tier 3 → tier 2 → tier 1)
+        const tierA = getHeroTier(a.unit_id, heroesData);
+        const tierB = getHeroTier(b.unit_id, heroesData);
+        
+        if (tierB !== tierA) {
+          return tierB - tierA; // Higher tier first within same rank
+        }
+        
+        // If same tier, sort by hero ID (ascending: lower ID first)
+        return a.unit_id - b.unit_id;
+      });
+  }, [units, heroesData]);
+  
+  const benchUnits = useMemo(() => {
+    return units
+      .filter(unit => unit.position && unit.position.y === -1 && !isUnderlord(unit) && !isContraption(unit))
+      .sort((a, b) => (a.position?.x || 0) - (b.position?.x || 0)); // Sort by x-position ascending (0 → 7)
+  }, [units]);
+  
+  // Get synergy color if a synergy is selected - memoize to avoid DOM access on every render
   const synergyColors = useMemo(() => {
     if (!selectedSynergyKeyword) return null;
     return getSynergyColor(selectedSynergyKeyword);
   }, [selectedSynergyKeyword]);
 
-  const renderCell = (columnKey: string) => {
+  // Memoize renderCell to prevent recreation on every render
+  const renderCell = useCallback((columnKey: string) => {
     switch (columnKey) {
       case 'place':
         return (
@@ -373,7 +387,22 @@ export const ScoreboardPlayerRow = memo(({
       default:
         return null;
     }
-  };
+  }, [
+    rank,
+    player,
+    heroesData,
+    itemsData,
+    selectedUnitIds,
+    onUnitClick,
+    selectedSynergyKeyword,
+    synergyColors,
+    onSynergyClick,
+    showSynergyPips,
+    rosterUnits,
+    benchUnits,
+    underlordUnits,
+    contraptionUnits
+  ]);
 
   return (
     <div 

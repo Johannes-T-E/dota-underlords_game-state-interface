@@ -1,0 +1,126 @@
+.filter-chips {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  background: var(--secondary-color);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  margin-bottom: 16px;
+}
+
+.filter-chips__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.filter-chips__header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-chips__title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.filter-chips__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  background: var(--accent-color);
+  color: var(--primary-color);
+  border-radius: 11px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.filter-chips__clear-all {
+  background: transparent;
+  border: none;
+  color: var(--accent-color);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.filter-chips__clear-all:hover {
+  background: var(--primary-color);
+  color: var(--text-color);
+}
+
+.filter-chips__container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.filter-chips__category {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--primary-color);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  font-size: 12px;
+  transition: all 0.2s ease;
+  cursor: default;
+}
+
+.filter-chip:hover {
+  background: var(--self-row-color);
+  border-color: var(--accent-color);
+  transform: translateY(-1px);
+}
+
+.filter-chip__label {
+  color: var(--text-color);
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.filter-chip__remove {
+  background: transparent;
+  border: none;
+  color: var(--accent-color);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 4px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  opacity: 0.7;
+}
+
+.filter-chip__remove:hover {
+  background: var(--secondary-color);
+  color: var(--text-color);
+  opacity: 1;
+  transform: scale(1.1);
+}
+

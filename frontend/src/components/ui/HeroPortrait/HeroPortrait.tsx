@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { HeroImage } from './components/HeroImage/HeroImage';
 import { StarIcon } from './components/StarIcon/StarIcon';
 import type { HeroesData } from '@/utils/heroHelpers';
@@ -23,6 +23,33 @@ export interface HeroPortraitProps {
   itemsData?: ItemsData | null; // Items.json data for icon lookup
 }
 
+// Get tier colors for dynamic styling - moved outside component to avoid redefinition
+const getTierColors = (tier: number) => {
+  const tierColors = {
+    1: { primary: '#595959', secondary: '#c8c8c8' },
+    2: { primary: '#3b9208', secondary: '#65f013' },
+    3: { primary: '#0c6583', secondary: '#14b4eb' },
+    4: { primary: '#6a1e88', secondary: '#c151ec' },
+    5: { primary: '#9b6714', secondary: '#f8ad33' }
+  };
+  return tierColors[tier as keyof typeof tierColors] || tierColors[1];
+};
+
+// Find hero by unit ID - moved outside component to avoid redefinition
+const findHeroByUnitId = (id: number, heroesData: HeroesData | null): string => {
+  if (!heroesData || !heroesData.heroes) {
+    return 'npc_dota_hero_abaddon';
+  }
+  
+  for (const [, heroData] of Object.entries(heroesData.heroes)) {
+    if (heroData.id === id) {
+      return heroData.dota_unit_name;
+    }
+  }
+  
+  return 'npc_dota_hero_abaddon'; // fallback
+};
+
 export const HeroPortrait = memo(({ 
   unitId, 
   rank, 
@@ -35,50 +62,38 @@ export const HeroPortrait = memo(({
 }: HeroPortraitProps) => {
   const { settings } = useHeroPortraitSettings();
   
-  // Find equipped item icon path
-  const itemIconPath = findEquippedItem(entindex, itemSlots, itemsData ?? null);
+  // Memoize equipped item icon path - expensive lookup
+  const itemIconPath = useMemo(() => {
+    return findEquippedItem(entindex, itemSlots, itemsData ?? null);
+  }, [entindex, itemSlots, itemsData]);
   
-  // Find hero by unit ID
-  const findHeroByUnitId = (id: number): string => {
-    if (!heroesData || !heroesData.heroes) {
-      return 'npc_dota_hero_abaddon';
-    }
-    
-    for (const [, heroData] of Object.entries(heroesData.heroes)) {
-      if (heroData.id === id) {
-        return heroData.dota_unit_name;
-      }
-    }
-    
-    return 'npc_dota_hero_abaddon'; // fallback
-  };
-
-  const dotaUnitName = findHeroByUnitId(unitId);
+  // Memoize hero tier - used multiple times, calculate once
+  const heroTier = useMemo(() => {
+    return getHeroTier(unitId, heroesData);
+  }, [unitId, heroesData]);
+  
+  // Memoize dota unit name - expensive lookup
+  const dotaUnitName = useMemo(() => {
+    return findHeroByUnitId(unitId, heroesData);
+  }, [unitId, heroesData]);
+  
   const starLevel = Math.min(Math.max(rank, 0), 3);
   
-  // Get tier colors for dynamic styling
-  const getTierColors = (tier: number) => {
-    const tierColors = {
-      1: { primary: '#595959', secondary: '#c8c8c8' },
-      2: { primary: '#3b9208', secondary: '#65f013' },
-      3: { primary: '#0c6583', secondary: '#14b4eb' },
-      4: { primary: '#6a1e88', secondary: '#c151ec' },
-      5: { primary: '#9b6714', secondary: '#f8ad33' }
-    };
-    return tierColors[tier as keyof typeof tierColors] || tierColors[1];
-  };
+  // Memoize tier colors calculation
+  const tierColors = useMemo(() => {
+    return overrideTierColors || (settings?.enableTierGlow 
+      ? getTierColors(heroTier)
+      : undefined);
+  }, [overrideTierColors, settings?.enableTierGlow, heroTier]);
   
-  // Use override tier colors if provided (e.g., for synergy selection), otherwise calculate from tier
-  const tierColors = overrideTierColors || (settings?.enableTierGlow 
-    ? getTierColors(getHeroTier(unitId, heroesData))
-    : undefined);
-  
-  // Calculate tier glow class - use tier-based if enabled, or force a class if override colors are provided
-  const tierGlowClass = overrideTierColors 
-    ? 'hero-image--tier-3' // Use a tier class to enable styling when override colors are provided
-    : (settings?.enableTierGlow 
-      ? getTierGlowClass(getHeroTier(unitId, heroesData))
-      : '');
+  // Memoize tier glow class calculation
+  const tierGlowClass = useMemo(() => {
+    return overrideTierColors 
+      ? 'hero-image--tier-3' // Use a tier class to enable styling when override colors are provided
+      : (settings?.enableTierGlow 
+        ? getTierGlowClass(heroTier)
+        : '');
+  }, [overrideTierColors, settings?.enableTierGlow, heroTier]);
 
   return (
     <div className={`hero-portrait ${className}`}>

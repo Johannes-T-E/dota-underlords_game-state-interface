@@ -21,7 +21,7 @@ export const PlayerNameDisplay = ({
   // Get translated bot name if it exists
   const translatedBotName = botPersonaName ? getBotName(botPersonaName) : undefined;
   
-  const longNameLength = 8;
+  const longNameLength = 18;
 
   let fullName: string | undefined = personaName || translatedBotName || botPersonaName;
   let shortName: string | undefined;
