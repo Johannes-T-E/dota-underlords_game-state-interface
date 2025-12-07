@@ -12,6 +12,25 @@ from .database import UnderlordsDatabaseManager
 from .utils import generate_match_id, is_valid_new_player, get_highest_hp_player
 from .config import socketio
 from .change_detector import change_detector
+from typing import Optional, Tuple
+
+
+# ==========================================
+# Combat Record Type
+# ==========================================
+
+CombatRecord = Dict  # TypedDict would be better, but Dict works for now
+# Structure:
+# {
+#     'round_number': int,
+#     'player_account_id': int,
+#     'opponent_account_id': int,
+#     'opponent_player_slot': int,
+#     'combat_type': int,
+#     'combat_duration': float,  # Duration of the combat in seconds
+#     'result': str,  # 'win', 'loss', 'draw'
+#     'timestamp': str  # ISO format
+# }
 
 
 # ==========================================
@@ -57,6 +76,11 @@ class MatchState:
         
         # Match counts for players (calculated at match start)
         self.player_match_counts = {}  # account_id -> match_count
+        
+        # Combat tracking
+        self.player_combat_history = {}  # account_id -> List[CombatRecord] - Full buffer of all combats
+        self.player_vs_opponent_stats = {}  # (account_id, opponent_slot) -> Dict with wins, losses, draws
+        self.new_combats_this_update = {}  # account_id -> List[CombatRecord] - New combats for this WebSocket emit
 
     def reset(self):
         """Reset to initial state."""
@@ -74,10 +98,116 @@ class MatchState:
         self.last_combat_type = 0
         self.round_number = 1  # Reset to round 1
         self.round_phase = 'prep'  # Reset to prep
+        
+        # Reset combat tracking
+        self.player_combat_history = {}
+        self.player_vs_opponent_stats = {}
+        self.new_combats_this_update = {}
 
 
 # Global match state
 match_state = MatchState()
+
+
+# ==========================================
+# Combat Detection Logic
+# ==========================================
+
+def detect_and_record_combat(account_id: int, current_state: Dict, previous_state: Dict, timestamp: datetime) -> Optional[CombatRecord]:
+    """Detect combat completion by monitoring vs_opponent_* stats.
+    
+    Returns:
+        CombatRecord if combat was detected, None otherwise
+    """
+    # Get current opponent info
+    opponent_slot = current_state.get('opponent_player_slot')
+    if opponent_slot is None:
+        return None
+    
+    # Get current vs_opponent stats
+    current_wins = current_state.get('vs_opponent_wins')
+    current_losses = current_state.get('vs_opponent_losses')
+    current_draws = current_state.get('vs_opponent_draws')
+    
+    # Handle None values - treat as 0
+    current_wins = current_wins if current_wins is not None else 0
+    current_losses = current_losses if current_losses is not None else 0
+    current_draws = current_draws if current_draws is not None else 0
+    current_sum = current_wins + current_losses + current_draws
+    
+    # Get previous stats
+    stats_key = (account_id, opponent_slot)
+    previous_stats = match_state.player_vs_opponent_stats.get(stats_key, {})
+    prev_wins = previous_stats.get('wins', 0)
+    prev_losses = previous_stats.get('losses', 0)
+    prev_draws = previous_stats.get('draws', 0)
+    prev_sum = prev_wins + prev_losses + prev_draws
+    
+    # Check if sum increased (combat completed)
+    if current_sum <= prev_sum:
+        # Update stats but no combat detected
+        match_state.player_vs_opponent_stats[stats_key] = {
+            'wins': current_wins,
+            'losses': current_losses,
+            'draws': current_draws
+        }
+        return None
+    
+    # Combat detected! Determine result
+    if current_wins > prev_wins:
+        result = 'win'
+    elif current_losses > prev_losses:
+        result = 'loss'
+    elif current_draws > prev_draws:
+        result = 'draw'
+    else:
+        # Shouldn't happen, but handle gracefully
+        result = 'unknown'
+    
+    # Get opponent account_id
+    opponent_account_id = None
+    for opp_account_id, opp_state in match_state.latest_processed_public_player_states.items():
+        if opp_state.get('player_slot') == opponent_slot:
+            opponent_account_id = opp_account_id
+            break
+    
+    if opponent_account_id is None:
+        # Opponent not found, can't create record
+        return None
+    
+    # Create combat record
+    combat_duration = current_state.get('combat_duration')
+    if combat_duration is None:
+        combat_duration = 0.0  # Default to 0 if not available
+    
+    combat_record: CombatRecord = {
+        'round_number': match_state.round_number,
+        'player_account_id': account_id,
+        'opponent_account_id': opponent_account_id,
+        'opponent_player_slot': opponent_slot,
+        'combat_type': current_state.get('combat_type', 0),
+        'combat_duration': float(combat_duration),
+        'result': result,
+        'timestamp': timestamp.isoformat()
+    }
+    
+    # Add to buffers
+    if account_id not in match_state.player_combat_history:
+        match_state.player_combat_history[account_id] = []
+    match_state.player_combat_history[account_id].append(combat_record)
+    
+    if account_id not in match_state.new_combats_this_update:
+        match_state.new_combats_this_update[account_id] = []
+    match_state.new_combats_this_update[account_id].append(combat_record)
+    
+    # Update stats
+    match_state.player_vs_opponent_stats[stats_key] = {
+        'wins': current_wins,
+        'losses': current_losses,
+        'draws': current_draws
+    }
+    
+    return combat_record
 
 
 # ==========================================
@@ -135,6 +265,9 @@ def process_and_store_gsi_public_player_state(account_id: int, gsi_public_player
     """
     # Update round tracking based on combat_type transitions
     update_round_from_combat_type(account_id, gsi_public_player_state.get('combat_type'))
+    
+    # Get previous state BEFORE updating (for combat detection)
+    previous_state = match_state.latest_processed_public_player_states.get(account_id)
     
     # Build full player state with comprehensive data
     # Use GSI data directly - missing fields will be None (no hardcoded fallbacks)
@@ -220,6 +353,10 @@ def process_and_store_gsi_public_player_state(account_id: int, gsi_public_player
     # Store in match state
     match_state.latest_processed_public_player_states[account_id] = player_state
     
+    # Detect combat completion (if we have previous state)
+    if previous_state is not None:
+        detect_and_record_combat(account_id, player_state, previous_state, timestamp)
+    
     return player_state
 
 
@@ -283,6 +420,16 @@ def emit_realtime_update():
         },
         'timestamp': time.time()
     }
+    
+    # Add combat results if there are new combats
+    if match_state.new_combats_this_update:
+        # Convert to JSON-serializable format (account_id as string key for JSON)
+        combat_results = {}
+        for acc_id, combats in match_state.new_combats_this_update.items():
+            combat_results[str(acc_id)] = combats
+        update_data['combat_results'] = combat_results
+        # Clear after adding to payload
+        match_state.new_combats_this_update = {}
     
     # Emit immediately - broadcast to ALL connected clients!
     socketio.emit('match_update', update_data, to=None)

@@ -112,6 +112,38 @@ def delete_match(match_id):
         }), 500
 
 
+@app.route('/api/matches/<match_id>/combats', methods=['GET'])
+def get_match_combats(match_id):
+    """Get combat history for an active match."""
+    try:
+        # Check if match is active
+        if match_state.match_id != match_id:
+            return jsonify({
+                'status': 'error',
+                'message': 'Match not found or not active'
+            }), 404
+        
+        # Convert account_id keys to strings for JSON serialization
+        combat_results = {}
+        for acc_id, combats in match_state.player_combat_history.items():
+            combat_results[str(acc_id)] = combats
+        
+        return jsonify({
+            'status': 'success',
+            'match_id': match_id,
+            'combat_results': combat_results
+        })
+    
+    except Exception as e:
+        print(f"[ERROR] Failed to get match combats: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+
 @app.route('/api/matches/<match_id>/changes', methods=['GET'])
 def get_match_changes(match_id):
     """Get changes for a match (from buffer if active, or calculated from database if historical)."""

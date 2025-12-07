@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppLayout, MainContentTemplate } from '@/components/layout';
 import { ScoreboardTable } from '@/features/scoreboard/components/ScoreboardTable/ScoreboardTable';
 import { PlayerBoard } from '@/features/player-board/components/PlayerBoard/PlayerBoard';
 import { UnitChanges } from '@/features/unit-changes/UnitChanges';
 import { ShopDisplay } from '@/features/shop';
+import { CombatResults } from '@/features/combat-results';
 import { EmptyState } from '@/components/shared';
+import { Button } from '@/components/ui';
+import { CombatDebugTable } from '@/components/debug/CombatDebugTable';
 import { useAppSelector } from '@/hooks/redux';
 import { useHeroesDataContext } from '@/contexts/HeroesDataContext';
 import { PlayerBoardScaler } from './PlayerBoardScaler';
@@ -19,6 +22,22 @@ export const Dashboard = () => {
   
   // Shared state for synergy selection
   const [selectedSynergyKeyword, setSelectedSynergyKeyword] = useState<number | null>(null);
+  
+  // Debug modal state
+  const [isDebugModalOpen, setIsDebugModalOpen] = useState(false);
+  
+  // Keyboard shortcut for debug modal (Ctrl+D)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === 'd') {
+        e.preventDefault();
+        setIsDebugModalOpen((prev) => !prev);
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
   
   // Shared handler for unit clicks
   const handleUnitClick = (unitId: number) => {
@@ -57,6 +76,18 @@ export const Dashboard = () => {
   return (
     <AppLayout>
       <MainContentTemplate centered>
+        {/* Debug Toggle Button */}
+        <div style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 100 }}>
+          <Button
+            variant="secondary"
+            size="small"
+            onClick={() => setIsDebugModalOpen(true)}
+            title="Open Combat Debug Table (Ctrl+D)"
+          >
+            Debug Table
+          </Button>
+        </div>
+        
         <div className="dashboard">
           {/* Scoreboard Section */}
           <section className="dashboard__section dashboard__section--scoreboard">
@@ -135,7 +166,19 @@ export const Dashboard = () => {
             <h2 className="dashboard__section-title">Unit Changes</h2>
             <UnitChanges />
           </section>
+
+          {/* Combat Results Section */}
+          <section className="dashboard__section dashboard__section--combat-results">
+            <h2 className="dashboard__section-title">Combat Results</h2>
+            <CombatResults />
+          </section>
         </div>
+        
+        {/* Combat Debug Table Modal */}
+        <CombatDebugTable
+          isOpen={isDebugModalOpen}
+          onClose={() => setIsDebugModalOpen(false)}
+        />
       </MainContentTemplate>
     </AppLayout>
   );

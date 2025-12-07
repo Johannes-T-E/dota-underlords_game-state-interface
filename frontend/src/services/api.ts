@@ -1,7 +1,8 @@
 import type { 
   ApiMatchesResponse, 
   ApiStatusResponse, 
-  ApiHealthResponse 
+  ApiHealthResponse,
+  CombatResult
 } from '@/types';
 
 const API_BASE_URL = import.meta.env.DEV ? 'http://localhost:3000' : '';
@@ -70,6 +71,21 @@ class ApiService {
     const queryString = params.toString();
     const endpoint = `/api/matches/${matchId}/changes${queryString ? `?${queryString}` : ''}`;
     return this.request(endpoint);
+  }
+
+  async fetchCombatHistory(matchId: string): Promise<Record<number, CombatResult[]>> {
+    const response = await this.request<{
+      status: string;
+      match_id: string;
+      combat_results: Record<string, CombatResult[]>;
+    }>(`/api/matches/${matchId}/combats`);
+    
+    // Convert string keys back to numbers
+    const result: Record<number, CombatResult[]> = {};
+    for (const [accountIdStr, combats] of Object.entries(response.combat_results)) {
+      result[Number(accountIdStr)] = combats;
+    }
+    return result;
   }
 }
 

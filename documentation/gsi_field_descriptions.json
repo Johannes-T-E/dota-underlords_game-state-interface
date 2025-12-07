@@ -282,7 +282,7 @@
     "examples": [5, 10, 11, 16, 17]
   },
   "block.data.public_player_state.combat_result": {
-    "description": "Last combat result: 0=loss, 1=win, 2=draw.",
+    "description": "Last combat result: 0=draw, 1=win, 2=loss.",
     "type": "integer",
     "examples": [0, 1, 2]
   },

@@ -1,0 +1,197 @@
+.combat-debug-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+  padding: 20px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.combat-debug-modal {
+  background: var(--primary-color);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+  width: 95%;
+  max-width: 1400px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.combat-debug-header {
+  padding: 16px 24px;
+  border-bottom: 2px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--secondary-color);
+  flex-shrink: 0;
+}
+
+.combat-debug-title {
+  margin: 0;
+  color: var(--text-color);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.combat-debug-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.combat-debug-content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.combat-debug-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--accent-color);
+  font-size: 16px;
+  padding: 40px;
+}
+
+.combat-debug-table-wrapper {
+  flex: 1;
+  overflow: auto;
+  padding: 16px;
+}
+
+.combat-debug-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.combat-debug-table__param-header {
+  position: sticky;
+  left: 0;
+  background: var(--secondary-color);
+  border: 1px solid var(--border-color);
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 700;
+  color: var(--accent-color);
+  z-index: 10;
+  min-width: 200px;
+}
+
+.combat-debug-table__column-header {
+  background: var(--secondary-color);
+  border: 1px solid var(--border-color);
+  padding: 8px 12px;
+  text-align: center;
+  font-weight: 600;
+  color: var(--text-color);
+  min-width: 120px;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.combat-debug-column-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+}
+
+.combat-debug-column-timestamp {
+  font-size: 10px;
+  opacity: 0.7;
+  font-weight: 400;
+}
+
+.combat-debug-table__param-cell {
+  position: sticky;
+  left: 0;
+  background: var(--primary-color);
+  border: 1px solid var(--border-color);
+  padding: 8px 16px;
+  text-align: left;
+  color: var(--accent-color);
+  font-weight: 500;
+  z-index: 2;
+  white-space: nowrap;
+}
+
+.combat-debug-table__data-cell {
+  border: 1px solid var(--border-color);
+  padding: 8px 12px;
+  text-align: center;
+  color: var(--text-color);
+  background: var(--primary-color);
+  white-space: nowrap;
+}
+
+.combat-debug-table tbody tr:hover .combat-debug-table__data-cell {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.combat-debug-table tbody tr:hover .combat-debug-table__param-cell {
+  background: var(--secondary-color);
+}
+
+/* Custom scrollbar */
+.combat-debug-table-wrapper::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.combat-debug-table-wrapper::-webkit-scrollbar-track {
+  background: var(--primary-color);
+}
+
+.combat-debug-table-wrapper::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 6px;
+}
+
+.combat-debug-table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color);
+}
+
+/* Corner cell styling */
+.combat-debug-table__param-header {
+  z-index: 15;
+}
+

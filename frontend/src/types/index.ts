@@ -146,12 +146,24 @@ export interface MatchInfo {
   player_count: number;
 }
 
+export interface CombatResult {
+  round_number: number;
+  player_account_id: number;
+  opponent_account_id: number;
+  opponent_player_slot: number;
+  combat_type: number;
+  combat_duration: number;
+  result: 'win' | 'loss' | 'draw';
+  timestamp: string;
+}
+
 export interface MatchData {
   match: MatchInfo;
   public_player_states: PlayerState[];  // Changed from 'players' to match backend
   private_player_state: PrivatePlayerState | null;  // Changed from 'private_player' to match backend
   current_round: RoundInfo;
   timestamp: number;
+  combat_results?: Record<string, CombatResult[]>;  // account_id (string) -> CombatResult[]
 }
 
 // API Response types
