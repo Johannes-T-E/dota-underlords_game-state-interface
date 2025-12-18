@@ -4,9 +4,10 @@
 
 .shop-display__grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(5, 250px); /* Fixed width for each card */
   gap: 12px;
   padding: 16px;
+  justify-content: start; /* Align to start instead of stretching */
 }
 
 .shop-display__slot {
@@ -14,12 +15,14 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding: 8px;
+  gap: 8px;
+  padding: 12px;
   border-radius: 8px;
   background-color: rgba(255, 255, 255, 0.05);
   transition: filter 0.3s ease, background-color 0.3s ease;
   position: relative;
-  min-height: 100px;
+  width: 230px; /* Fixed width */
+  height: 200px; /* Fixed height */
 }
 
 .shop-display__slot:hover:not(.shop-display__slot--empty) {
@@ -40,10 +43,13 @@
 }
 
 .shop-display__hero {
-  width: 100%;
   display: flex;
   justify-content: center;
-  margin-bottom: 4px;
+  align-items: center;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  transform: scale(1.5); /* Make hero image bigger */
 }
 
 .shop-display__empty-slot {
@@ -64,14 +70,38 @@
 }
 
 .shop-display__pool-count {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.7);
+  font-size: 24px;
+  color: rgba(255, 255, 255, 0.9);
   text-align: center;
-  margin-top: 4px;
-  font-weight: 500;
+  font-weight: 700;
+  line-height: 1.2;
+  width: 100%;
 }
 
 .shop-display__slot--selected .shop-display__pool-count {
   color: rgba(255, 255, 255, 0.9);
+}
+
+.shop-display__synergies {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.shop-display__synergy-icon {
+  height: 56px;
+  width: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.shop-display__synergy-icon .synergy-icon-container {
+  height: 100%;
+  width: auto;
+  aspect-ratio: 1;
 }
 

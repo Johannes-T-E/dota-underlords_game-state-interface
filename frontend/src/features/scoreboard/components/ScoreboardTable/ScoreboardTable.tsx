@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { ScoreboardHeader } from '@/features/scoreboard/components/ScoreboardHeader/ScoreboardHeader';
 import { ScoreboardPlayerRow } from '@/features/scoreboard/components/ScoreboardPlayerRow/ScoreboardPlayerRow';
 import { ScoreboardSettings } from '@/features/scoreboard/components/ScoreboardSettings/ScoreboardSettings';
+import { SynergyToolbar } from '@/features/scoreboard/components/SynergyToolbar';
 import { useHeroesDataContext } from '@/contexts/HeroesDataContext';
 import { useScoreboardSettings } from '@/features/scoreboard/hooks/useScoreboardSettings';
 import { selectShowSynergyPips, updateShowSynergyPips } from '@/store/settingsSlice';
@@ -154,6 +155,10 @@ export const ScoreboardTable = ({
       className={`scoreboard-table ${className}`}
       style={tableStyle}
     >
+      <SynergyToolbar
+        selectedSynergyKeyword={selectedSynergyKeyword}
+        onSynergyClick={onSynergyClick}
+      />
       <div className="scoreboard-table__controls">
         <div className="scoreboard-table__controls-spacer" />
         <ScoreboardSettings 
