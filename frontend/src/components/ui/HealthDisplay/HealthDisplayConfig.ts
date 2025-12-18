@@ -14,16 +14,16 @@ export const interpolateColor = (config: HealthColorConfig, healthValue: number)
   let endStop: ColorStop | undefined;
   
   for (let i = 0; i < stops.length - 1; i++) {
-    if (clampedHealth >= stops[i].position && clampedHealth <= stops[i + 1].position) {
-      startStop = stops[i];
-      endStop = stops[i + 1];
+    if (clampedHealth >= stops[i]!.position && clampedHealth <= stops[i + 1]!.position) {
+      startStop = stops[i]!;
+      endStop = stops[i + 1]!;
       break;
     }
   }
   
   // If we're at the edges
   if (!startStop || !endStop) {
-    return stops[clampedHealth <= 0 ? 0 : stops.length - 1].color;
+    return stops[clampedHealth <= 0 ? 0 : stops.length - 1]!.color;
   }
   
   // Calculate interpolation factor with easing
@@ -50,7 +50,7 @@ const applyEasing = (t: number, interpolation: InterpolationConfig): number => {
       return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
     case 'bezier':
       if (interpolation.bezierPoints) {
-        const [x1, y1, x2, y2] = interpolation.bezierPoints;
+        const [, y1, , y2] = interpolation.bezierPoints;
         // Simplified cubic bezier calculation
         return bezier(t, 0, y1, y2, 1);
       }
@@ -82,9 +82,9 @@ const parseColor = (color: string): { r: number; g: number; b: number } => {
   const rgbMatch = color.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
   if (rgbMatch) {
     return {
-      r: parseInt(rgbMatch[1]),
-      g: parseInt(rgbMatch[2]),
-      b: parseInt(rgbMatch[3])
+      r: parseInt(rgbMatch[1]!),
+      g: parseInt(rgbMatch[2]!),
+      b: parseInt(rgbMatch[3]!)
     };
   }
   
@@ -92,9 +92,9 @@ const parseColor = (color: string): { r: number; g: number; b: number } => {
   const hexMatch = color.match(/#([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})/i);
   if (hexMatch) {
     return {
-      r: parseInt(hexMatch[1], 16),
-      g: parseInt(hexMatch[2], 16),
-      b: parseInt(hexMatch[3], 16)
+      r: parseInt(hexMatch[1]!, 16),
+      g: parseInt(hexMatch[2]!, 16),
+      b: parseInt(hexMatch[3]!, 16)
     };
   }
   

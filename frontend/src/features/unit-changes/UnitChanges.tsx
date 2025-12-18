@@ -1,9 +1,9 @@
-import React, { useMemo, useRef, useEffect, useState } from 'react';
+import { useMemo, useRef, useEffect, useState } from 'react';
 import { useAppSelector, useAppDispatch } from '@/hooks/redux';
 import { useHeroesDataContext } from '@/contexts/HeroesDataContext';
 import { apiService } from '@/services/api';
 import { setChanges, selectChangesForCurrentMatch } from '@/store/changesSlice';
-import type { ConnectionStatus } from '@/types';
+import type { ConnectionStatus, Change } from '@/types';
 import { ChangeFilters } from './components/ChangeFilters';
 import { ChangesList } from './components/ChangesList';
 import { FilterChips } from './components/FilterChips';
@@ -113,7 +113,7 @@ export const UnitChanges = () => {
         
         if (response.status === 'success') {
           // Backend sends changes with ISO string timestamps - keep as string in type
-          const convertedChanges = response.changes.map((change: any) => ({
+          const convertedChanges: Change[] = response.changes.map((change: Change) => ({
             ...change,
             // Keep timestamp as string to match backend type
             timestamp: change.timestamp,

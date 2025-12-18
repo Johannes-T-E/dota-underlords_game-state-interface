@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { AppLayout, MainContentTemplate } from '@/components/layout';
 import { ScoreboardTable } from '@/features/scoreboard/components/ScoreboardTable/ScoreboardTable';
 import { PlayerBoard } from '@/features/player-board/components/PlayerBoard/PlayerBoard';
-import { UnitChanges } from '@/features/unit-changes/UnitChanges';
+/* import { UnitChanges } from '@/features/unit-changes/UnitChanges'; */
 import { ShopDisplay } from '@/features/shop';
 import { CombatResults } from '@/features/combat-results';
 import { EmptyState } from '@/components/shared';
@@ -63,7 +63,7 @@ export const Dashboard = () => {
   };
 
   // Get valid players (with account_id)
-  const validPlayers = React.useMemo(() => {
+  const validPlayers = useMemo(() => {
     if (!players || !Array.isArray(players)) {
       return [];
     }
@@ -164,7 +164,7 @@ export const Dashboard = () => {
           {/* Unit Changes Section */}
           <section className="dashboard__section dashboard__section--unit-changes">
             <h2 className="dashboard__section-title">Unit Changes</h2>
-            <UnitChanges />
+            {/* <UnitChanges /> */}
           </section>
 
           {/* Combat Results Section */}

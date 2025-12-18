@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useAppSelector, useAppDispatch } from '@/hooks/redux';
 import { apiService } from '@/services/api';
 import { setCombatHistory } from '@/store/matchSlice';
@@ -55,4 +55,6 @@ export const CombatResults = () => {
     </div>
   );
 };
+
+
 

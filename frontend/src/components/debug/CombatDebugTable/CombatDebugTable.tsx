@@ -1,7 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useAppSelector } from '@/hooks/redux';
 import { Button } from '@/components/ui';
-import type { PlayerState } from '@/types';
 import './CombatDebugTable.css';
 
 const TARGET_ACCOUNT_ID = 249722568;

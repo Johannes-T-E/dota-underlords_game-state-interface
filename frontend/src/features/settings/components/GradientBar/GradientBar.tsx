@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import type { HealthColorConfig } from '@/components/ui/HealthDisplay/HealthDisplaySettings';
-import { interpolateColor } from '@/components/ui/HealthDisplay/HealthDisplayUtils';
 import './GradientBar.css';
 
 export interface GradientBarProps {

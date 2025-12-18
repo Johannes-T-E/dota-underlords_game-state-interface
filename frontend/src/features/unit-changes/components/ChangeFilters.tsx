@@ -107,7 +107,7 @@ export const ChangeFilters: React.FC<ChangeFiltersProps> = ({
       if (!grouped[filter.category]) {
         grouped[filter.category] = [];
       }
-      grouped[filter.category].push(filter);
+      grouped[filter.category]!.push(filter);
     });
     return grouped;
   }, []);
@@ -154,7 +154,7 @@ export const ChangeFilters: React.FC<ChangeFiltersProps> = ({
 
   const activeFilterCount = useMemo(() => {
     if (changeFilters.all) return 0;
-    return Object.values(changeFilters).filter((val, idx, arr) => {
+    return Object.values(changeFilters).filter((val, idx) => {
       const key = Object.keys(changeFilters)[idx];
       return key !== 'all' && val === true;
     }).length;

@@ -1,4 +1,5 @@
-import { StatusIndicator, Text, type ConnectionStatus as ConnectionStatusType } from '@/components/ui';
+import { StatusIndicator, Text } from '@/components/ui';
+import type { ConnectionStatus as ConnectionStatusType } from '@/types';
 import './ConnectionStatus.css';
 
 export interface ConnectionStatusProps {

@@ -271,7 +271,7 @@ def process_and_store_gsi_public_player_state(account_id: int, gsi_public_player
     
     # Build full player state with comprehensive data
     # Use GSI data directly - missing fields will be None (no hardcoded fallbacks)
-    player_state = {
+    processed_public_player_state = {
         # Basic player info
         'account_id': account_id,  # Normalized account_id (int) - bots end with "000", humans use raw account_id
         'persona_name': gsi_public_player_state.get('persona_name'),  # Only for humans
@@ -351,13 +351,13 @@ def process_and_store_gsi_public_player_state(account_id: int, gsi_public_player
     }
     
     # Store in match state
-    match_state.latest_processed_public_player_states[account_id] = player_state
+    match_state.latest_processed_public_player_states[account_id] = processed_public_player_state
     
     # Detect combat completion (if we have previous state)
     if previous_state is not None:
-        detect_and_record_combat(account_id, player_state, previous_state, timestamp)
+        detect_and_record_combat(account_id, processed_public_player_state, previous_state, timestamp)
     
-    return player_state
+    return processed_public_player_state
 
 
 def process_and_store_gsi_private_player_state(gsi_private_player_state: Dict, timestamp: datetime) -> Dict:

@@ -2,7 +2,8 @@ import type {
   ApiMatchesResponse, 
   ApiStatusResponse, 
   ApiHealthResponse,
-  CombatResult
+  CombatResult,
+  Change
 } from '@/types';
 
 const API_BASE_URL = import.meta.env.DEV ? 'http://localhost:3000' : '';
@@ -61,7 +62,7 @@ class ApiService {
     limit?: number,
     roundNumber?: number,
     roundPhase?: string
-  ): Promise<{ status: string; match_id: string; changes: any[]; count: number }> {
+  ): Promise<{ status: string; match_id: string; changes: Change[]; count: number }> {
     const params = new URLSearchParams();
     if (accountId !== undefined) params.append('account_id', accountId.toString());
     if (limit !== undefined) params.append('limit', limit.toString());

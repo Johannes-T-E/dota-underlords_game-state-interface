@@ -110,7 +110,8 @@ export function convertSynergiesToDisplayData(
   if (options?.onlyActive) {
     result = result.filter(data => {
       if (data.levels.length === 0) return false;
-      const firstThreshold = data.levels[0].unitcount;
+      const firstThreshold = data.levels[0]?.unitcount;
+      if (firstThreshold === undefined) return false;
       return data.activeUnits >= firstThreshold;
     });
   }
@@ -151,7 +152,7 @@ export function getSynergyTier(activeUnits: number, levels: SynergyLevel[]): num
 export function isSynergyActive(synergy: Synergy): boolean {
   const levels = getSynergyLevelsByKeyword(synergy.keyword);
   if (levels.length === 0) return false;
-  return synergy.unique_unit_count >= levels[0].unitcount;
+  return synergy.unique_unit_count >= (levels[0]?.unitcount ?? 0);
 }
 
 /**

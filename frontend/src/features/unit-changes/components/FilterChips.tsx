@@ -133,7 +133,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
       if (!grouped[chip.category]) {
         grouped[chip.category] = [];
       }
-      grouped[chip.category].push(chip);
+      grouped[chip.category]!.push(chip);
     });
     return grouped;
   }, [activeFilters]);

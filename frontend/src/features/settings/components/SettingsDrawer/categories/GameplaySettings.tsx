@@ -82,7 +82,10 @@ export const GameplaySettings = () => {
   };
 
   const handlePresetChange = (preset: string) => {
-    updateColumns(LAYOUT_PRESETS[preset]);
+    const presetConfig = LAYOUT_PRESETS[preset];
+    if (presetConfig) {
+      updateColumns(presetConfig);
+    }
   };
 
   const handleShowAll = () => {

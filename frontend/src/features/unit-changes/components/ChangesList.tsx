@@ -23,30 +23,36 @@ export const ChangesList: React.FC<ChangesListProps> = ({
   const [sortOption, setSortOption] = useState<SortOption>('time-desc');
   const [groupOption, setGroupOption] = useState<GroupOption>('none');
 
+  // Helper function to get player name (computed at render time to avoid memory leak)
+  const getPlayerName = (accountId: number): string => {
+    const player = validPlayers.find((p) => p.account_id === accountId);
+    return player 
+      ? (player.persona_name || player.bot_persona_name || `Player ${accountId}`)
+      : `Player ${accountId}`;
+  };
+
+  // Helper function to format time display (computed at render time)
+  const formatTimeDisplay = (timestampMs: number): string => {
+    const timeAgo = Math.floor((Date.now() - timestampMs) / 1000);
+    return timeAgo < 60 ? `${timeAgo}s ago` : `${Math.floor(timeAgo / 60)}m ago`;
+  };
+
+  // Only store minimal data in memoized array - compute player names and time displays at render time
+  // This prevents recalculation when validPlayers changes (which happens 10x/second)
   const changesWithPlayerInfo = useMemo(() => {
     return changes.map((change) => {
       // Convert ISO string timestamp to number for display
       const timestampMs = typeof change.timestamp === 'string' 
         ? new Date(change.timestamp).getTime() 
         : change.timestamp;
-      const timeAgo = Math.floor((Date.now() - timestampMs) / 1000);
-      const timeDisplay = timeAgo < 60 ? `${timeAgo}s ago` : `${Math.floor(timeAgo / 60)}m ago`;
-      
-      // Get player name and player object
-      const player = validPlayers.find((p) => p.account_id === change.account_id);
-      const playerName = player 
-        ? (player.persona_name || player.bot_persona_name || `Player ${player.account_id}`)
-        : `Player ${change.account_id}`;
       
       return {
         change,
-        playerName,
-        timeDisplay,
-        player,
+        accountId: change.account_id,
         timestampMs
       };
     });
-  }, [changes, validPlayers]);
+  }, [changes]); // Only depend on changes, NOT validPlayers
 
   const sortedChanges = useMemo(() => {
     const sorted = [...changesWithPlayerInfo];
@@ -57,8 +63,11 @@ export const ChangesList: React.FC<ChangesListProps> = ({
       case 'time-asc':
         return sorted.sort((a, b) => a.timestampMs - b.timestampMs);
       case 'player':
+        // Compute player names on-the-fly during sort to avoid storing them in memoized array
         return sorted.sort((a, b) => {
-          const nameCompare = a.playerName.localeCompare(b.playerName);
+          const nameA = getPlayerName(a.accountId);
+          const nameB = getPlayerName(b.accountId);
+          const nameCompare = nameA.localeCompare(nameB);
           if (nameCompare !== 0) return nameCompare;
           return b.timestampMs - a.timestampMs; // Secondary sort by time
         });
@@ -71,7 +80,7 @@ export const ChangesList: React.FC<ChangesListProps> = ({
       default:
         return sorted;
     }
-  }, [changesWithPlayerInfo, sortOption]);
+  }, [changesWithPlayerInfo, sortOption, validPlayers]); // Need validPlayers for player sort
 
   const getTimePeriod = (timestampMs: number): string => {
     const now = Date.now();
@@ -97,7 +106,8 @@ export const ChangesList: React.FC<ChangesListProps> = ({
       
       switch (groupOption) {
         case 'player':
-          groupKey = item.playerName;
+          // Compute player name on-the-fly during grouping to avoid storing in memoized array
+          groupKey = getPlayerName(item.accountId);
           break;
         case 'type':
           groupKey = item.change.type.charAt(0).toUpperCase() + item.change.type.slice(1).replace(/_/g, ' ');
@@ -110,11 +120,11 @@ export const ChangesList: React.FC<ChangesListProps> = ({
       if (!groups[groupKey]) {
         groups[groupKey] = [];
       }
-      groups[groupKey].push(item);
+      groups[groupKey]!.push(item);
     });
 
     return groups;
-  }, [sortedChanges, groupOption]);
+  }, [sortedChanges, groupOption, validPlayers]); // Need validPlayers for player grouping
 
   if (changes.length === 0) {
     return (
@@ -208,16 +218,22 @@ export const ChangesList: React.FC<ChangesListProps> = ({
       </div>
       <div className="unit-changes-widget__changes-list">
         {groupOption === 'none' ? (
-          sortedChanges.map(({ change, playerName, timeDisplay, player }, index) => (
-            <ChangeItem
-              key={`${change.account_id}-${change.timestamp}-${index}`}
-              change={change}
-              playerName={playerName}
-              timeDisplay={timeDisplay}
-              heroesData={heroesData}
-              player={player}
-            />
-          ))
+          sortedChanges.map(({ change, accountId, timestampMs }, index) => {
+            // Compute player name and time display at render time to avoid memory leak
+            const player = validPlayers.find(p => p.account_id === accountId);
+            const playerName = getPlayerName(accountId);
+            const timeDisplay = formatTimeDisplay(timestampMs);
+            return (
+              <ChangeItem
+                key={`${change.account_id}-${change.timestamp}-${index}`}
+                change={change}
+                playerName={playerName}
+                timeDisplay={timeDisplay}
+                heroesData={heroesData}
+                player={player}
+              />
+            );
+          })
         ) : (
           Object.entries(groupedChanges).map(([groupKey, groupItems]) => (
             <div key={groupKey} className="changes-list__group">
@@ -230,16 +246,22 @@ export const ChangesList: React.FC<ChangesListProps> = ({
                 </UIText>
               </div>
               <div className="changes-list__group-items">
-                {groupItems.map(({ change, playerName, timeDisplay, player }, index) => (
-                  <ChangeItem
-                    key={`${change.account_id}-${change.timestamp}-${index}`}
-                    change={change}
-                    playerName={playerName}
-                    timeDisplay={timeDisplay}
-                    heroesData={heroesData}
-                    player={player}
-                  />
-                ))}
+                {groupItems.map(({ change, accountId, timestampMs }, index) => {
+                  // Compute player name and time display at render time to avoid memory leak
+                  const player = validPlayers.find(p => p.account_id === accountId);
+                  const playerName = getPlayerName(accountId);
+                  const timeDisplay = formatTimeDisplay(timestampMs);
+                  return (
+                    <ChangeItem
+                      key={`${change.account_id}-${change.timestamp}-${index}`}
+                      change={change}
+                      playerName={playerName}
+                      timeDisplay={timeDisplay}
+                      heroesData={heroesData}
+                      player={player}
+                    />
+                  );
+                })}
               </div>
             </div>
           ))

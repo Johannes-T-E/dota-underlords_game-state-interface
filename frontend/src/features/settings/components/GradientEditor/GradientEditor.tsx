@@ -41,6 +41,7 @@ export const GradientEditor = ({
   const handleUpdateStop = useCallback((index: number, updates: Partial<ColorStop>) => {
     const newStops = [...config.colorStops];
     const currentStop = newStops[index];
+    if (!currentStop) return;
     newStops[index] = { 
       position: updates.position !== undefined ? updates.position : currentStop.position,
       color: updates.color !== undefined ? updates.color : currentStop.color
