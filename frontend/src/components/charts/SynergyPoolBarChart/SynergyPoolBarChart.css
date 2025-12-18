@@ -1,0 +1,115 @@
+.synergy-pool-bar-chart {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.synergy-pool-bar-chart__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: var(--text-secondary, #b9bbbe);
+  font-size: 16px;
+}
+
+.synergy-pool-bar-chart__container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: 12px;
+  padding: 20px;
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.synergy-pool-bar-chart__bar-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 80px;
+  flex-shrink: 0;
+  height: 100%; /* Take full height of container */
+}
+
+.synergy-pool-bar-chart__bar-container {
+  width: 100%;
+  flex: 1; /* Take remaining space after label */
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  position: relative;
+  min-height: 0; /* Allow flex item to shrink */
+}
+
+.synergy-pool-bar-chart__bar {
+  width: 100%;
+  max-width: 60px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Changed from flex-end to flex-start so empty is at top */
+  border: 2px solid; /* Border color set inline via style */
+  border-radius: 4px 4px 0 0;
+  overflow: hidden;
+  min-height: 0; /* Remove fixed min-height, let percentage work */
+}
+
+.synergy-pool-bar-chart__bar-empty {
+  width: 100%;
+  transition: height 0.3s ease;
+}
+
+.synergy-pool-bar-chart__bar-fill {
+  width: 100%;
+  transition: height 0.3s ease;
+}
+
+.synergy-pool-bar-chart__bar-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary, #ffffff);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.synergy-pool-bar-chart__label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+
+.synergy-pool-bar-chart__icon-wrapper {
+  width: 60px; /* Match bar max-width */
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.synergy-pool-bar-chart__icon-wrapper .synergy-icon-container {
+  width: 100%;
+  height: 100%;
+}
+
+.synergy-pool-bar-chart__label-text {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary, #b9bbbe);
+  word-break: break-word;
+  max-width: 80px;
+  line-height: 1.2;
+}
+

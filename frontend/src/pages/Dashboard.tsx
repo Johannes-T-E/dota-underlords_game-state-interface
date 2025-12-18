@@ -7,6 +7,7 @@ import { ShopDisplay } from '@/features/shop';
 import { CombatResults } from '@/features/combat-results';
 import { EmptyState } from '@/components/shared';
 import { Button } from '@/components/ui';
+import { OpenInNewTabButton } from '@/components/shared/OpenInNewTabButton';
 import { CombatDebugTable } from '@/components/debug/CombatDebugTable';
 import { useAppSelector } from '@/hooks/redux';
 import { useHeroesDataContext } from '@/contexts/HeroesDataContext';
@@ -91,7 +92,10 @@ export const Dashboard = () => {
         <div className="dashboard">
           {/* Scoreboard Section */}
           <section className="dashboard__section dashboard__section--scoreboard">
-            <h2 className="dashboard__section-title">Scoreboard</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h2 className="dashboard__section-title">Scoreboard</h2>
+              <OpenInNewTabButton href="/scoreboard" />
+            </div>
             {!currentMatch ? (
               <EmptyState
                 title="No Active Match"
@@ -112,7 +116,10 @@ export const Dashboard = () => {
 
           {/* Shop Section */}
           <section className="dashboard__section dashboard__section--shop">
-            <h2 className="dashboard__section-title">Shop</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h2 className="dashboard__section-title">Shop</h2>
+              <OpenInNewTabButton href="/shop" />
+            </div>
             {!currentMatch ? (
               <EmptyState
                 title="No Active Match"
@@ -132,7 +139,10 @@ export const Dashboard = () => {
 
           {/* Player Boards Section */}
           <section className="dashboard__section dashboard__section--player-boards">
-            <h2 className="dashboard__section-title">Player Boards</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h2 className="dashboard__section-title">Player Boards</h2>
+              <OpenInNewTabButton href="/player-boards" />
+            </div>
             {validPlayers.length === 0 ? (
               <div className="dashboard__empty">
                 {!currentMatch ? (
@@ -169,8 +179,32 @@ export const Dashboard = () => {
 
           {/* Combat Results Section */}
           <section className="dashboard__section dashboard__section--combat-results">
-            <h2 className="dashboard__section-title">Combat Results</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h2 className="dashboard__section-title">Combat Results</h2>
+              <OpenInNewTabButton href="/combat-results" />
+            </div>
             <CombatResults />
+          </section>
+
+          {/* Hero Pool Stats Section */}
+          <section className="dashboard__section dashboard__section--hero-pool-stats">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h2 className="dashboard__section-title">Hero Pool Stats</h2>
+              <OpenInNewTabButton href="/hero-pool-stats" />
+            </div>
+            {!currentMatch ? (
+              <EmptyState
+                title="No Active Match"
+                message="Waiting for GSI data from Dota Underlords..."
+                showSpinner
+              />
+            ) : (
+              <div style={{ padding: '16px', minHeight: '300px' }}>
+                <p style={{ color: 'var(--text-secondary, #b9bbbe)', fontSize: '14px' }}>
+                  View detailed hero pool statistics by synergy on the dedicated page.
+                </p>
+              </div>
+            )}
           </section>
         </div>
         

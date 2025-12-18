@@ -21,10 +21,10 @@ export const PlayerBoardScaler: React.FC<PlayerBoardScalerProps> = ({ children }
       const contentWidth = content.scrollWidth;
       const contentHeight = content.scrollHeight;
 
-      // Calculate scale to fit both width and height
+      // Calculate scale to fit both width and height (allow scaling up)
       const scaleX = containerWidth / contentWidth;
       const scaleY = containerHeight / contentHeight;
-      const newScale = Math.min(scaleX, scaleY, 1); // Don't scale up, only down
+      const newScale = Math.min(scaleX, scaleY); // Allow scaling up to fill space
 
       setScale(newScale);
     };
@@ -54,8 +54,10 @@ export const PlayerBoardScaler: React.FC<PlayerBoardScalerProps> = ({ children }
       style={{
         width: '100%',
         height: '100%',
+        minHeight: 0,
+        maxHeight: '100%',
         display: 'flex',
-        alignItems: 'flex-start',
+        alignItems: 'center',
         justifyContent: 'center',
         overflow: 'hidden',
         position: 'relative',
@@ -65,7 +67,7 @@ export const PlayerBoardScaler: React.FC<PlayerBoardScalerProps> = ({ children }
         ref={contentRef}
         style={{
           transform: `scale(${scale})`,
-          transformOrigin: 'top center',
+          transformOrigin: 'center center',
           width: 'fit-content',
           height: 'fit-content',
         }}

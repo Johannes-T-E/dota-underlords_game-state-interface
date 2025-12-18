@@ -104,7 +104,11 @@ export interface PlayerState {
 
 export interface ShopUnit {
   unit_id: number;
-  keywords?: string[];
+  keywords?: number[]; // Array of keyword IDs (e.g., [9, 39, 48])
+  gold_cost?: number;
+  wanted_legendary?: boolean;
+  will_combine_three_stars?: boolean;
+  will_combine_two_stars?: boolean;
 }
 
 export interface Challenge {

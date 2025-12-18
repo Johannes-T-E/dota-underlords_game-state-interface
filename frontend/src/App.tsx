@@ -6,6 +6,12 @@ import { websocketService } from './services/websocket';
 import { HeroesDataProvider } from './contexts/HeroesDataContext';
 import { Dashboard } from './pages/Dashboard';
 import { MatchManagement } from './pages/MatchManagement';
+import { ScoreboardPage } from './pages/ScoreboardPage';
+import { ShopPage } from './pages/ShopPage';
+import { PlayerBoardsPage } from './pages/PlayerBoardsPage';
+import { PlayerBoardPage } from './pages/PlayerBoardPage';
+import { CombatResultsPage } from './pages/CombatResultsPage';
+import { HeroPoolStatsPage } from './pages/HeroPoolStatsPage';
 
 function AppContent() {
   useEffect(() => {
@@ -24,6 +30,12 @@ function AppContent() {
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/match-management" element={<MatchManagement />} />
+        <Route path="/scoreboard" element={<ScoreboardPage />} />
+        <Route path="/shop" element={<ShopPage />} />
+        <Route path="/player-boards" element={<PlayerBoardsPage />} />
+        <Route path="/player-board/:accountId" element={<PlayerBoardPage />} />
+        <Route path="/combat-results" element={<CombatResultsPage />} />
+        <Route path="/hero-pool-stats" element={<HeroPoolStatsPage />} />
       </Routes>
     </BrowserRouter>
   );

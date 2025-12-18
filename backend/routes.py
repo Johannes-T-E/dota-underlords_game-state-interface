@@ -17,6 +17,13 @@ if PRODUCTION and FRONTEND_BUILD_DIR and os.path.exists(FRONTEND_BUILD_DIR):
     @app.route('/')
     @app.route('/dashboard')
     @app.route('/matches')
+    @app.route('/scoreboard')
+    @app.route('/shop')
+    @app.route('/player-boards')
+    @app.route('/player-board/<path:accountId>')
+    @app.route('/combat-results')
+    @app.route('/hero-pool-stats')
+    @app.route('/match-management')
     def serve_react_app():
         """Serve the React app for all frontend routes."""
         return send_from_directory(app.static_folder, 'index.html')

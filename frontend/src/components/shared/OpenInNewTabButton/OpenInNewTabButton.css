@@ -1,0 +1,25 @@
+.open-in-new-tab-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 4px;
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.6);
+  transition: color 0.2s ease, background-color 0.2s ease;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.open-in-new-tab-button:hover {
+  color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.open-in-new-tab-button__icon {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+

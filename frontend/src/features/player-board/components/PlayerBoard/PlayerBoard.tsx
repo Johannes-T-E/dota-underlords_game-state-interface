@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button, HeroPortrait, PlayerNameDisplay } from '@/components/ui';
+import { OpenInNewTabButton } from '@/components/shared/OpenInNewTabButton';
 import { MovementTrail } from './components/MovementTrail/MovementTrail';
 import { useUnitPositions } from '@/features/player-board/hooks/useUnitPositions';
 import { calculatePosition, CELL_SIZE, GAP_SIZE } from '@/features/player-board/utils/positionUtils';
@@ -13,7 +14,7 @@ import './PlayerBoard.css';
 export interface PlayerBoardProps {
   player: PlayerState;
   heroesData: HeroesData | null;
-  onClose: () => void;
+  onClose?: () => void;
   className?: string;
 }
 
@@ -205,15 +206,22 @@ export const PlayerBoard = ({ player, heroesData, onClose, className = '' }: Pla
           className="player-board__name"
           matchCount={player.match_count}
         />
-        <Button
-          variant="ghost"
-          size="small"
-          onClick={onClose}
-          className="player-board__close-btn"
-          aria-label="Close board"
-        >
-          ×
-        </Button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {onClose && (
+            <>
+              <OpenInNewTabButton href={`/player-board/${player.account_id}`} />
+              <Button
+                variant="ghost"
+                size="small"
+                onClick={onClose}
+                className="player-board__close-btn"
+                aria-label="Close board"
+              >
+                ×
+              </Button>
+            </>
+          )}
+        </div>
       </div>
       
       <div className="player-board__grid-container">

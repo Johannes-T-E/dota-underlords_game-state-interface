@@ -4,7 +4,6 @@ import { EmptyState } from '@/components/shared';
 import { getSynergyNameByKeyword } from '@/components/ui/SynergyDisplay/utils';
 import synergyStyles from '@/components/ui/SynergyDisplay/data/synergy-styles.json';
 import synergyIconMap from '@/components/ui/SynergyDisplay/data/synergy-icon-map.json';
-import keywordMappings from '@/components/ui/SynergyDisplay/data/synergy-keyword-mappings.json';
 import type { PrivatePlayerState, PlayerState } from '@/types';
 import type { HeroesData } from '@/utils/heroHelpers';
 import { calculatePoolCounts } from '@/utils/poolCalculator';
@@ -52,36 +51,6 @@ function getSynergyVisualData(synergyName: string) {
   return { styleNumber, iconFile, synergyColor, brightColor };
 }
 
-/**
- * Get hero keywords as numbers from heroesData
- */
-function getHeroKeywords(unitId: number, heroesData: HeroesData | null): number[] {
-  if (!heroesData || !heroesData.heroes) {
-    return [];
-  }
-  
-  // Find hero by ID
-  for (const [, heroData] of Object.entries(heroesData.heroes)) {
-    if (heroData.id === unitId) {
-      // Parse keywords string (space-separated keyword names like "fallen knight")
-      if (!heroData.keywords) return [];
-      
-      const reverseMappings = keywordMappings.reverse_mappings as Record<string, number>;
-      return heroData.keywords
-        .split(' ')
-        .map(k => {
-          const trimmed = k.trim();
-          if (!trimmed) return null;
-          // Capitalize first letter to match mapping format (e.g., "fallen" -> "Fallen", "knight" -> "Knight")
-          const capitalized = trimmed.charAt(0).toUpperCase() + trimmed.slice(1).toLowerCase();
-          return reverseMappings[capitalized];
-        })
-        .filter((k): k is number => k !== null && k !== undefined && !isNaN(k));
-    }
-  }
-  
-  return [];
-}
 
 export const ShopDisplay = ({
   privatePlayer,
@@ -99,13 +68,13 @@ export const ShopDisplay = ({
   // Get shop units, ensuring we always have 5 slots
   const shopUnits = useMemo(() => {
     if (!privatePlayer || !privatePlayer.shop_units) {
-      return Array(5).fill(null).map(() => ({ unit_id: -1 }));
+      return Array(5).fill(null).map(() => ({ unit_id: -1, keywords: [] }));
     }
     
     const units = [...privatePlayer.shop_units];
     // Ensure we have exactly 5 slots
     while (units.length < 5) {
-      units.push({ unit_id: -1 });
+      units.push({ unit_id: -1, keywords: [] });
     }
     return units.slice(0, 5);
   }, [privatePlayer]);
@@ -166,31 +135,32 @@ export const ShopDisplay = ({
                     className="shop-display__hero"
                   />
                   {(() => {
-                const keywords = getHeroKeywords(unitId, heroesData);
-                if (keywords.length === 0) return null;
-                
-                return (
-                  <div className="shop-display__synergies">
-                    {keywords.map((keyword) => {
-                      const synergyName = getSynergyNameByKeyword(keyword);
-                      if (!synergyName) return null;
-                      
-                      const visual = getSynergyVisualData(synergyName);
-                      
-                      return (
-                        <div key={keyword} className="shop-display__synergy-icon">
-                          <SynergyIcon
-                            styleNumber={visual.styleNumber}
-                            iconFile={visual.iconFile}
-                            synergyName={synergyName}
-                            synergyColor={visual.synergyColor}
-                            brightColor={visual.brightColor}
-                          />
-                        </div>
-                      );
-                    })}
-                  </div>
-                  );
+                    // Use keywords directly from shop unit data
+                    const keywords = shopUnit.keywords || [];
+                    if (keywords.length === 0) return null;
+                    
+                    return (
+                      <div className="shop-display__synergies">
+                        {keywords.map((keyword: number) => {
+                          const synergyName = getSynergyNameByKeyword(keyword);
+                          if (!synergyName) return null;
+                          
+                          const visual = getSynergyVisualData(synergyName);
+                          
+                          return (
+                            <div key={keyword} className="shop-display__synergy-icon">
+                              <SynergyIcon
+                                styleNumber={visual.styleNumber}
+                                iconFile={visual.iconFile}
+                                synergyName={synergyName}
+                                synergyColor={visual.synergyColor}
+                                brightColor={visual.brightColor}
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
                   })()}
                 </>
               )}

@@ -224,14 +224,14 @@ export const ChangesList: React.FC<ChangesListProps> = ({
             const playerName = getPlayerName(accountId);
             const timeDisplay = formatTimeDisplay(timestampMs);
             return (
-              <ChangeItem
-                key={`${change.account_id}-${change.timestamp}-${index}`}
-                change={change}
-                playerName={playerName}
-                timeDisplay={timeDisplay}
-                heroesData={heroesData}
-                player={player}
-              />
+            <ChangeItem
+              key={`${change.account_id}-${change.timestamp}-${index}`}
+              change={change}
+              playerName={playerName}
+              timeDisplay={timeDisplay}
+              heroesData={heroesData}
+              player={player}
+            />
             );
           })
         ) : (
@@ -252,14 +252,14 @@ export const ChangesList: React.FC<ChangesListProps> = ({
                   const playerName = getPlayerName(accountId);
                   const timeDisplay = formatTimeDisplay(timestampMs);
                   return (
-                    <ChangeItem
-                      key={`${change.account_id}-${change.timestamp}-${index}`}
-                      change={change}
-                      playerName={playerName}
-                      timeDisplay={timeDisplay}
-                      heroesData={heroesData}
-                      player={player}
-                    />
+                  <ChangeItem
+                    key={`${change.account_id}-${change.timestamp}-${index}`}
+                    change={change}
+                    playerName={playerName}
+                    timeDisplay={timeDisplay}
+                    heroesData={heroesData}
+                    player={player}
+                  />
                   );
                 })}
               </div>

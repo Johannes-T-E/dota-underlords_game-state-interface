@@ -1,0 +1,95 @@
+.player-boards-page {
+  height: 100%;
+  padding: 0 !important;
+  margin: -1rem -2rem !important;
+  overflow: hidden;
+  min-height: 0;
+  width: calc(100% + 4rem); /* Compensate for negative margin to fill full width */
+  max-width: none;
+}
+
+.player-boards-page__container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.player-boards-page__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: var(--secondary-color, #2a2a2e);
+  border-bottom: 1px solid var(--border-color, #3a3a3e);
+  flex-shrink: 0;
+}
+
+.player-boards-page__title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-primary, #ffffff);
+  margin: 0;
+}
+
+.player-boards-page__controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.player-boards-page__label {
+  font-size: 14px;
+  color: var(--text-secondary, #b9bbbe);
+  font-weight: 500;
+}
+
+.player-boards-page__buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.player-boards-page__button {
+  min-width: 40px;
+  padding: 6px 12px;
+}
+
+.player-boards-page__empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.player-boards-page__grid {
+  flex: 1;
+  display: grid;
+  gap: 4px;
+  padding: 4px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  align-items: start;
+  min-height: 0;
+  grid-auto-rows: min-content; /* Let items control their own height via aspect-ratio */
+}
+
+.player-boards-page__grid-item {
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+  aspect-ratio: 704 / 500; /* Match board aspect ratio: width 704px / height 500px = 1.408:1 */
+  position: relative;
+  overflow: hidden;
+}
+
+.player-boards-page__grid-item > * {
+  width: 100%;
+  height: 100%;
+}
+
