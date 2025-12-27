@@ -316,6 +316,14 @@ def create_build():
                 'message': 'Missing required fields: id, name'
             }), 400
         
+        # Check if build already exists
+        existing = db.get_build(build_id)
+        if existing:
+            return jsonify({
+                'status': 'error',
+                'message': f'Build with ID "{build_id}" already exists'
+            }), 409
+        
         units_json = json.dumps(units)
         db.save_build(build_id, name, description, units_json)
         
