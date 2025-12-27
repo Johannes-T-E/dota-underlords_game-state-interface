@@ -3,7 +3,8 @@ import type {
   ApiStatusResponse, 
   ApiHealthResponse,
   CombatResult,
-  Change
+  Change,
+  Build
 } from '@/types';
 
 const API_BASE_URL = import.meta.env.DEV ? 'http://localhost:3000' : '';
@@ -87,6 +88,60 @@ class ApiService {
       result[Number(accountIdStr)] = combats;
     }
     return result;
+  }
+
+  // Build endpoints
+  async getBuilds(): Promise<Build[]> {
+    const response = await this.request<{
+      status: string;
+      builds: Build[];
+    }>('/api/builds');
+    return response.builds;
+  }
+
+  async getBuild(buildId: string): Promise<Build> {
+    const response = await this.request<{
+      status: string;
+      build: Build;
+    }>(`/api/builds/${buildId}`);
+    return response.build;
+  }
+
+  async saveBuild(build: Build): Promise<void> {
+    const isNew = !build.id || !await this.buildExists(build.id);
+    const endpoint = isNew ? '/api/builds' : `/api/builds/${build.id}`;
+    const method = isNew ? 'POST' : 'PUT';
+    
+    await this.request<{
+      status: string;
+      message: string;
+    }>(endpoint, {
+      method,
+      body: JSON.stringify(build),
+    });
+  }
+
+  async deleteBuild(buildId: string): Promise<void> {
+    await this.request<{
+      status: string;
+      message: string;
+    }>(`/api/builds/${buildId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  private async buildExists(buildId: string): Promise<boolean> {
+    try {
+      await this.getBuild(buildId);
+      return true;
+    } catch (error: any) {
+      // If 404, build doesn't exist
+      if (error?.message?.includes('404')) {
+        return false;
+      }
+      // For other errors, assume it doesn't exist
+      return false;
+    }
   }
 }
 

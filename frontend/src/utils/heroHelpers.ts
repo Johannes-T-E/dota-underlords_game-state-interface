@@ -23,10 +23,11 @@ export interface HeroData {
   // Game mechanics
   draftTier: number;
   goldCost: number;
-  keywords: string;
+  keywords: number[];
   
   // Abilities and hints
   abilities: string[];
+  extra_abilities?: string[];
   hintWords: string[];
   
   // Visual and audio

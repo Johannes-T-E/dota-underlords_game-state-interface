@@ -294,4 +294,33 @@ export interface Change {
   timestamp: string; // ISO string from backend (converted to number in components for display)
 }
 
+// Build Creator Types
+export interface BuildUnit {
+  unit_id: number;        // Hero type/definition ID
+  entindex?: number;      // Optional: for display purposes, can be generated
+  position: {
+    x: number;
+    y: number;
+  };
+  rank: number;          // 1, 2, or 3 stars
+  keywords?: number[];   // Synergy keyword IDs
+  items?: ItemSlot[];    // Optional items assigned to this unit
+}
+
+export interface Build {
+  id: string;            // UUID
+  name: string;
+  description?: string;
+  units: BuildUnit[];
+  createdAt: string;     // ISO timestamp
+  updatedAt: string;     // ISO timestamp
+}
+
+export interface BuildStats {
+  totalCost: number;
+  synergies: Synergy[];
+  unitCount: number;
+  averageTier: number;
+}
+
 

@@ -26,6 +26,7 @@ export interface SynergiesCellProps {
   className?: string;
   selectedSynergyKeyword?: number | null; // Optional: selected synergy keyword for highlighting
   onSynergyClick?: (keyword: number | null) => void; // Optional: click handler for synergy selection
+  onSynergyHover?: (keyword: number | null) => void; // Optional: hover handler for synergy highlighting
 }
 
 /**
@@ -68,17 +69,28 @@ const SynergiesCell: React.FC<SynergiesCellProps> = ({
   maxDisplay,
   className = '',
   selectedSynergyKeyword = null,
-  onSynergyClick
+  onSynergyClick,
+  onSynergyHover
 }) => {
   // Convert and filter synergies
   const displayData = useMemo(() => {
     let data = convertSynergiesToDisplayData(synergies, {
       onlyActive,
-      sortByCount: false // We'll sort by tier instead
+      sortByCount: false // We'll sort by active status and tier
     });
     
-    // Sort by keyword number (ascending)
+    // Sort: active synergies first, then by keyword number within each group
     data.sort((a, b) => {
+      const aTier = getSynergyTier(a.activeUnits, a.levels);
+      const bTier = getSynergyTier(b.activeUnits, b.levels);
+      const aIsActive = aTier > 0;
+      const bIsActive = bTier > 0;
+      
+      // Active synergies first
+      if (aIsActive && !bIsActive) return -1;
+      if (!aIsActive && bIsActive) return 1;
+      
+      // Within same group (active/inactive), sort by keyword number
       return a.keyword - b.keyword;
     });
     
@@ -114,6 +126,8 @@ const SynergiesCell: React.FC<SynergiesCellProps> = ({
               key={synergy.keyword} 
               className={`synergies-cell__item ${isSelected ? 'synergies-cell__item--selected' : ''}`}
               onClick={() => handleSynergyClick(synergy.keyword)}
+              onMouseEnter={() => onSynergyHover?.(synergy.keyword)}
+              onMouseLeave={() => onSynergyHover?.(null)}
               style={{ cursor: onSynergyClick ? 'pointer' : 'default' }}
               title={`${synergy.synergyName} (${synergy.activeUnits}/${synergy.levels[synergy.levels.length - 1]?.unitcount || '?'})`}
             >
@@ -132,6 +146,8 @@ const SynergiesCell: React.FC<SynergiesCellProps> = ({
               key={synergy.keyword} 
               className={`synergies-cell__item synergies-cell__item--tier-${tier} ${isSelected ? 'synergies-cell__item--selected' : ''}`}
               onClick={() => handleSynergyClick(synergy.keyword)}
+              onMouseEnter={() => onSynergyHover?.(synergy.keyword)}
+              onMouseLeave={() => onSynergyHover?.(null)}
               style={{ cursor: onSynergyClick ? 'pointer' : 'default' }}
               title={`${synergy.synergyName} (${synergy.activeUnits}/${synergy.levels[synergy.levels.length - 1]?.unitcount || '?'})`}
             >

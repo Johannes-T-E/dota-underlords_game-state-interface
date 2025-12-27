@@ -1,0 +1,183 @@
+.editable-player-board {
+  width: fit-content;
+  background: var(--primary-color);
+  border: 2px solid var(--border-color);
+  overflow: visible;
+}
+
+.editable-player-board__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--secondary-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.editable-player-board__title {
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--accent-color);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.editable-player-board__header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.editable-player-board__unit-count {
+  font-size: 12px;
+  color: var(--text-color-secondary);
+}
+
+.editable-player-board__clear-button {
+  padding: 4px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.editable-player-board__clear-button:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+}
+
+.editable-player-board__grid-container {
+  padding: 16px;
+  position: relative;
+  overflow: visible;
+  pointer-events: auto;
+}
+
+.editable-player-board__grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: fit-content;
+  position: relative;
+}
+
+.editable-player-board__roster-section {
+  display: grid;
+  grid-template-columns: repeat(8, 80px);
+  grid-template-rows: repeat(4, 80px);
+  gap: 4px;
+}
+
+.editable-player-board__bench-section {
+  display: grid;
+  grid-template-columns: repeat(8, 80px);
+  grid-template-rows: repeat(1, 80px);
+  gap: 4px;
+}
+
+.editable-player-board__cell {
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  pointer-events: auto;
+  z-index: 1;
+}
+
+.editable-player-board__cell:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--accent-color);
+}
+
+.editable-player-board__cell--hovered {
+  background: rgba(var(--accent-color-rgb, 100, 150, 255), 0.2) !important;
+  border-color: var(--accent-color) !important;
+  border-width: 2px;
+}
+
+.editable-player-board__cell--occupied {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--border-color);
+}
+
+.editable-player-board__cell--selected {
+  border-color: var(--accent-color);
+  border-width: 2px;
+  box-shadow: 0 0 8px rgba(var(--accent-color-rgb, 100, 150, 255), 0.5);
+}
+
+.editable-player-board__unit {
+  position: absolute;
+  cursor: move;
+  transition: transform 0.1s, opacity 0.1s;
+  user-select: none;
+  -webkit-user-drag: element;
+  touch-action: none;
+}
+
+.editable-player-board__unit:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+  z-index: 20;
+}
+
+.editable-player-board__unit:active {
+  cursor: grabbing;
+}
+
+.editable-player-board__unit[draggable="true"] {
+  cursor: grab;
+}
+
+.editable-player-board__unit[draggable="true"]:active {
+  cursor: grabbing;
+  opacity: 0.6;
+}
+
+.editable-player-board__unit--selected {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.editable-player-board__unit--dimmed {
+  filter: grayscale(100%) brightness(0.5) !important;
+  transition: filter 0.3s ease !important;
+}
+
+.editable-player-board__unit-remove {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ff4444;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 30;
+}
+
+.editable-player-board__unit:hover .editable-player-board__unit-remove {
+  opacity: 1;
+}
+
+.editable-player-board__unit-remove:hover {
+  background: #cc0000;
+  transform: scale(1.1);
+}
+

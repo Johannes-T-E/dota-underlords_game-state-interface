@@ -1,7 +1,7 @@
 .placement-board {
   background: var(--primary-color);
   border: 1px solid var(--border-color);
-  border-radius: 6px;
+  border-radius: 0;
   overflow: hidden;
 }
 

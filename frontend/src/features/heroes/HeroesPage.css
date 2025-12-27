@@ -1,0 +1,43 @@
+.heroes-page {
+  height: 100%;
+  min-height: 0;
+}
+
+.heroes-page__container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  padding: 0;
+}
+
+.heroes-page__header {
+  padding: 16px;
+  border-bottom: 1px solid var(--border-color, #3a3a3e);
+  background: var(--secondary-color, #2a2a2e);
+  flex-shrink: 0;
+}
+
+.heroes-page__title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary, #ffffff);
+  margin: 0 0 12px 0;
+}
+
+.heroes-page__description {
+  font-size: 13px;
+  color: var(--text-secondary, #b9bbbe);
+  margin: 0;
+  line-height: 1.5;
+  max-width: 900px;
+}
+
+.heroes-page__empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+

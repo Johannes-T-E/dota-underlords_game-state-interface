@@ -2,6 +2,7 @@ import React, { useMemo, memo, useRef, useEffect, useState } from 'react';
 import './SynergyDisplay.css';
 import './synergy-colors.css';
 import { SynergyIcon, SynergyPip } from './components';
+import { getSynergyTier } from './utils';
 import keywordMappings from './data/synergy-keyword-mappings.json';
 import synergyStyles from './data/synergy-styles.json';
 import synergyIconMap from './data/synergy-icon-map.json';
@@ -119,6 +120,10 @@ const SynergyDisplay: React.FC<SynergyDisplayProps> = memo(({
   // Determine if we should show pips
   const shouldShowPips = showPips && pipsPerBar > 0 && levels.length > 0;
 
+  // Calculate if synergy is active (tier > 0)
+  const synergyTier = useMemo(() => getSynergyTier(activeUnits, levels), [activeUnits, levels]);
+  const isActive = synergyTier > 0;
+
   // Calculate container width based on height and aspect ratios (similar to SynergyPip pattern)
   useEffect(() => {
     if (!containerRef.current) return;
@@ -193,6 +198,7 @@ const SynergyDisplay: React.FC<SynergyDisplayProps> = memo(({
         synergyName={synergyData.synergyName}
         synergyColor={colors.synergyColor}
         brightColor={colors.brightColor}
+        isActive={isActive}
       />
       
       {/* Synergy Pips - using optimized SynergyPip component */}

@@ -1,0 +1,253 @@
+.build-suggestions {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  background: var(--secondary-color, #2a2a2e);
+  border: 1px solid var(--border-color, #3a3a3e);
+  overflow: hidden;
+}
+
+.build-suggestions__header {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-color, #3a3a3e);
+  background: var(--tertiary-color, #1f1f23);
+  flex-shrink: 0;
+}
+
+.build-suggestions__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary, #ffffff);
+  margin: 0 0 2px 0;
+}
+
+.build-suggestions__subtitle {
+  font-size: 11px;
+  color: var(--text-secondary, #b9bbbe);
+  margin: 0;
+}
+
+.build-suggestions__list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.build-suggestions__loading,
+.build-suggestions__empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.build-suggestion {
+  background: var(--tertiary-color, #1f1f23);
+  border: 1px solid var(--border-color, #3a3a3e);
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.build-suggestion:hover {
+  border-color: var(--accent-color, #5865f2);
+  background: rgba(88, 101, 242, 0.05);
+}
+
+.build-suggestion__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.build-suggestion__name-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.build-suggestion__name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary, #ffffff);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.build-suggestion__score {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.build-suggestion__score-label {
+  color: var(--text-secondary, #b9bbbe);
+  font-size: 11px;
+}
+
+.build-suggestion__score-value {
+  color: var(--accent-color, #5865f2);
+  font-weight: 700;
+  font-size: 16px;
+}
+
+
+.build-suggestion__description {
+  font-size: 11px;
+  color: var(--text-secondary, #b9bbbe);
+  margin: 0 0 6px 0;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.build-suggestion__synergies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+.build-suggestion__synergy-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.build-suggestion__heroes {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border-color, #3a3a3e);
+}
+
+.build-suggestion__heroes-title {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-secondary, #b9bbbe);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.build-suggestion__heroes-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.build-suggestion__hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition: transform 0.2s ease;
+}
+
+.build-suggestion__hero:hover {
+  transform: scale(1.05);
+}
+
+.build-suggestion__hero--high {
+  /* Visual indicator via border on portrait */
+}
+
+.build-suggestion__hero--medium {
+  /* Visual indicator via border on portrait */
+}
+
+.build-suggestion__hero--low {
+  /* Visual indicator via border on portrait */
+}
+
+.build-suggestion__hero-portrait {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.build-suggestion__hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+
+.build-suggestion__hero-competition {
+  font-weight: 700;
+  font-size: 12px;
+  text-align: center;
+  min-width: 40px;
+  line-height: 1.2;
+}
+
+.build-suggestion__hero-competition--none {
+  color: #4caf50; /* Green - no competition */
+}
+
+.build-suggestion__hero-competition--low {
+  color: #ff9800; /* Orange - 1 competitor */
+}
+
+.build-suggestion__hero-competition--medium {
+  color: #ff5722; /* Deep orange - 2 competitors */
+}
+
+.build-suggestion__hero-competition--high {
+  color: #f44336; /* Red - 3+ competitors */
+}
+
+.build-suggestion__hero-competition-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #f44336;
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 5px;
+  min-width: 16px;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.build-suggestion__hero-more {
+  font-size: 10px;
+  color: var(--text-secondary, #b9bbbe);
+  padding: 4px 6px;
+  text-align: center;
+  font-style: italic;
+}
+
+/* Scrollbar styling */
+.build-suggestions__list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.build-suggestions__list::-webkit-scrollbar-track {
+  background: var(--tertiary-color, #1f1f23);
+}
+
+.build-suggestions__list::-webkit-scrollbar-thumb {
+  background: var(--border-color, #3a3a3e);
+}
+
+.build-suggestions__list::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color, #5865f2);
+}
+

@@ -1,0 +1,19 @@
+.item-display {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.item-display--small {
+  gap: 2px;
+}
+
+.item-display--medium {
+  gap: 4px;
+}
+
+.item-display--large {
+  gap: 6px;
+}
+

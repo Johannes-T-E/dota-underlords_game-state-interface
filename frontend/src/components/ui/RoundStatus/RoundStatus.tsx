@@ -15,10 +15,10 @@ export const RoundStatus = ({
   return (
     <div className={`round-status ${className}`}>
       <div className="round-status__text">
-        <Text variant="label" weight="bold">Round {roundNumber}</Text>
+        <Text variant="body" weight="bold">Round {roundNumber}</Text>
         <div className="round-status__phase">
           <PhaseIcon phase={roundPhase} size="small" />
-          <Text variant="label">{roundPhase}</Text>
+          <Text variant="body">{roundPhase}</Text>
         </div>
       </div>
     </div>

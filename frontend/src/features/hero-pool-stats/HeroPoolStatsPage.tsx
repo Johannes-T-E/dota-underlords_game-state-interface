@@ -6,10 +6,11 @@ import { useAppSelector } from '@/hooks/redux';
 import { useHeroesDataContext } from '@/contexts/HeroesDataContext';
 import { calculatePoolCounts } from '@/utils/poolCalculator';
 import { calculateSynergyPoolStats } from '@/utils/synergyPoolCalculator';
+import { BuildSuggestions } from './components/BuildSuggestions/BuildSuggestions';
 import './HeroPoolStatsPage.css';
 
 export const HeroPoolStatsPage = () => {
-  const { currentMatch, players } = useAppSelector((state) => state.match);
+  const { currentMatch, players, privatePlayer } = useAppSelector((state) => state.match);
   const { heroesData } = useHeroesDataContext();
 
   // Calculate pool counts for all heroes
@@ -22,11 +23,11 @@ export const HeroPoolStatsPage = () => {
 
   // Calculate synergy pool stats
   const synergyPoolStats = useMemo(() => {
-    if (!players || !heroesData || poolCounts.size === 0) {
+    if (!heroesData || poolCounts.size === 0) {
       return [];
     }
-    return calculateSynergyPoolStats(players, heroesData, poolCounts);
-  }, [players, heroesData, poolCounts]);
+    return calculateSynergyPoolStats(heroesData, poolCounts);
+  }, [heroesData, poolCounts]);
 
   return (
     <AppLayout>
@@ -53,7 +54,17 @@ export const HeroPoolStatsPage = () => {
             </div>
           ) : (
             <div className="hero-pool-stats-page__content">
-              <SynergyPoolBarChart synergyPoolStats={synergyPoolStats} />
+              <div className="hero-pool-stats-page__chart-section">
+                <SynergyPoolBarChart synergyPoolStats={synergyPoolStats} />
+              </div>
+              <div className="hero-pool-stats-page__suggestions-section">
+                <BuildSuggestions
+                  players={players}
+                  privatePlayer={privatePlayer}
+                  poolCounts={poolCounts}
+                  heroesData={heroesData}
+                />
+              </div>
             </div>
           )}
         </div>
@@ -61,5 +72,6 @@ export const HeroPoolStatsPage = () => {
     </AppLayout>
   );
 };
+
 
 

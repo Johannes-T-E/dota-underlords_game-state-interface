@@ -1,0 +1,230 @@
+.hero-detail-page {
+  height: 100%;
+  min-height: 0;
+}
+
+.hero-detail-page__container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.hero-detail-page__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+
+.hero-detail-page__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-shrink: 0;
+}
+
+.hero-detail-page__back-button,
+.hero-detail-page__nav-button {
+  padding: 8px 16px;
+  background: var(--tertiary-color, #1f1f23);
+  border: 1px solid var(--border-color, #3a3a3e);
+  color: var(--text-primary, #ffffff);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hero-detail-page__back-button:hover,
+.hero-detail-page__nav-button:hover {
+  border-color: var(--accent-color, #5865f2);
+  background: rgba(88, 101, 242, 0.1);
+}
+
+.hero-detail-page__navigation {
+  display: flex;
+  gap: 8px;
+}
+
+.hero-detail-page__content {
+  flex: 1;
+  min-height: 0;
+}
+
+.hero-detail-page__main {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border-color, #3a3a3e);
+}
+
+.hero-detail-page__portrait-section {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.hero-detail-page__portrait {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  display: block;
+}
+
+.hero-detail-page__tier-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--secondary-color, #2a2a2e);
+  border: 1px solid var(--border-color, #3a3a3e);
+  color: var(--text-primary, #ffffff);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 8px;
+  text-transform: uppercase;
+}
+
+.hero-detail-page__info {
+  flex: 1;
+}
+
+.hero-detail-page__name {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-primary, #ffffff);
+  margin: 0 0 16px 0;
+  text-transform: capitalize;
+}
+
+.hero-detail-page__synergies {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.hero-detail-page__synergy-icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.hero-detail-page__pool-info {
+  font-size: 14px;
+  color: var(--text-secondary, #b9bbbe);
+}
+
+.hero-detail-page__stats-abilities-wrapper {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 32px;
+  align-items: flex-start;
+}
+
+.hero-detail-page__stats-section,
+.hero-detail-page__abilities-section {
+  flex: 1;
+  min-width: 0;
+}
+
+.hero-detail-page__section-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary, #ffffff);
+  margin: 0 0 16px 0;
+}
+
+.hero-detail-page__stats-table {
+  overflow-x: auto;
+}
+
+.hero-detail-page__stats-table table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--secondary-color, #2a2a2e);
+  border: 1px solid var(--border-color, #3a3a3e);
+}
+
+.hero-detail-page__stats-table th {
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary, #b9bbbe);
+  background: var(--tertiary-color, #1f1f23);
+  border-bottom: 1px solid var(--border-color, #3a3a3e);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.hero-detail-page__stats-table td {
+  padding: 10px 12px;
+  font-size: 13px;
+  color: var(--text-primary, #ffffff);
+  border-bottom: 1px solid var(--border-color, #3a3a3e);
+}
+
+.hero-detail-page__stats-table tr:last-child td {
+  border-bottom: none;
+}
+
+.hero-detail-page__ability {
+  background: var(--secondary-color, #2a2a2e);
+  border: 1px solid var(--border-color, #3a3a3e);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.hero-detail-page__ability-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.hero-detail-page__ability-icon {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.hero-detail-page__ability-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary, #ffffff);
+  margin: 0;
+}
+
+.hero-detail-page__ability-stat {
+  font-size: 13px;
+  color: var(--text-secondary, #b9bbbe);
+  margin-bottom: 8px;
+}
+
+.hero-detail-page__ability-stat strong {
+  color: var(--text-primary, #ffffff);
+}
+
+.hero-detail-page__ability-description {
+  font-size: 13px;
+  color: var(--text-primary, #ffffff);
+  line-height: 1.6;
+  margin: 12px 0;
+}
+
+.hero-detail-page__ability-description p {
+  margin: 8px 0;
+}
+
+.hero-detail-page__ability-lore {
+  font-size: 12px;
+  color: var(--text-secondary, #b9bbbe);
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color, #3a3a3e);
+}
+

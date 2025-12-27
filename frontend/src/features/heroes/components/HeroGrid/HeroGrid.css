@@ -1,0 +1,16 @@
+.hero-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 84px);
+  gap: 8px;
+  padding: 12px;
+  align-content: start;
+}
+
+.hero-grid--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  grid-column: 1 / -1;
+}
+

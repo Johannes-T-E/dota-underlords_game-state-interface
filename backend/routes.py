@@ -6,6 +6,7 @@ from typing import Dict, List
 from flask import request, jsonify, send_from_directory
 from flask_socketio import emit
 from datetime import datetime
+import json
 from .game_state import match_state, db, db_write_queue, connected_clients, stats, abandon_match, emit_realtime_update
 from .gsi_handler import process_gsi_data
 from .config import app, socketio, PRODUCTION, FRONTEND_BUILD_DIR, GSI_HOST, GSI_PORT
@@ -242,6 +243,157 @@ def get_match_changes(match_id):
     
     except Exception as e:
         print(f"[ERROR] Failed to get match changes: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+
+# Build endpoints
+@app.route('/api/builds', methods=['GET'])
+def get_builds():
+    """Get all builds."""
+    try:
+        builds = db.get_all_builds()
+        return jsonify({
+            'status': 'ok',
+            'builds': builds
+        }), 200
+    except Exception as e:
+        print(f"[ERROR] Failed to get builds: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+@app.route('/api/builds/<build_id>', methods=['GET'])
+def get_build(build_id: str):
+    """Get a specific build by ID."""
+    try:
+        build = db.get_build(build_id)
+        if not build:
+            return jsonify({
+                'status': 'error',
+                'message': 'Build not found'
+            }), 404
+        
+        return jsonify({
+            'status': 'ok',
+            'build': build
+        }), 200
+    except Exception as e:
+        print(f"[ERROR] Failed to get build: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+@app.route('/api/builds', methods=['POST'])
+def create_build():
+    """Create a new build."""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({
+                'status': 'error',
+                'message': 'No data provided'
+            }), 400
+        
+        build_id = data.get('id')
+        name = data.get('name')
+        description = data.get('description')
+        units = data.get('units', [])
+        
+        if not build_id or not name:
+            return jsonify({
+                'status': 'error',
+                'message': 'Missing required fields: id, name'
+            }), 400
+        
+        units_json = json.dumps(units)
+        db.save_build(build_id, name, description, units_json)
+        
+        return jsonify({
+            'status': 'ok',
+            'message': 'Build created successfully'
+        }), 201
+    except Exception as e:
+        print(f"[ERROR] Failed to create build: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+@app.route('/api/builds/<build_id>', methods=['PUT'])
+def update_build(build_id: str):
+    """Update an existing build."""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({
+                'status': 'error',
+                'message': 'No data provided'
+            }), 400
+        
+        name = data.get('name')
+        description = data.get('description')
+        units = data.get('units', [])
+        
+        if not name:
+            return jsonify({
+                'status': 'error',
+                'message': 'Missing required field: name'
+            }), 400
+        
+        # Check if build exists
+        existing = db.get_build(build_id)
+        if not existing:
+            return jsonify({
+                'status': 'error',
+                'message': 'Build not found'
+            }), 404
+        
+        units_json = json.dumps(units)
+        db.save_build(build_id, name, description, units_json)
+        
+        return jsonify({
+            'status': 'ok',
+            'message': 'Build updated successfully'
+        }), 200
+    except Exception as e:
+        print(f"[ERROR] Failed to update build: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+@app.route('/api/builds/<build_id>', methods=['DELETE'])
+def delete_build(build_id: str):
+    """Delete a build."""
+    try:
+        deleted = db.delete_build(build_id)
+        if not deleted:
+            return jsonify({
+                'status': 'error',
+                'message': 'Build not found'
+            }), 404
+        
+        return jsonify({
+            'status': 'ok',
+            'message': 'Build deleted successfully'
+        }), 200
+    except Exception as e:
+        print(f"[ERROR] Failed to delete build: {e}")
         import traceback
         traceback.print_exc()
         return jsonify({

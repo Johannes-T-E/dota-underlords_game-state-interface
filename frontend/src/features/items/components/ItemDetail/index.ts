@@ -1,0 +1,2 @@
+export { ItemDetailPage } from './ItemDetailPage';
+

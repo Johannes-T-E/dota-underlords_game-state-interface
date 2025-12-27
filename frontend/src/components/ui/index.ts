@@ -50,6 +50,7 @@ export {
   isSynergyActive,
   getNextThreshold,
   getUnitsToNextThreshold,
+  getSynergyVisualData,
 } from './SynergyDisplay';
 export type { 
   SynergyDisplayProps, 
@@ -59,6 +60,47 @@ export type {
   SynergyDisplayData,
   SynergiesCellProps,
 } from './SynergyDisplay';
+
+// AbilityDisplay components and utilities
+export {
+  AbilityDisplay,
+  AbilityIcon,
+  Tooltip,
+  // Utility functions
+  getAbilityIconPath,
+  getAbilityData,
+  getAbilityDescription,
+  formatAbilityDescription,
+  formatAbilityTooltip,
+  processAbilityForDisplay,
+} from './AbilityDisplay';
+export type {
+  AbilityDisplayProps,
+  AbilityIconProps,
+  TooltipProps,
+  AbilityData,
+  AbilitiesData,
+  AbilityDescriptions,
+  AbilityDisplayData,
+} from './AbilityDisplay';
+
+// ItemDisplay components and utilities
+export {
+  ItemDisplay,
+  ItemIcon,
+  // Utility functions
+  getItemIconPath,
+  getItemName,
+  getItemDescription,
+  formatItemTooltip,
+  processItemForDisplay,
+  getAllItems,
+} from './ItemDisplay';
+export type {
+  ItemDisplayProps,
+  ItemIconProps,
+  ItemDisplayData,
+} from './ItemDisplay';
 
 export { StatDisplay } from './StatDisplay/StatDisplay';
 export type { StatDisplayProps } from './StatDisplay/StatDisplay';

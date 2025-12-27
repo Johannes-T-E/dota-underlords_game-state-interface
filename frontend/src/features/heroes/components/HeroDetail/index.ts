@@ -1,0 +1,2 @@
+export { HeroDetailPage } from './HeroDetailPage';
+

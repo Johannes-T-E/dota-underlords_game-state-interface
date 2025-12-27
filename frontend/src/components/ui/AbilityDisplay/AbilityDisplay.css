@@ -1,0 +1,19 @@
+.ability-display {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.ability-display--small {
+  gap: 2px;
+}
+
+.ability-display--medium {
+  gap: 4px;
+}
+
+.ability-display--large {
+  gap: 6px;
+}
+

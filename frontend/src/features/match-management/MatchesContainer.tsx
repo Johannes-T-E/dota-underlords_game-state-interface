@@ -84,7 +84,7 @@ export const MatchesContainer = () => {
           <div style={{ 
             background: 'var(--secondary-color)', 
             border: '1px solid var(--border-color)', 
-            borderRadius: '8px',
+            borderRadius: 0,
             overflow: 'hidden'
           }}>
             <MatchDetailPanel
@@ -96,7 +96,7 @@ export const MatchesContainer = () => {
           <div style={{ 
             background: 'var(--secondary-color)', 
             border: '1px solid var(--border-color)', 
-            borderRadius: '8px'
+            borderRadius: 0
           }}>
             <EmptyState
               title="Select a match to view details"

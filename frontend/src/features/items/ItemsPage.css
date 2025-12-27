@@ -1,0 +1,22 @@
+.items-page__container {
+  padding: 24px;
+}
+
+.items-page__header {
+  margin-bottom: 24px;
+}
+
+.items-page__title {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-primary, #ffffff);
+  margin: 0;
+}
+
+.items-page__loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+

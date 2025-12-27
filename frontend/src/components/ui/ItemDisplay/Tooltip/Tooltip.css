@@ -1,0 +1,34 @@
+/* Reuse styles from AbilityDisplay Tooltip, but add item-specific styles */
+.item-tooltip__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.item-tooltip__icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.item-tooltip strong {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary, #ffffff);
+  flex: 1;
+}
+
+.item-tooltip div {
+  margin-bottom: 6px;
+  color: var(--text-secondary, #b9bbbe);
+}
+
+.item-tooltip div:last-child {
+  margin-bottom: 0;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-color, #3a3a3e);
+}
+

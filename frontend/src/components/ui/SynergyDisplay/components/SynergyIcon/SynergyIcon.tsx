@@ -7,6 +7,8 @@ export interface SynergyIconProps {
   synergyName: string;        // For alt text
   synergyColor: string;       // Computed synergy color
   brightColor: string;        // Computed bright color for border pop
+  isActive?: boolean;         // Whether the synergy is active (default: true)
+  inactiveColor?: string;     // Color to use when inactive (default: #1a1a1a)
 }
 
 /**
@@ -29,7 +31,9 @@ const SynergyIcon: React.FC<SynergyIconProps> = memo(({
   iconFile,
   synergyName,
   synergyColor,
-  brightColor
+  brightColor,
+  isActive = true,
+  inactiveColor = '#1a1a1a'
 }) => {
   // Memoize style number string
   const styleNum = useMemo(() => 
@@ -45,18 +49,22 @@ const SynergyIcon: React.FC<SynergyIconProps> = memo(({
     icon: getAssetUrl(iconFile)
   }), [styleNum, iconFile]);
 
+  // Determine colors based on active state
+  const effectiveSynergyColor = isActive ? synergyColor : inactiveColor;
+  const effectiveBrightColor = isActive ? brightColor : inactiveColor;
+
   // Memoize inline styles
   const baseColorWashStyle = useMemo<React.CSSProperties>(() => ({
     maskImage: `url('${imagePaths.base}')`,
     WebkitMaskImage: `url('${imagePaths.base}')`,
-    backgroundColor: synergyColor,
-  }), [imagePaths.base, synergyColor]);
+    backgroundColor: effectiveSynergyColor,
+  }), [imagePaths.base, effectiveSynergyColor]);
 
   const borderPopColorWashStyle = useMemo<React.CSSProperties>(() => ({
     maskImage: `url('${imagePaths.borderPop}')`,
     WebkitMaskImage: `url('${imagePaths.borderPop}')`,
-    backgroundColor: brightColor,
-  }), [imagePaths.borderPop, brightColor]);
+    backgroundColor: effectiveBrightColor,
+  }), [imagePaths.borderPop, effectiveBrightColor]);
 
   // Memoize background image styles
   const baseStyle = useMemo<React.CSSProperties>(() => ({

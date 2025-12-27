@@ -14,23 +14,23 @@ export interface ItemsData {
 
 /**
  * Find an item by its ID in items.json data
- * Searches through set_base and set_balance sections
+ * Prioritizes set_balance over set_base
  */
 export function findItemByItemId(itemsData: ItemsData | null, itemId: number): ItemData | null {
   if (!itemsData) return null;
 
-  // Search in set_base first
-  if (itemsData.set_base) {
-    for (const item of Object.values(itemsData.set_base)) {
+  // First, try set_balance (prioritized)
+  if (itemsData.set_balance) {
+    for (const item of Object.values(itemsData.set_balance)) {
       if (item.id === itemId) {
         return item;
       }
     }
   }
 
-  // Search in set_balance if not found
-  if (itemsData.set_balance) {
-    for (const item of Object.values(itemsData.set_balance)) {
+  // Then try set_base
+  if (itemsData.set_base) {
+    for (const item of Object.values(itemsData.set_base)) {
       if (item.id === itemId) {
         return item;
       }

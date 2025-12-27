@@ -107,10 +107,6 @@ export const SynergyPoolBarChart = ({
                       }}
                     />
                   )}
-                  {/* Text overlay */}
-                  <div className="synergy-pool-bar-chart__bar-text">
-                    {stat.remainingPool} / {stat.totalPool}
-                  </div>
                 </div>
               </div>
               <div className="synergy-pool-bar-chart__label">
@@ -124,7 +120,7 @@ export const SynergyPoolBarChart = ({
                   />
                 </div>
                 <div className="synergy-pool-bar-chart__label-text">
-                  {stat.synergyName}
+                  {stat.remainingPool} / {stat.totalPool}
                 </div>
               </div>
             </div>

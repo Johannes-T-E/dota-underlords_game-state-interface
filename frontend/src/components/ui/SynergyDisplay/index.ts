@@ -22,5 +22,6 @@ export {
   isSynergyActive,
   getNextThreshold,
   getUnitsToNextThreshold,
+  getSynergyVisualData,
 } from './utils';
 export type { SynergyDisplayData } from './utils';

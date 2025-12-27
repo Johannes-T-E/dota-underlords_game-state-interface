@@ -1,4 +1,3 @@
-import type { PlayerState } from '@/types';
 import type { HeroesData } from './heroHelpers';
 import type { PoolCount } from './poolCalculator';
 import { cardsPerTier } from './poolCalculator';
@@ -18,54 +17,13 @@ export interface SynergyPoolStat {
 }
 
 /**
- * Special case mappings for hero keyword strings to synergy names
- */
-const KEYWORD_NAME_MAPPINGS: Record<string, string> = {
-  'scaled': 'Naga',
-  'heartless': 'Undead',
-  'brute': 'Brutal',
-};
-
-/**
- * Parse hero keywords string to array of keyword numbers
- * Handles special cases like "scaled" → "Naga", "heartless" → "Undead", "brute" → "Brutal"
- */
-function parseHeroKeywords(
-  keywordsString: string,
-  reverseMappings: Record<string, number>
-): number[] {
-  if (!keywordsString || keywordsString.trim() === '') {
-    return [];
-  }
-
-  const keywords: number[] = [];
-  const words = keywordsString.trim().split(/\s+/);
-
-  for (const word of words) {
-    // Apply special case mappings first
-    const mappedName = KEYWORD_NAME_MAPPINGS[word.toLowerCase()];
-    const synergyName = mappedName || (word.charAt(0).toUpperCase() + word.slice(1).toLowerCase());
-    
-    // Look up in reverse_mappings
-    const keyword = reverseMappings[synergyName];
-    if (keyword !== undefined) {
-      keywords.push(keyword);
-    }
-  }
-
-  return keywords;
-}
-
-/**
  * Calculate synergy pool statistics grouped by synergy keyword
  * 
- * @param players - Array of all player states
  * @param heroesData - Heroes data to get hero information
  * @param poolCounts - Map of unit_id -> PoolCount (from calculatePoolCounts)
  * @returns Array of SynergyPoolStat objects sorted by remainingPool descending
  */
 export function calculateSynergyPoolStats(
-  players: PlayerState[],
   heroesData: HeroesData | null,
   poolCounts: Map<number, PoolCount>
 ): SynergyPoolStat[] {
@@ -75,23 +33,14 @@ export function calculateSynergyPoolStats(
 
   const reverseMappings = keywordMappings.reverse_mappings as Record<string, number>;
 
-  // Step 1: Build hero-to-keywords mapping
-  const heroKeywordsMap = new Map<number, number[]>();
-  
-  for (const [, heroData] of Object.entries(heroesData.heroes)) {
-    const unitId = heroData.id;
-    const keywords = parseHeroKeywords(heroData.keywords, reverseMappings);
-    heroKeywordsMap.set(unitId, keywords);
-  }
-
-  // Step 2: Calculate total pool per synergy
+  // Step 1: Calculate total pool per synergy
   const synergyStats = new Map<number, {
     totalPool: number;
     remainingPool: number;
   }>();
 
   // Initialize all synergies from reverse_mappings
-  for (const [synergyName, keyword] of Object.entries(reverseMappings)) {
+  for (const [, keyword] of Object.entries(reverseMappings)) {
     if (INACTIVE_SYNERGY_KEYWORDS.includes(keyword)) {
       continue; // Skip inactive synergies
     }
@@ -100,9 +49,8 @@ export function calculateSynergyPoolStats(
 
   // Calculate total pool for each synergy
   for (const [, heroData] of Object.entries(heroesData.heroes)) {
-    const unitId = heroData.id;
     const tier = heroData.draftTier;
-    const keywords = heroKeywordsMap.get(unitId) || [];
+    const keywords = heroData.keywords || [];
     const totalPool = cardsPerTier[String(tier) as keyof typeof cardsPerTier] || 0;
 
     // Add this hero's pool to each of its synergies
@@ -118,10 +66,10 @@ export function calculateSynergyPoolStats(
     }
   }
 
-  // Step 3: Calculate used/remaining pool per synergy
+  // Step 2: Calculate used/remaining pool per synergy
   for (const [, heroData] of Object.entries(heroesData.heroes)) {
     const unitId = heroData.id;
-    const keywords = heroKeywordsMap.get(unitId) || [];
+    const keywords = heroData.keywords || [];
     const poolCount = poolCounts.get(unitId);
 
     if (!poolCount) {

@@ -1,0 +1,53 @@
+.ability-tooltip-container {
+  position: relative;
+  display: inline-block;
+}
+
+.ability-tooltip {
+  position: fixed;
+  background: var(--secondary-color, #2a2a2e);
+  border: 1px solid var(--border-color, #3a3a3e);
+  padding: 12px;
+  border-radius: 4px;
+  max-width: 300px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-primary, #ffffff);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  z-index: 10000;
+}
+
+.ability-tooltip__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.ability-tooltip__icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.ability-tooltip strong {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary, #ffffff);
+  flex: 1;
+}
+
+.ability-tooltip div {
+  margin-bottom: 6px;
+  color: var(--text-secondary, #b9bbbe);
+}
+
+.ability-tooltip div:last-child {
+  margin-bottom: 0;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-color, #3a3a3e);
+}
+

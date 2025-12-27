@@ -8,6 +8,8 @@ import type { Synergy } from '@/types';
 import type { SynergyLevel } from './SynergyDisplay';
 import synergiesData from './data/synergies.json';
 import keywordMappings from './data/synergy-keyword-mappings.json';
+import synergyStyles from './data/synergy-styles.json';
+import synergyIconMap from './data/synergy-icon-map.json';
 
 // Type for synergies.json data (set_balance structure)
 type SynergyEntry = {
@@ -174,5 +176,39 @@ export function getUnitsToNextThreshold(activeUnits: number, levels: SynergyLeve
   const next = getNextThreshold(activeUnits, levels);
   if (next === null) return null;
   return next - activeUnits;
+}
+
+/**
+ * Gets the CSS variable name for a synergy's color
+ */
+function getColorVar(synergyName: string, bright: boolean = false): string {
+  const cssVar = synergyName.toLowerCase();
+  const suffix = bright ? '-bright' : '';
+  return `--synergy-${cssVar}-color${suffix}`;
+}
+
+/**
+ * Get computed color value from CSS variable
+ */
+function getComputedColor(varName: string, fallback: string = '#888888'): string {
+  if (typeof window === 'undefined') return fallback;
+  const value = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+  return value || fallback;
+}
+
+/**
+ * Get synergy visual data (style number, icon file, colors)
+ * This is used by SynergyIcon component to display synergy capsules
+ */
+export function getSynergyVisualData(synergyName: string) {
+  const styleNumber = (synergyStyles as Record<string, number>)[synergyName] || 1;
+  const iconFile = (synergyIconMap as Record<string, string>)[synergyName] || 'beast_psd.png';
+  
+  const colorVar = getColorVar(synergyName);
+  const brightColorVar = getColorVar(synergyName, true);
+  const synergyColor = getComputedColor(colorVar);
+  const brightColor = getComputedColor(brightColorVar) || synergyColor;
+  
+  return { styleNumber, iconFile, synergyColor, brightColor };
 }
 

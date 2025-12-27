@@ -137,6 +137,18 @@ class UnderlordsDatabaseManager:
             )
         """)
         
+        # Builds table for build creator
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS builds (
+                id TEXT PRIMARY KEY,
+                name TEXT NOT NULL,
+                description TEXT,
+                units_json TEXT NOT NULL,
+                created_at TIMESTAMP NOT NULL,
+                updated_at TIMESTAMP NOT NULL
+            )
+        """)
+        
         # Public player snapshots (state at each update) with JSON data
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS public_player_snapshots (
@@ -795,6 +807,64 @@ class UnderlordsDatabaseManager:
         
         result = cursor.fetchone()
         return result[0] if result else 0
+
+    def save_build(self, build_id: str, name: str, description: Optional[str], units_json: str) -> None:
+        """Save or update a build."""
+        cursor = self.conn.cursor()
+        now = datetime.now().isoformat()
+        
+        cursor.execute("""
+            INSERT OR REPLACE INTO builds (id, name, description, units_json, created_at, updated_at)
+            VALUES (?, ?, ?, ?, 
+                COALESCE((SELECT created_at FROM builds WHERE id = ?), ?),
+                ?)
+        """, (build_id, name, description, units_json, build_id, now, now))
+        
+        self.conn.commit()
+    
+    def get_build(self, build_id: str) -> Optional[Dict[str, Any]]:
+        """Get a build by ID."""
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT * FROM builds WHERE id = ?", (build_id,))
+        row = cursor.fetchone()
+        
+        if not row:
+            return None
+        
+        return {
+            'id': row['id'],
+            'name': row['name'],
+            'description': row['description'],
+            'units': json.loads(row['units_json']),
+            'createdAt': row['created_at'],
+            'updatedAt': row['updated_at']
+        }
+    
+    def get_all_builds(self) -> List[Dict[str, Any]]:
+        """Get all builds."""
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT * FROM builds ORDER BY updated_at DESC")
+        rows = cursor.fetchall()
+        
+        builds = []
+        for row in rows:
+            builds.append({
+                'id': row['id'],
+                'name': row['name'],
+                'description': row['description'],
+                'units': json.loads(row['units_json']),
+                'createdAt': row['created_at'],
+                'updatedAt': row['updated_at']
+            })
+        
+        return builds
+    
+    def delete_build(self, build_id: str) -> bool:
+        """Delete a build by ID. Returns True if deleted, False if not found."""
+        cursor = self.conn.cursor()
+        cursor.execute("DELETE FROM builds WHERE id = ?", (build_id,))
+        self.conn.commit()
+        return cursor.rowcount > 0
 
     def close(self) -> None:
         """Close database connection."""
