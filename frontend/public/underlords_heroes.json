@@ -2487,7 +2487,8 @@
         "#dac_hero_hint_line_damage"
       ],
       "keywords": [
-        20
+        20,
+        40
       ],
       "magicResist": 0,
       "maxmana": 40,
@@ -2540,7 +2541,8 @@
       ],
       "keywords": [
         15,
-        45
+        45,
+        40
       ],
       "magicResist": 0,
       "maxmana": 100,
@@ -2594,7 +2596,8 @@
         "#dac_hero_hint_silences"
       ],
       "keywords": [
-        24
+        24,
+        40
       ],
       "magicResist": 0,
       "maxmana": 100,
@@ -2639,7 +2642,8 @@
         "#dac_hero_hint_void_spirit"
       ],
       "keywords": [
-        55
+        55,
+        40
       ],
       "magicResist": 0,
       "maxmana": 100,
