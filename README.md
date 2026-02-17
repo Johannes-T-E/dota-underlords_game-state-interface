@@ -272,7 +272,7 @@ The Shop page displays the private player's current shop offering, showing the f
 
 ### Combat Results (`/combat-results`)
 
-![Combat Results](dev_log_img/combat-results.png)
+![Combat Results](dev_log_img/combat-results-loop.gif)
 
 The Combat Results page provides a round-by-round combat history table where rows represent players and columns represent rounds (1 through 40). Each cell shows the combat outcome (WIN, LOSS, or DRAW) along with the opponent's name, color-coded backgrounds for quick scanning, and a bot-fight indicator where applicable. During an active combat phase, the table groups players by their current matchup and shows a countdown timer for the round.
 
@@ -379,7 +379,7 @@ The Match Management page provides a sidebar list of all saved matches alongside
 
 ### Settings (drawer overlay)
 
-![Settings](dev_log_img/settings.png)
+![Settings](dev_log_img/settings-loop.gif)
 
 The Settings drawer slides in as an overlay panel with category-based navigation. Categories include Appearance (theme and UI preferences), Gameplay (game-related display options), Advanced (export/import settings as JSON, reset all settings to defaults), and About (version information and credits). All settings are persisted to localStorage and restored automatically on page load.
 
