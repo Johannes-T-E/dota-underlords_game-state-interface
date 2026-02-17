@@ -626,21 +626,38 @@ def process_buffered_data(match_id: str, timestamp: datetime):
         print(f"[BUFFER] Queued buffered public snapshot for player {account_id}, match {match_id}")
     
     # Process private player states - find and process latest in one pass
+    # Filter out stale private states from a previous match by comparing timestamps
+    # with the earliest valid public buffer entry. Private states that arrived before
+    # any valid new-game public state are likely leftover post-match data.
+    earliest_public_time = min(buf_time for _, buf_time, _ in public_buffer) if public_buffer else None
+    
     latest_gsi_private_player_state = None
     latest_private_time = None
     latest_private_sequence = 0
+    stale_count = 0
     
     for gsi_private_state, private_time in private_buffer:
+        # Skip private states that predate the earliest valid public state
+        if earliest_public_time and private_time < earliest_public_time:
+            stale_count += 1
+            continue
         private_sequence = gsi_private_state.get('sequence_number', 0)
         if private_sequence > latest_private_sequence:
             latest_private_sequence = private_sequence
             latest_gsi_private_player_state = gsi_private_state
             latest_private_time = private_time
     
+    if stale_count > 0:
+        print(f"[BUFFER] Filtered {stale_count} stale private state(s) from previous match (arrived before earliest valid public state)")
+    
     # Process the latest private player state
+    # NOTE: Do NOT set match_state.sequences['private_sequence'] here.
+    # The buffer may contain stale private states from a previous match (post-match GSI payloads).
+    # If we initialize private_sequence from a stale high value, all new-match private states
+    # (which have reset/lower sequence numbers) would be silently rejected.
+    # Leaving private_sequence unset ensures the first real-time private state is always accepted.
     if latest_gsi_private_player_state is not None:
         processed_private_state = process_and_store_gsi_private_player_state(latest_gsi_private_player_state, latest_private_time)
-        match_state.sequences['private_sequence'] = latest_private_sequence
         db_write_queue.put(('insert_snapshot', match_id, 'private_player', None, processed_private_state, latest_private_time))
         print(f"[BUFFER] Queued buffered private snapshot for match {match_id}")
     
