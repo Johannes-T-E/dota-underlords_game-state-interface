@@ -182,7 +182,7 @@ export const ItemTable = ({ items, itemsLocalization, className = '' }: ItemTabl
           {sortedItems.map(item => {
             const itemName = getItemName(item.id, item.displayName, itemsLocalization);
             const typeDisplay = item.type
-              ? item.type.replace('equipment_', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+              ? item.type.replace('equipment_', '').replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())
               : '';
             
             const damage = Array.isArray(item.attack_damage) ? item.attack_damage[0] : (item.attack_damage || '-');

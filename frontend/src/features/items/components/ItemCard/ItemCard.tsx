@@ -26,7 +26,7 @@ export const ItemCard = ({ item, itemsLocalization, className = '' }: ItemCardPr
     return item.type
       .replace('equipment_', '')
       .replace(/_/g, ' ')
-      .replace(/\b\w/g, l => l.toUpperCase());
+      .replace(/\b\w/g, (l: string) => l.toUpperCase());
   }, [item.type]);
 
   const handleClick = () => {

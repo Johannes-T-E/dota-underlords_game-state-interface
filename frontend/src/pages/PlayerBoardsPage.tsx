@@ -53,12 +53,6 @@ export const PlayerBoardsPage = () => {
     });
   }, [players]);
   
-  // Calculate number of rows needed
-  const numRows = useMemo(() => {
-    if (validPlayers.length === 0) return 0;
-    return Math.ceil(validPlayers.length / boardsPerRow);
-  }, [validPlayers.length, boardsPerRow]);
-
   return (
     <AppLayout>
       <MainContentTemplate className="player-boards-page" centered={false}>

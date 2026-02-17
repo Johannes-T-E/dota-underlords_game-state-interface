@@ -1,5 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
-import { getSynergyNameByKeyword } from '@/components/ui/SynergyDisplay/utils';
+import { useMemo } from 'react';
 import { getTierColor } from '@/utils/tierColors';
 import { SynergyIcon } from '@/components/ui/SynergyDisplay/components';
 import synergyStyles from '@/components/ui/SynergyDisplay/data/synergy-styles.json';

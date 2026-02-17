@@ -84,7 +84,7 @@ function getTargetRankInfo(tier: number): { targetRank: number; copiesNeeded: nu
  */
 function calculateHeroScore(
   unitId: number,
-  buildUnit: BuildUnit,
+  _buildUnit: BuildUnit,
   poolCount: PoolCount | undefined,
   competingPlayers: number,
   heroesData: HeroesData | null

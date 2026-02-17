@@ -3,7 +3,6 @@ import { getSynergyNameByKeyword } from '@/components/ui/SynergyDisplay/utils';
 import { getTierColor } from '@/utils/tierColors';
 import synergyStyles from '@/components/ui/SynergyDisplay/data/synergy-styles.json';
 import synergyIconMap from '@/components/ui/SynergyDisplay/data/synergy-icon-map.json';
-import keywordMappings from '@/components/ui/SynergyDisplay/data/synergy-keyword-mappings.json';
 import type { HeroesData, HeroData } from '@/utils/heroHelpers';
 import './HeroItem.css';
 
@@ -56,7 +55,7 @@ export const HeroItem = ({
   onDragStart,
   className = '',
 }: HeroItemProps) => {
-  const tierColor = getTierColor(hero.draftTier || hero.tier || 1);
+  const tierColor = getTierColor(hero.draftTier || 1);
   
   // Extract hero name from dota_unit_name (e.g., "npc_dota_hero_alchemist" -> "alchemist")
   const heroName = hero.dota_unit_name

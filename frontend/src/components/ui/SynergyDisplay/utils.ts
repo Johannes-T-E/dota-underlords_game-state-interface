@@ -211,4 +211,3 @@ export function getSynergyVisualData(synergyName: string) {
   
   return { styleNumber, iconFile, synergyColor, brightColor };
 }
-

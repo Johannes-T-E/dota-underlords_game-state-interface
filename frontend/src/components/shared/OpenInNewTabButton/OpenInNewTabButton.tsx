@@ -19,7 +19,7 @@ export const OpenInNewTabButton = ({
       rel="noopener noreferrer"
       className={`open-in-new-tab-button ${className}`}
       title={title}
-      onClick={(e) => {
+      onClick={() => {
         // Prevent navigation in current tab if clicked normally
         // The target="_blank" will handle opening in new tab
       }}

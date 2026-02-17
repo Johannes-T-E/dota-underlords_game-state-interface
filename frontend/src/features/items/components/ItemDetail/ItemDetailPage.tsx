@@ -4,7 +4,7 @@ import { AppLayout, MainContentTemplate } from '@/components/layout';
 import { EmptyState } from '@/components/shared';
 import { useItemsData } from '@/hooks/useItemsData';
 import { useItemsLocalization } from '../../hooks/useItemsLocalization';
-import { ItemDisplay, getItemName, getItemDescription, getAllItems } from '@/components/ui/ItemDisplay';
+import { ItemDisplay, getItemName, getItemDescription } from '@/components/ui/ItemDisplay';
 import { getTierColor } from '@/utils/tierColors';
 import type { ItemData } from '@/utils/itemHelpers';
 import './ItemDetailPage.css';
@@ -14,14 +14,6 @@ export const ItemDetailPage = () => {
   const navigate = useNavigate();
   const { itemsData, loaded } = useItemsData();
   const { itemsLocalization, loading: localizationLoading } = useItemsLocalization();
-
-  // Get all items
-  const allItems = useMemo(() => {
-    if (!itemsData) {
-      return [];
-    }
-    return getAllItems(itemsData);
-  }, [itemsData]);
 
   // Find current item (prioritize set_balance)
   const item = useMemo(() => {
@@ -70,7 +62,7 @@ export const ItemDetailPage = () => {
     return item.type
       .replace('equipment_', '')
       .replace(/_/g, ' ')
-      .replace(/\b\w/g, l => l.toUpperCase());
+      .replace(/\b\w/g, (l: string) => l.toUpperCase());
   }, [item]);
 
   const isLoading = !loaded || localizationLoading;

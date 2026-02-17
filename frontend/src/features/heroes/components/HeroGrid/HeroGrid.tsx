@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { HeroCard } from '../HeroCard/HeroCard';
 import { EmptyState } from '@/components/shared';
 import type { HeroData } from '@/utils/heroHelpers';

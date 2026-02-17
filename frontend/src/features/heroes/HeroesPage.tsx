@@ -6,7 +6,6 @@ import { HeroFilters } from './components/HeroFilters/HeroFilters';
 import { HeroGrid } from './components/HeroGrid/HeroGrid';
 import { HeroTable } from './components/HeroTable/HeroTable';
 import { getFilteredAndSortedHeroes, type SortOption, type ViewMode } from './utils/heroFilters';
-import type { HeroData } from '@/utils/heroHelpers';
 import './HeroesPage.css';
 
 // Contraption unit IDs to exclude

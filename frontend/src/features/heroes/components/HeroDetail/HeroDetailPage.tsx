@@ -1,9 +1,9 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AppLayout, MainContentTemplate } from '@/components/layout';
 import { EmptyState } from '@/components/shared';
 import { useHeroesDataContext } from '@/contexts/HeroesDataContext';
-import { getHeroIconPath, getHeroTier } from '@/utils/heroHelpers';
+import { getHeroIconPath } from '@/utils/heroHelpers';
 import { cardsPerTier } from '@/utils/poolCalculator';
 import { getSynergyNameByKeyword } from '@/components/ui/SynergyDisplay/utils';
 import { SynergyIcon } from '@/components/ui/SynergyDisplay/components';

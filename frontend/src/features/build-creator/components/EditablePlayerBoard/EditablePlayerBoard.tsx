@@ -1,6 +1,6 @@
 import { useState, useRef, useMemo } from 'react';
 import { HeroPortrait } from '@/components/ui';
-import { calculatePosition, isValidGridPosition } from '@/features/player-board/utils/positionUtils';
+import { calculatePosition } from '@/features/player-board/utils/positionUtils';
 import { MAX_BUILD_UNITS, createBuildUnit } from '@/utils/buildHelpers';
 import { getSynergyNameByKeyword } from '@/components/ui/SynergyDisplay/utils';
 import type { BuildUnit } from '@/types';
@@ -120,7 +120,7 @@ export const EditablePlayerBoard = ({
       if (unitIndexStr) {
         const unitIndex = parseInt(unitIndexStr, 10);
         if (!isNaN(unitIndex) && unitIndex >= 0 && unitIndex < units.length) {
-          unitToMove = units[unitIndex];
+          unitToMove = units[unitIndex] ?? null;
         }
       }
     }

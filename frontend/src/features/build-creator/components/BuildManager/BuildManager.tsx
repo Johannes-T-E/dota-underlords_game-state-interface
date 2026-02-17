@@ -118,7 +118,7 @@ export const BuildManager = ({
   const [builds, setBuilds] = useState<Build[]>([]);
   const [buildName, setBuildName] = useState('');
   const [buildDescription, setBuildDescription] = useState('');
-  const [editingBuildId, setEditingBuildId] = useState<string | null>(null);
+  const [, setEditingBuildId] = useState<string | null>(null);
 
   // Load builds on mount
   useEffect(() => {
@@ -224,19 +224,6 @@ export const BuildManager = ({
         alert(`Failed to delete build: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     }
-  };
-
-  const handleDuplicateBuild = (build: Build) => {
-    const duplicatedBuild: Build = {
-      ...build,
-      id: generateBuildId(),
-      name: `${build.name} (Copy)`,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    saveBuild(duplicatedBuild);
-    refreshBuilds();
-    onBuildSelect(duplicatedBuild);
   };
 
   return (

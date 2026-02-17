@@ -4,29 +4,32 @@
 
 .shop-display__grid {
   display: grid;
-  grid-template-columns: repeat(5, 250px); /* Fixed width for each card */
+  grid-template-columns: repeat(5, 126px);
   gap: 12px;
   padding: 16px;
-  justify-content: start; /* Align to start instead of stretching */
+  justify-content: start;
 }
 
 .shop-display__slot {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  gap: 8px;
-  padding: 12px;
-  border-radius: 8px;
-  background-color: rgba(255, 255, 255, 0.05);
-  transition: filter 0.3s ease, background-color 0.3s ease;
+  padding: 0;
+  border: 2px solid;
+  transition: background-color 0.2s, border-color 0.2s, filter 0.3s ease;
   position: relative;
-  width: 230px; /* Fixed width */
-  height: 200px; /* Fixed height */
+  width: 126px;
+  height: 189px;
+  box-sizing: border-box;
+  cursor: pointer;
 }
 
 .shop-display__slot:hover:not(.shop-display__slot--empty) {
-  background-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.shop-display__slot:active:not(.shop-display__slot--empty) {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .shop-display__slot--dimmed {
@@ -40,68 +43,109 @@
 
 .shop-display__slot--empty {
   cursor: default;
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
-.shop-display__hero {
+/* Hero name label at the top of the card */
+.shop-display__name {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--text-color);
+  text-align: center;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: normal;
+  width: 100%;
+  max-width: 100%;
+  line-height: 1.2;
+  height: 36px;
+  max-height: 36px;
+  overflow: hidden;
   display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+/* Hero portrait area */
+.shop-display__hero {
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0;
+  margin-top: 36px;
+}
+
+.shop-display__hero .hero-image {
+  width: 100%;
+  height: 100%;
+}
+
+/* Wrapper for slot + pool count */
+.shop-display__slot-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Pool count displayed below the card */
+.shop-display__pool-count {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  font-weight: 700;
+  line-height: 1;
+  margin-top: 4px;
+  white-space: nowrap;
+}
+
+/* Synergy icons row at the bottom */
+.shop-display__synergies {
+  margin-top: 6px;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 3px;
   justify-content: center;
   align-items: center;
   width: 100%;
-  flex: 1;
-  min-height: 0;
-  transform: scale(1.5); /* Make hero image bigger */
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
+.shop-display__synergy-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.shop-display__synergy-icon .synergy-icon-container {
+  height: 100%;
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+/* Empty slot indicator */
 .shop-display__empty-slot {
   width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 64px;
 }
 
 .shop-display__empty-indicator {
-  width: 48px;
-  height: 48px;
-  border: 2px dashed rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
-  background-color: rgba(255, 255, 255, 0.05);
-}
-
-.shop-display__pool-count {
-  font-size: 24px;
-  color: rgba(255, 255, 255, 0.9);
-  text-align: center;
-  font-weight: 700;
-  line-height: 1.2;
-  width: 100%;
-}
-
-.shop-display__slot--selected .shop-display__pool-count {
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.shop-display__synergies {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  width: 100%;
-}
-
-.shop-display__synergy-icon {
+  width: 56px;
   height: 56px;
-  width: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.03);
 }
-
-.shop-display__synergy-icon .synergy-icon-container {
-  height: 100%;
-  width: auto;
-  aspect-ratio: 1;
-}
-

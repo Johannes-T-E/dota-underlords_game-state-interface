@@ -1,5 +1,7 @@
 import type { ItemData, ItemsData } from '@/utils/itemHelpers';
 import type { ItemsLocalization } from '@/features/items/hooks/useItemsLocalization';
+export type { ItemData } from '@/utils/itemHelpers';
+export type { ItemsLocalization } from '@/features/items/hooks/useItemsLocalization';
 
 export interface ItemDisplayData {
   itemData: ItemData;
@@ -49,7 +51,7 @@ export function getItemName(
     }
     // Try with DAC_ prefix
     if (tokens[`DAC_${upperKey}`]) {
-      return tokens[`DAC_${upperKey}`];
+      return tokens[`DAC_${upperKey}`]!;
     }
   }
 
@@ -94,10 +96,10 @@ export function getItemDescription(
     }
     // Try with DAC_ prefix and _desc suffix
     if (tokens[`DAC_${upperKey}_desc`]) {
-      return tokens[`DAC_${upperKey}_desc`];
+      return tokens[`DAC_${upperKey}_desc`]!;
     }
     if (tokens[`DAC_${upperKey}_Desc`]) {
-      return tokens[`DAC_${upperKey}_Desc`];
+      return tokens[`DAC_${upperKey}_Desc`]!;
     }
   }
 
@@ -132,7 +134,7 @@ export function formatItemTooltip(
     const typeDisplay = itemData.type
       .replace('equipment_', '')
       .replace(/_/g, ' ')
-      .replace(/\b\w/g, l => l.toUpperCase());
+      .replace(/\b\w/g, (l: string) => l.toUpperCase());
     parts.push(`<div>Type: ${typeDisplay}</div>`);
   }
 

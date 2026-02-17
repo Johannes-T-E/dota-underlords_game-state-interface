@@ -3,11 +3,9 @@ import { AppLayout, MainContentTemplate } from '@/components/layout';
 import { ScoreboardTable } from '@/features/scoreboard/components/ScoreboardTable/ScoreboardTable';
 import { EmptyState } from '@/components/shared';
 import { useAppSelector } from '@/hooks/redux';
-import { useHeroesDataContext } from '@/contexts/HeroesDataContext';
 
 export const ScoreboardPage = () => {
   const { currentMatch, players } = useAppSelector((state) => state.match);
-  const { heroesData } = useHeroesDataContext();
   
   // Local state for unit selection
   const [selectedUnitIds, setSelectedUnitIds] = useState<Set<number>>(new Set());

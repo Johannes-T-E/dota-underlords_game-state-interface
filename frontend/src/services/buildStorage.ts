@@ -159,10 +159,10 @@ export async function deleteBuild(id: string): Promise<void> {
 /**
  * Update a build (partial update)
  */
-export function updateBuild(id: string, updates: Partial<Omit<Build, 'id' | 'createdAt'>>): void {
+export async function updateBuild(id: string, updates: Partial<Omit<Build, 'id' | 'createdAt'>>): Promise<void> {
   try {
-    const builds = loadBuilds();
-    const index = builds.findIndex(b => b.id === id);
+    const builds = await loadBuilds();
+    const index = builds.findIndex((b: Build) => b.id === id);
     
     if (index < 0) {
       throw new Error(`Build with id ${id} not found`);
@@ -172,7 +172,7 @@ export function updateBuild(id: string, updates: Partial<Omit<Build, 'id' | 'cre
       ...builds[index],
       ...updates,
       updatedAt: new Date().toISOString(),
-    };
+    } as Build;
     
     localStorage.setItem(STORAGE_KEY, JSON.stringify(builds));
   } catch (error) {

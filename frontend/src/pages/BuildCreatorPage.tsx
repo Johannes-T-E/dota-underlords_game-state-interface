@@ -5,7 +5,6 @@ import { HeroSelectionPanel } from '@/features/build-creator/components/HeroSele
 import { EditablePlayerBoard } from '@/features/build-creator/components/EditablePlayerBoard/EditablePlayerBoard';
 import { BuildManager } from '@/features/build-creator/components/BuildManager/BuildManager';
 import { useHeroesDataContext } from '@/contexts/HeroesDataContext';
-import { generateBuildId, saveBuild } from '@/services/buildStorage';
 import { validateBuild, getBuildStats, calculateBuildSynergies } from '@/utils/buildHelpers';
 import { isSynergyActive } from '@/components/ui/SynergyDisplay/utils';
 import { SynergiesCell } from '@/components/ui/SynergyDisplay';
