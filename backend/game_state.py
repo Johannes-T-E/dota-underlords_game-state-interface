@@ -58,6 +58,7 @@ class MatchState:
     def __init__(self):
         self.match_id = None            # needs to be calculated.
         self.match_start = None         # needs to be calculated.
+        self.private_player_account_id = None   # Auto-detected from player_slot matching
         self.latest_processed_private_player_state = {}        # "account_id" : {} -> latest processed private_player_state (client owner)
         self.latest_processed_public_player_states = {}        # "account_id" : {} -> latest processed public_player_state
         self.sequences = {}             # account_id -> last_sequence_number
@@ -86,6 +87,7 @@ class MatchState:
         """Reset to initial state."""
         self.match_id = None
         self.match_start = None
+        self.private_player_account_id = None
         self.latest_processed_public_player_states = {}
         self.latest_processed_private_player_state = {}
         self.sequences = {}
@@ -592,6 +594,24 @@ def cleanup_buffers():
             match_state.private_player_buffer = [(latest_private, latest_time)]
 
 
+def _resolve_private_player_account_id(gsi_private_player_state: Dict):
+    """Resolve private player's account_id by matching player_slot against public player states."""
+    if match_state.private_player_account_id is not None:
+        return
+
+    private_slot = gsi_private_player_state.get('player_slot')
+    if private_slot is None:
+        return
+
+    for account_id, public_state in match_state.latest_processed_public_player_states.items():
+        if public_state.get('player_slot') == private_slot:
+            match_state.private_player_account_id = account_id
+            print(f"[GSI] Auto-detected private player account_id: {account_id} (player_slot: {private_slot})")
+            return
+
+    print(f"[GSI] WARNING: Could not resolve private player account_id for player_slot {private_slot}")
+
+
 def process_buffered_data(match_id: str, timestamp: datetime):
     """Process buffered data for newly started match. Derives confirmed players from buffer."""
     # Copy buffers to local variables before clearing to prevent race conditions
@@ -660,6 +680,8 @@ def process_buffered_data(match_id: str, timestamp: datetime):
         processed_private_state = process_and_store_gsi_private_player_state(latest_gsi_private_player_state, latest_private_time)
         db_write_queue.put(('insert_snapshot', match_id, 'private_player', None, processed_private_state, latest_private_time))
         print(f"[BUFFER] Queued buffered private snapshot for match {match_id}")
+        
+        _resolve_private_player_account_id(latest_gsi_private_player_state)
     
     # Initialize change detector previous states with latest processed states
     # This ensures the first real-time update can detect changes against the last buffered snapshot

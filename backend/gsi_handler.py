@@ -7,10 +7,10 @@ from .game_state import (
     match_state, db, stats, db_write_queue, data_lock,
     process_and_store_gsi_public_player_state, process_and_store_gsi_private_player_state,
     emit_realtime_update, start_new_match, process_buffered_data, check_match_end,
-    abandon_match
+    abandon_match, _resolve_private_player_account_id
 )
 from .utils import generate_bot_account_id, is_valid_new_player
-from .config import socketio, PRIVATE_PLAYER_ACCOUNT_ID
+from .config import socketio
 from .change_detector import change_detector
 
 
@@ -156,6 +156,9 @@ def process_private_player_state(gsi_private_player_state, timestamp):
     if 'private_sequence' in match_state.sequences and match_state.sequences['private_sequence'] >= private_player_sequence_num:
         return False
     
+    # Fallback: resolve private player account_id if not yet detected
+    _resolve_private_player_account_id(gsi_private_player_state)
+    
     # Active match - update memory and store in DB
     # Update sequence tracker
     match_state.sequences['private_sequence'] = private_player_sequence_num
@@ -248,7 +251,7 @@ def process_public_player_state(gsi_public_player_state, timestamp):
         return False
     
     # Check if client owner has reset (indicates abandoned previous game)
-    if account_id == PRIVATE_PLAYER_ACCOUNT_ID and account_id in match_state.latest_processed_public_player_states:
+    if match_state.private_player_account_id and account_id == match_state.private_player_account_id and account_id in match_state.latest_processed_public_player_states:
         old_health = match_state.latest_processed_public_player_states[account_id].get('health', 0)
         old_slot = match_state.latest_processed_public_player_states[account_id].get('player_slot', 0)
         new_health = gsi_public_player_state.get('health', 0)

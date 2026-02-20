@@ -2,9 +2,12 @@
 Configuration & Environment Setup
 """
 import os
+from dotenv import load_dotenv
 from flask import Flask
 from flask_socketio import SocketIO
 from flask_cors import CORS
+
+load_dotenv()
 
 # Configuration from environment variables
 DEBUG = os.getenv('DEBUG', 'false').lower() == 'true'
@@ -14,9 +17,6 @@ LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
 # GSI endpoint is fixed by game configuration
 GSI_HOST = '0.0.0.0'  # Must match game's GSI config
 GSI_PORT = 3000       # Must match game's GSI config
-
-# Client owner identification (the player running this GSI client)
-PRIVATE_PLAYER_ACCOUNT_ID = 249722568  # int to match account_id type
 
 # Determine if we're in production or development
 PRODUCTION = os.getenv('PRODUCTION', 'false').lower() == 'true'

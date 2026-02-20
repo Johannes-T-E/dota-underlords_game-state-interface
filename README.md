@@ -45,13 +45,21 @@ A real-time scoreboard and match tracker for Dota Underlords using the Game Stat
 
 ## Setup
 
-### 1. Install Python Dependencies
+### 1. Configure Environment Variables (Optional)
+
+Copy the example environment file to customize settings:
+
+```bash
+cp .env.example .env
+```
+
+### 2. Install Python Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Install Frontend Dependencies
+### 3. Install Frontend Dependencies
 
 ```bash
 cd frontend
@@ -499,6 +507,8 @@ npm run build
 This creates an optimized production build in `frontend/dist/` that Flask can serve.
 
 ## Environment Variables
+
+All environment variables can be set in a `.env` file in the project root (see `.env.example`).
 
 - `DEBUG` - Enable Flask debug mode (default: `false`)
 - `PRODUCTION` - Enable production mode to serve React build (default: `false`)
