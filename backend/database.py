@@ -569,6 +569,63 @@ class UnderlordsDatabaseManager:
         
         print(f"[DB] Deleted match {match_id} and all associated data")
 
+    def get_shop_history(self, match_id: str) -> List[Dict]:
+        """
+        Get one row per shop_generation_id for a match.
+        Uses the FIRST snapshot per generation (shop when full, before purchases).
+        Optionally computes purchased_slot_indices by comparing first vs last snapshot.
+        Returns list of dicts with 'generation_id', 'shop_units', 'purchased_slot_indices'.
+        Ordered by shop_generation_id ascending (chronological).
+        """
+        cursor = self.conn.cursor()
+        # First snapshot per generation (full shop)
+        cursor.execute("""
+            SELECT p.shop_generation_id, p.shop_units_json
+            FROM private_player_snapshots p
+            INNER JOIN (
+                SELECT shop_generation_id, MIN(timestamp) AS min_ts
+                FROM private_player_snapshots
+                WHERE match_id = ?
+                GROUP BY shop_generation_id
+            ) q ON p.shop_generation_id = q.shop_generation_id AND p.timestamp = q.min_ts
+            WHERE p.match_id = ?
+            ORDER BY p.shop_generation_id ASC
+        """, (match_id, match_id))
+        first_rows = {row[0]: (row[0], json.loads(row[1]) if row[1] else []) for row in cursor.fetchall()}
+        # Last snapshot per generation (after purchases)
+        cursor.execute("""
+            SELECT p.shop_generation_id, p.shop_units_json
+            FROM private_player_snapshots p
+            INNER JOIN (
+                SELECT shop_generation_id, MAX(timestamp) AS max_ts
+                FROM private_player_snapshots
+                WHERE match_id = ?
+                GROUP BY shop_generation_id
+            ) q ON p.shop_generation_id = q.shop_generation_id AND p.timestamp = q.max_ts
+            WHERE p.match_id = ?
+            ORDER BY p.shop_generation_id ASC
+        """, (match_id, match_id))
+        last_rows = {row[0]: (json.loads(row[1]) if row[1] else []) for row in cursor.fetchall()}
+        result = []
+        for gen_id in sorted(first_rows.keys()):
+            _, shop_units = first_rows[gen_id]
+            last_units = last_rows.get(gen_id, [])
+            # Pad to 5 slots
+            first_slots = (shop_units + [{'unit_id': -1}] * 5)[:5]
+            last_slots = (last_units + [{'unit_id': -1}] * 5)[:5]
+            purchased = []
+            for i in range(5):
+                u_first = first_slots[i].get('unit_id', -1) if i < len(first_slots) else -1
+                u_last = last_slots[i].get('unit_id', -1) if i < len(last_slots) else -1
+                if u_first != -1 and u_last == -1:
+                    purchased.append(i)
+            result.append({
+                'generation_id': gen_id,
+                'shop_units': shop_units,
+                'purchased_slot_indices': purchased
+            })
+        return result
+
     def get_all_matches(self) -> List[Dict]:
         """Get list of all matches with basic info and player data."""
         cursor = self.conn.cursor()

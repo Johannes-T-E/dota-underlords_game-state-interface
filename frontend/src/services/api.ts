@@ -4,7 +4,8 @@ import type {
   ApiHealthResponse,
   CombatResult,
   Change,
-  Build
+  Build,
+  ShopHistoryEntry
 } from '@/types';
 
 const API_BASE_URL = import.meta.env.DEV ? 'http://localhost:3000' : '';
@@ -88,6 +89,19 @@ class ApiService {
       result[Number(accountIdStr)] = combats;
     }
     return result;
+  }
+
+  async fetchShopHistory(matchId: string): Promise<ShopHistoryEntry[]> {
+    const response = await this.request<{
+      status: string;
+      match_id: string;
+      shop_history: { generation_id: number; shop_units: unknown[]; purchased_slot_indices?: number[] }[];
+    }>(`/api/matches/${matchId}/shop_history`);
+    return response.shop_history.map((e) => ({
+      generationId: e.generation_id,
+      shopUnits: e.shop_units as ShopHistoryEntry['shopUnits'],
+      purchasedSlotIndices: e.purchased_slot_indices,
+    }));
   }
 
   // Build endpoints

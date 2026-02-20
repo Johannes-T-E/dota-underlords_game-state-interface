@@ -152,6 +152,26 @@ def get_match_combats(match_id):
         }), 500
 
 
+@app.route('/api/matches/<match_id>/shop_history', methods=['GET'])
+def get_match_shop_history(match_id):
+    """Get shop history for a match (one entry per shop_generation_id from DB)."""
+    try:
+        shop_history = db.get_shop_history(match_id)
+        return jsonify({
+            'status': 'success',
+            'match_id': match_id,
+            'shop_history': shop_history
+        })
+    except Exception as e:
+        print(f"[ERROR] Failed to get match shop history: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+
 @app.route('/api/matches/<match_id>/changes', methods=['GET'])
 def get_match_changes(match_id):
     """Get changes for a match (from buffer if active, or calculated from database if historical)."""

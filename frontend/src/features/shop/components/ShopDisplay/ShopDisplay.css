@@ -46,6 +46,129 @@
   border-color: rgba(255, 255, 255, 0.15);
 }
 
+/* Upgrade: one more copy completes 2-star — sparkly border and pulsating scale */
+.shop-display__slot--upgrade {
+  border-width: 2px;
+  border-color: rgba(255, 220, 120, 0.9) !important;
+  box-shadow:
+    0 0 16px rgba(255, 200, 100, 0.6),
+    0 0 24px rgba(255, 180, 80, 0.35),
+    inset 0 0 0 1px rgba(255, 235, 150, 0.5);
+  animation: shop-display__upgrade-pulse 1.2s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.shop-display__slot--upgrade::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    transparent 35%,
+    rgba(255, 245, 200, 0.12) 42%,
+    rgba(255, 255, 230, 0.25) 50%,
+    rgba(255, 245, 200, 0.12) 58%,
+    transparent 65%,
+    transparent 100%
+  );
+  background-size: 250% 250%;
+  animation: shop-display__upgrade-sparkle 1.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes shop-display__upgrade-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 16px rgba(255, 200, 100, 0.6), 0 0 24px rgba(255, 180, 80, 0.35), inset 0 0 0 1px rgba(255, 235, 150, 0.5);
+  }
+  50% {
+    transform: scale(1.03);
+    box-shadow: 0 0 22px rgba(255, 210, 80, 0.75), 0 0 32px rgba(255, 190, 70, 0.45), inset 0 0 0 1px rgba(255, 240, 160, 0.7);
+  }
+}
+
+@keyframes shop-display__upgrade-sparkle {
+  0%, 100% { background-position: 200% 50%; }
+  50% { background-position: -100% 50%; }
+}
+
+/* Fixed-height row above every card so all cards align vertically */
+.shop-display__owned-row {
+  height: 64px;
+  min-height: 64px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+/* Owned indicator: hero portraits (same as scoreboard) — one per owned copy, correct hero + star level */
+.shop-display__owned {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: fit-content;
+}
+
+.shop-display__owned .shop-display__owned-portrait {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.shop-display__owned .shop-display__owned-portrait .hero-portrait__image,
+.shop-display__owned .shop-display__owned-portrait .hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Remove tier glow and border on owned-row portraits only */
+.shop-display__owned .shop-display__owned-portrait .hero-image {
+  filter: none !important;
+  border: none !important;
+}
+
+/* Card highlight + sparkle when player already has copies (collecting this hero) */
+.shop-display__slot--owned {
+  background: rgba(180, 150, 90, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(205, 170, 100, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+.shop-display__slot--owned::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    transparent 40%,
+    rgba(255, 240, 200, 0.08) 45%,
+    rgba(255, 250, 220, 0.18) 50%,
+    rgba(255, 240, 200, 0.08) 55%,
+    transparent 60%,
+    transparent 100%
+  );
+  background-size: 200% 200%;
+  animation: shop-display__sparkle 2.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes shop-display__sparkle {
+  0%, 100% { background-position: 200% 50%; }
+  50% { background-position: -100% 50%; }
+}
+
+.shop-display__slot--owned:hover:not(.shop-display__slot--empty) {
+  background: rgba(180, 150, 90, 0.14);
+}
+
+
 /* Hero name label at the top of the card */
 .shop-display__name {
   position: absolute;

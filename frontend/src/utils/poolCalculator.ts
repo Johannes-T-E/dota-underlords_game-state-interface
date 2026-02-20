@@ -1,4 +1,4 @@
-import type { PlayerState } from '@/types';
+import type { PlayerState, ShopUnit, Unit } from '@/types';
 import type { HeroesData } from './heroHelpers';
 
 // Shop odds per level (probability of each tier appearing)
@@ -101,5 +101,78 @@ export function calculatePoolCounts(
   }
 
   return poolCounts;
+}
+
+/**
+ * Clone pool counts and subtract one remaining for each unit in the current shop.
+ * Used for "next reroll" odds (rerolled heroes do not appear in the next shop).
+ */
+export function getPoolCountsExcludingShop(
+  poolCounts: Map<number, PoolCount>,
+  shopUnits: ShopUnit[]
+): Map<number, PoolCount> {
+  const next = new Map<number, PoolCount>();
+  for (const [unitId, count] of poolCounts) {
+    next.set(unitId, { remaining: count.remaining, total: count.total });
+  }
+  for (const shopUnit of shopUnits) {
+    const unitId = shopUnit.unit_id;
+    if (unitId === -1) continue;
+    const count = next.get(unitId);
+    if (count) {
+      next.set(unitId, {
+        ...count,
+        remaining: Math.max(0, count.remaining - 1)
+      });
+    }
+  }
+  return next;
+}
+
+/**
+ * Probability that a hero appears in at least one of the 5 shop slots.
+ * Uses level shop odds and remaining pool; treats slots as independent.
+ */
+export function getHeroShopProbability(
+  unitId: number,
+  level: number,
+  poolCounts: Map<number, PoolCount>,
+  heroesData: HeroesData | null
+): number {
+  if (!heroesData?.heroes) return 0;
+  const heroData = Object.values(heroesData.heroes).find((h) => h.id === unitId);
+  if (!heroData) return 0;
+  const tier = heroData.draftTier;
+  const tierKey = `tier${tier}` as keyof (typeof shopOdds)[keyof typeof shopOdds];
+  const levelKey = String(Math.min(10, Math.max(1, level))) as keyof typeof shopOdds;
+  const tierProb = shopOdds[levelKey]?.[tierKey] ?? 0;
+  const poolCount = poolCounts.get(unitId);
+  const remainingX = poolCount?.remaining ?? 0;
+  let totalInTier = 0;
+  for (const [, h] of Object.entries(heroesData.heroes)) {
+    if (h.draftTier === tier) {
+      totalInTier += poolCounts.get(h.id)?.remaining ?? 0;
+    }
+  }
+  if (totalInTier <= 0) return 0;
+  const pOneSlot = tierProb * (remainingX / totalInTier);
+  return 1 - Math.pow(1 - pOneSlot, 5);
+}
+
+/**
+ * Unique unit_ids from the player's units (board + bench).
+ */
+export function getHeroesOwnedByPlayer(units: Unit[] | undefined): number[] {
+  if (!units?.length) return [];
+  const seen = new Set<number>();
+  const out: number[] = [];
+  for (const u of units) {
+    const id = u.unit_id;
+    if (!seen.has(id)) {
+      seen.add(id);
+      out.push(id);
+    }
+  }
+  return out;
 }
 

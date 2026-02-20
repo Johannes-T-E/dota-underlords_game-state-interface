@@ -1,0 +1,106 @@
+.shop-history-list {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.shop-history-list__title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  color: var(--text-color, rgba(255, 255, 255, 0.9));
+}
+
+.shop-history-list__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.shop-history-list__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  min-height: 56px;
+}
+
+.shop-history-list__row:last-child {
+  border-bottom: none;
+}
+
+.shop-history-list__label {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  min-width: 90px;
+}
+
+.shop-history-list__slots {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: nowrap;
+}
+
+.shop-history-list__slot {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  border: 2px solid transparent;
+}
+
+.shop-history-list__slot--empty {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.shop-history-list__slot--bought {
+  border-color: rgba(80, 200, 120, 0.9);
+  box-shadow: 0 0 8px rgba(80, 200, 120, 0.3);
+}
+
+.shop-history-list__slot--dimmed {
+  filter: grayscale(100%) brightness(0.5);
+}
+
+.shop-history-list__slot--selected {
+  filter: none;
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.shop-history-list__slot:not(.shop-history-list__slot--empty) {
+  cursor: pointer;
+}
+
+.shop-history-list__icon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.shop-history-list__empty-slot {
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 2px;
+}
+
+.shop-history-list__empty {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  padding: 12px 0;
+}

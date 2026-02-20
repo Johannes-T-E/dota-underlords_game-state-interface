@@ -1,0 +1,134 @@
+.shop-odds-panel {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.shop-odds-panel__header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.shop-odds-panel__title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-color, rgba(255, 255, 255, 0.9));
+}
+
+.shop-odds-panel__total {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.shop-odds-panel__empty {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  padding: 8px 0;
+}
+
+.shop-odds-panel__row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 20px 24px;
+  align-items: flex-end;
+}
+
+.shop-odds-panel__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.shop-odds-panel__portrait {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  margin-top: 0;
+}
+
+.shop-odds-panel__portrait .hero-portrait__image {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.shop-odds-panel__percent {
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+}
+
+.shop-odds-panel__table-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 16px 0 8px 0;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.shop-odds-panel__table-wrap {
+  overflow-x: auto;
+  overflow-y: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.shop-odds-panel__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.shop-odds-panel__th,
+.shop-odds-panel__td {
+  padding: 6px 8px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.shop-odds-panel__th {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.shop-odds-panel__th--hero,
+.shop-odds-panel__td--hero {
+  text-align: left;
+  padding-left: 10px;
+}
+
+.shop-odds-panel__th--current,
+.shop-odds-panel__td--current {
+  background: rgba(255, 255, 255, 0.12);
+  font-weight: 700;
+}
+
+.shop-odds-panel__table-portrait {
+  width: 28px;
+  height: 28px;
+  margin-top: 0;
+}
+
+.shop-odds-panel__table-portrait .hero-portrait__image {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.shop-odds-panel__total-row .shop-odds-panel__td {
+  font-weight: 600;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.shop-odds-panel__td--total {
+  font-weight: 700;
+}

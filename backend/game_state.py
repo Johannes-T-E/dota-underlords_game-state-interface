@@ -416,6 +416,7 @@ def emit_realtime_update():
         },
         'public_player_states': list(match_state.latest_processed_public_player_states.values()),
         'private_player_state': match_state.latest_processed_private_player_state,  # Private data for client owner
+        'private_player_account_id': match_state.private_player_account_id,  # Resolved by player_slot matching
         'current_round': {
             'round_number': match_state.round_number,
             'round_phase': match_state.round_phase

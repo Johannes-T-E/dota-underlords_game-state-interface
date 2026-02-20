@@ -111,6 +111,13 @@ export interface ShopUnit {
   will_combine_two_stars?: boolean;
 }
 
+export interface ShopHistoryEntry {
+  generationId: number;
+  shopUnits: ShopUnit[];
+  /** Slot indices (0–4) that were purchased from this shop (green border in UI). */
+  purchasedSlotIndices?: number[];
+}
+
 export interface Challenge {
   challenge_id?: number;
   progress?: number;
@@ -165,6 +172,7 @@ export interface MatchData {
   match: MatchInfo;
   public_player_states: PlayerState[];  // Changed from 'players' to match backend
   private_player_state: PrivatePlayerState | null;  // Changed from 'private_player' to match backend
+  private_player_account_id?: number | null;  // Resolved by backend (player_slot matching)
   current_round: RoundInfo;
   timestamp: number;
   combat_results?: Record<string, CombatResult[]>;  // account_id (string) -> CombatResult[]

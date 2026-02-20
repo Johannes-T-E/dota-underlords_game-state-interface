@@ -15,7 +15,7 @@ import { PlayerBoardScaler } from './PlayerBoardScaler';
 import './Dashboard.css';
 
 export const Dashboard = () => {
-  const { currentMatch, players, privatePlayer } = useAppSelector((state) => state.match);
+  const { currentMatch, players, privatePlayer, privatePlayerAccountId } = useAppSelector((state) => state.match);
   const { heroesData } = useHeroesDataContext();
   
   // Shared state for unit selection (bidirectional between scoreboard and shop)
@@ -130,6 +130,7 @@ export const Dashboard = () => {
               <ShopDisplay
                 privatePlayer={privatePlayer}
                 players={players || []}
+                privatePlayerAccountId={privatePlayerAccountId ?? undefined}
                 heroesData={heroesData}
                 selectedUnitIds={selectedUnitIds}
                 onUnitClick={handleUnitClick}

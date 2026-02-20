@@ -6,14 +6,20 @@ import { getTierColor } from '@/utils/tierColors';
 import { getHeroTier } from '@/utils/heroHelpers';
 import synergyStyles from '@/components/ui/SynergyDisplay/data/synergy-styles.json';
 import synergyIconMap from '@/components/ui/SynergyDisplay/data/synergy-icon-map.json';
-import type { PrivatePlayerState, PlayerState } from '@/types';
+import type { PrivatePlayerState, PlayerState, Unit } from '@/types';
 import type { HeroesData } from '@/utils/heroHelpers';
 import { calculatePoolCounts } from '@/utils/poolCalculator';
 import './ShopDisplay.css';
 
+export interface OwnedUpgradeState {
+  ownedCount: number;
+  wouldUpgrade: boolean;
+}
+
 export interface ShopDisplayProps {
   privatePlayer: PrivatePlayerState | null;
   players: PlayerState[];
+  privatePlayerAccountId?: number | null;
   heroesData: HeroesData | null;
   selectedUnitIds?: Set<number>;
   onUnitClick?: (unitId: number) => void;
@@ -87,15 +93,80 @@ function getHeroDisplayName(unitId: number, heroesData: HeroesData | null): stri
   return 'Unknown';
 }
 
+/** Exclude underlords and contraptions when counting owned units (same as scoreboard roster/bench). */
+function isUnderlord(unit: Unit) {
+  return unit.unit_id > 1000;
+}
+function isContraption(unit: Unit) {
+  return [117, 143, 127].includes(unit.unit_id);
+}
+
+/**
+ * Build map of unit_id -> list of owned Unit (hero units only), for displaying owned copies with correct rank.
+ */
+function buildOwnedUnitsByUnitId(units: Unit[] | undefined): Map<number, Unit[]> {
+  const map = new Map<number, Unit[]>();
+  if (!units || units.length === 0) return map;
+
+  const heroUnits = units.filter((u) => !isUnderlord(u) && !isContraption(u));
+  for (const u of heroUnits) {
+    const list = map.get(u.unit_id) ?? [];
+    list.push(u);
+    map.set(u.unit_id, list);
+  }
+  return map;
+}
+
+/**
+ * Build map of unit_id -> { ownedCount, wouldUpgrade } from private player's units.
+ * wouldUpgrade: one more 1-star copy would complete a 2-star (i.e. we have 2 loose 1-stars).
+ */
+function buildOwnedUpgradeMap(units: Unit[] | undefined): Map<number, OwnedUpgradeState> {
+  const map = new Map<number, OwnedUpgradeState>();
+  if (!units || units.length === 0) return map;
+
+  const heroUnits = units.filter((u) => !isUnderlord(u) && !isContraption(u));
+  const byUnitId = new Map<number, Unit[]>();
+  for (const u of heroUnits) {
+    const list = byUnitId.get(u.unit_id) ?? [];
+    list.push(u);
+    byUnitId.set(u.unit_id, list);
+  }
+
+  for (const [unitId, list] of byUnitId) {
+    const ownedCount = list.length;
+    const count1Star = list.filter((u) => (u.rank || 0) === 1).length;
+    const wouldUpgrade = (count1Star % 3) === 2;
+    map.set(unitId, { ownedCount, wouldUpgrade });
+  }
+  return map;
+}
 
 export const ShopDisplay = ({
   privatePlayer,
   players,
+  privatePlayerAccountId = null,
   heroesData,
   selectedUnitIds = new Set<number>(),
   onUnitClick,
   className = ''
 }: ShopDisplayProps) => {
+  // Resolve private player by account_id (backend sends private_player_account_id)
+  const privatePlayerState = useMemo(() => {
+    if (privatePlayerAccountId == null) return null;
+    return players.find((p) => p.account_id === privatePlayerAccountId) ?? null;
+  }, [players, privatePlayerAccountId]);
+
+  const ownedUpgradeMap = useMemo(
+    () => buildOwnedUpgradeMap(privatePlayerState?.units),
+    [privatePlayerState?.units]
+  );
+
+  const ownedUnitsByUnitId = useMemo(
+    () => buildOwnedUnitsByUnitId(privatePlayerState?.units),
+    [privatePlayerState?.units]
+  );
+
   // Calculate pool counts for all heroes
   const poolCounts = useMemo(() => {
     return calculatePoolCounts(players, heroesData);
@@ -147,16 +218,46 @@ export const ShopDisplay = ({
           const tierColors = TIER_COLORS_MAP[heroTier] || TIER_COLORS_MAP[1];
           const heroName = !isEmpty ? getHeroDisplayName(unitId, heroesData) : '';
 
+          const ownedUpgrade = !isEmpty ? ownedUpgradeMap.get(unitId) : null;
+          const ownedCount = ownedUpgrade?.ownedCount ?? 0;
+          const wouldUpgrade = ownedUpgrade?.wouldUpgrade ?? false;
+          const ownedUnits = !isEmpty ? (ownedUnitsByUnitId.get(unitId) ?? []) : [];
+          const slotTitle = !isEmpty
+            ? [
+                ownedCount > 0 ? `You have ${ownedCount} copy${ownedCount !== 1 ? 'ies' : ''}` : null,
+                wouldUpgrade ? 'Buying this will upgrade to 2-star' : null
+              ]
+                .filter(Boolean)
+                .join('. ') || undefined
+            : undefined;
+
           return (
             <div key={index} className="shop-display__slot-wrapper">
+              <div className="shop-display__owned-row">
+                {!isEmpty && ownedUnits.length > 0 && (
+                  <div className="shop-display__owned" title={slotTitle}>
+                    {ownedUnits.map((unit, i) => (
+                      <HeroPortrait
+                        key={unit.entindex ?? i}
+                        unitId={unit.unit_id}
+                        rank={unit.rank || 0}
+                        heroesData={heroesData}
+                        className="shop-display__owned-portrait"
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
               <div
                 className={`shop-display__slot ${
                   isDimmed ? 'shop-display__slot--dimmed' : ''
                 } ${isSelected ? 'shop-display__slot--selected' : ''} ${
                   isEmpty ? 'shop-display__slot--empty' : ''
-                }`}
+                } ${ownedCount > 0 ? 'shop-display__slot--owned' : ''} ${wouldUpgrade ? 'shop-display__slot--upgrade' : ''}`}
                 onClick={() => !isEmpty && onUnitClick?.(unitId)}
                 style={{ borderColor: isEmpty ? undefined : tierColor }}
+                title={slotTitle}
+                aria-label={slotTitle}
               >
                 {isEmpty ? (
                   <div className="shop-display__empty-slot">
