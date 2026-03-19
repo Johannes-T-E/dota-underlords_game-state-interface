@@ -38,6 +38,8 @@ Thumbs.db
 .env.test.local
 .env.production.local
 
+analytics/
+
 # React/Node.js
 frontend/node_modules/
 frontend/dist/
