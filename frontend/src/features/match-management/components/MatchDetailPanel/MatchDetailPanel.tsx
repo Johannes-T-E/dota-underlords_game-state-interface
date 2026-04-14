@@ -11,6 +11,7 @@ export interface MatchDetailPanelProps {
 
 export const MatchDetailPanel = ({ match, onClose, className = '' }: MatchDetailPanelProps) => {
   const isComplete = !!match.ended_at;
+  const statusLabel = isComplete ? '✓ Complete' : '⏱ In Progress';
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString();
@@ -19,9 +20,41 @@ export const MatchDetailPanel = ({ match, onClose, className = '' }: MatchDetail
   return (
     <div className={`match-detail-panel ${className}`}>
       <div className="match-detail-panel__header">
-        <div>
+        <div className="match-detail-panel__header-main">
           <Text variant="h2">Match Details</Text>
           <MatchIdDisplay matchId={match.match_id} label="" />
+          <div className="match-detail-panel__header-meta">
+            <div className="match-detail-panel__meta-chip">
+              <Text variant="label" color="secondary">Status</Text>
+              <Badge variant={isComplete ? 'completed' : 'in-progress'}>
+                {statusLabel}
+              </Badge>
+            </div>
+            <div className="match-detail-panel__meta-chip">
+              <Text variant="label" color="secondary">Players</Text>
+              <Text variant="body">{match.player_count}</Text>
+            </div>
+            <div className="match-detail-panel__meta-chip">
+              <Text variant="label" color="secondary">Started</Text>
+              <Text variant="body" className="match-detail-panel__info-value">
+                {formatDate(match.started_at)}
+              </Text>
+            </div>
+            {isComplete && (
+              <div className="match-detail-panel__meta-chip">
+                <Text variant="label" color="secondary">Ended</Text>
+                <Text variant="body" className="match-detail-panel__info-value">
+                  {formatDate(match.ended_at!)}
+                </Text>
+              </div>
+            )}
+            {isComplete && (
+              <div className="match-detail-panel__meta-chip">
+                <Text variant="label" color="secondary">Duration</Text>
+                <DurationDisplay startTime={match.started_at} endTime={match.ended_at} />
+              </div>
+            )}
+          </div>
         </div>
         <Button
           variant="ghost"
@@ -32,43 +65,6 @@ export const MatchDetailPanel = ({ match, onClose, className = '' }: MatchDetail
         >
           ✕
         </Button>
-      </div>
-      
-      {/* Match Info Bar */}
-      <div className="match-detail-panel__info">
-        <div className="match-detail-panel__info-item">
-          <Text variant="label" color="secondary">Status</Text>
-          <Badge variant={isComplete ? 'completed' : 'in-progress'}>
-            {isComplete ? '✓ Complete' : '⏱ In Progress'}
-          </Badge>
-        </div>
-        <div className="match-detail-panel__info-item">
-          <Text variant="label" color="secondary">Players</Text>
-          <Text variant="body">{match.player_count}</Text>
-        </div>
-        <div className="match-detail-panel__info-item">
-          <Text variant="label" color="secondary">Started</Text>
-          <Text variant="body" className="match-detail-panel__info-value">
-            {formatDate(match.started_at)}
-          </Text>
-        </div>
-        {isComplete && (
-          <>
-            <div className="match-detail-panel__info-item">
-              <Text variant="label" color="secondary">Ended</Text>
-              <Text variant="body" className="match-detail-panel__info-value">
-                {formatDate(match.ended_at!)}
-              </Text>
-            </div>
-            <div className="match-detail-panel__info-item">
-              <Text variant="label" color="secondary">Duration</Text>
-              <DurationDisplay 
-                startTime={match.started_at} 
-                endTime={match.ended_at} 
-              />
-            </div>
-          </>
-        )}
       </div>
 
       {/* Players Placement Board */}

@@ -5,16 +5,6 @@
   overflow: hidden;
 }
 
-.placement-board__title {
-  font-size: 12px;
-  font-weight: bold;
-  color: var(--accent-color);
-  margin: 0;
-  padding: 1rem 1rem 0.5rem 1rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
 .placement-board__table {
   width: 100%;
   border-collapse: collapse;
@@ -58,6 +48,10 @@
 
 .placement-board__player {
   min-width: 200px;
+}
+
+.placement-board__player-name .player-name-display {
+  font-size: 0.95rem;
 }
 
 .placement-board__type {

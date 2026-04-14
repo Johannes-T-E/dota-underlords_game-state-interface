@@ -24,9 +24,6 @@ export const PlacementBoard = ({ players, className = '' }: PlacementBoardProps)
 
   return (
     <div className={`placement-board ${className}`}>
-      <Text variant="h3" weight="bold" className="placement-board__title">
-        Final Placement
-      </Text>
       <table className="placement-board__table">
         <thead>
           <tr>
@@ -46,6 +43,7 @@ export const PlacementBoard = ({ players, className = '' }: PlacementBoardProps)
                   personaName={player.persona_name}
                   botPersonaName={player.bot_persona_name}
                   matchCount={player.match_count}
+                  className="placement-board__player-name"
                 />
               </td>
               <td className="placement-board__type">
