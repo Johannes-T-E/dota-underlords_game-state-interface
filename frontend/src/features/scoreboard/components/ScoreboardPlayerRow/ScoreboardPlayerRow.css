@@ -176,16 +176,11 @@
 }
 
 .scoreboard-player-row__unit--bench {
-  filter: saturate(1) brightness(1);
+  filter: grayscale(0%) brightness(1);
   transition: filter 0.3s ease;
 }
 
 .scoreboard-player-row__unit--dimmed {
-  filter: grayscale(100%) brightness(0.5) !important;
-  transition: filter 0.3s ease !important;
-}
-
-.scoreboard-player-row__unit--dimmed.scoreboard-player-row__unit--bench {
   filter: grayscale(100%) brightness(0.5) !important;
   transition: filter 0.3s ease !important;
 }

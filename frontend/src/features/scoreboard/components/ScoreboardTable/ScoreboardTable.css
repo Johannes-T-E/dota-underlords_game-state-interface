@@ -3,10 +3,11 @@
   border-radius: 0;
   overflow: hidden;
   box-shadow: 0 6px 24px rgba(0,0,0,0.25);
-  width: fit-content;
+  width: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  flex-shrink: 0;
+  flex-shrink: 1;
 }
 
 .scoreboard-table__controls {
@@ -21,11 +22,45 @@
   flex: 1;
 }
 
+.scoreboard-table__scroll {
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-color) var(--secondary-color);
+}
+
+.scoreboard-table__scroll::-webkit-scrollbar {
+  height: 10px;
+}
+
+.scoreboard-table__scroll::-webkit-scrollbar-track {
+  background: var(--secondary-color);
+  border-top: 1px solid var(--border-color);
+}
+
+.scoreboard-table__scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--accent-color), rgba(255, 200, 120, 0.8));
+  border-radius: 999px;
+  border: 2px solid var(--secondary-color);
+}
+
+.scoreboard-table__scroll::-webkit-scrollbar-thumb:hover {
+  filter: brightness(1.08);
+}
+
+.scoreboard-table__scroll > .scoreboard-header,
+.scoreboard-table__scroll > .scoreboard-table__players {
+  width: max-content;
+  min-width: 100%;
+}
+
 .scoreboard-table__players {
   display: flex;
   flex-direction: column;
   background-color: var(--primary-color);
-  overflow-x: hidden;
+  overflow-x: visible;
   overflow-y: hidden;
   padding-bottom: 12px;
 }

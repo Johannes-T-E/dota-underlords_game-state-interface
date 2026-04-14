@@ -168,33 +168,35 @@ export const ScoreboardTable = ({
           onShowSynergyPipsChange={handleShowSynergyPipsChange}
         />
       </div>
-      <ScoreboardHeader
-        sortField={sortField}
-        sortDirection={sortDirection}
-        onSort={handleSort}
-        visibleColumns={visibleColumns}
-        columnOrder={visibleColumns.columnOrder}
-        onColumnReorder={handleColumnReorder}
-      />
+      <div className="scoreboard-table__scroll">
+        <ScoreboardHeader
+          sortField={sortField}
+          sortDirection={sortDirection}
+          onSort={handleSort}
+          visibleColumns={visibleColumns}
+          columnOrder={visibleColumns.columnOrder}
+          onColumnReorder={handleColumnReorder}
+        />
 
-      <div className="scoreboard-table__players">
-        {sortedPlayers.map((player, index) => {
-          return (
-            <ScoreboardPlayerRow
-              key={player.account_id}
-              player={player}
-              rank={index + 1}
-              heroesData={heroesData}
-              visibleColumns={visibleColumns}
-              columnOrder={visibleColumns.columnOrder}
-              selectedUnitIds={selectedUnitIds}
-              onUnitClick={onUnitClick}
-              selectedSynergyKeyword={selectedSynergyKeyword}
-              onSynergyClick={onSynergyClick}
-              showSynergyPips={showSynergyPips}
-            />
-          );
-        })}
+        <div className="scoreboard-table__players">
+          {sortedPlayers.map((player, index) => {
+            return (
+              <ScoreboardPlayerRow
+                key={player.account_id}
+                player={player}
+                rank={index + 1}
+                heroesData={heroesData}
+                visibleColumns={visibleColumns}
+                columnOrder={visibleColumns.columnOrder}
+                selectedUnitIds={selectedUnitIds}
+                onUnitClick={onUnitClick}
+                selectedSynergyKeyword={selectedSynergyKeyword}
+                onSynergyClick={onSynergyClick}
+                showSynergyPips={showSynergyPips}
+              />
+            );
+          })}
+        </div>
       </div>
     </div>
   );
