@@ -132,3 +132,29 @@ h1 {
     text-align: center;
 }
 
+/* Shared scrollbar utility for themed scroll containers */
+.app-scrollbar {
+    --app-scrollbar-size: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-color) var(--secondary-color);
+}
+
+.app-scrollbar::-webkit-scrollbar {
+    width: var(--app-scrollbar-size);
+    height: var(--app-scrollbar-size);
+}
+
+.app-scrollbar::-webkit-scrollbar-track {
+    background: var(--secondary-color);
+}
+
+.app-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--accent-color), rgba(255, 200, 120, 0.8));
+    border-radius: 999px;
+    border: 2px solid var(--secondary-color);
+}
+
+.app-scrollbar::-webkit-scrollbar-thumb:hover {
+    filter: brightness(1.08);
+}
+

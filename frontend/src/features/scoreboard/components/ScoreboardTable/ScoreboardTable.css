@@ -27,27 +27,6 @@
   min-width: 0;
   overflow-x: auto;
   overflow-y: hidden;
-  scrollbar-width: thin;
-  scrollbar-color: var(--accent-color) var(--secondary-color);
-}
-
-.scoreboard-table__scroll::-webkit-scrollbar {
-  height: 10px;
-}
-
-.scoreboard-table__scroll::-webkit-scrollbar-track {
-  background: var(--secondary-color);
-  border-top: 1px solid var(--border-color);
-}
-
-.scoreboard-table__scroll::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--accent-color), rgba(255, 200, 120, 0.8));
-  border-radius: 999px;
-  border: 2px solid var(--secondary-color);
-}
-
-.scoreboard-table__scroll::-webkit-scrollbar-thumb:hover {
-  filter: brightness(1.08);
 }
 
 .scoreboard-table__scroll > .scoreboard-header,

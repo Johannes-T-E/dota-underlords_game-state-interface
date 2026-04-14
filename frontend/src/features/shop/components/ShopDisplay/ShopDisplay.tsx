@@ -9,11 +9,17 @@ import synergyIconMap from '@/components/ui/SynergyDisplay/data/synergy-icon-map
 import type { PrivatePlayerState, PlayerState, Unit } from '@/types';
 import type { HeroesData } from '@/utils/heroHelpers';
 import { calculatePoolCounts } from '@/utils/poolCalculator';
+import { OwnedHeroesChart, type OwnedHeroBarData } from '../OwnedHeroesChart/OwnedHeroesChart';
 import './ShopDisplay.css';
 
 export interface OwnedUpgradeState {
   ownedCount: number;
   wouldUpgrade: boolean;
+}
+
+interface HeroCardData {
+  unitId: number;
+  keywords: number[];
 }
 
 export interface ShopDisplayProps {
@@ -101,6 +107,13 @@ function isContraption(unit: Unit) {
   return [117, 143, 127].includes(unit.unit_id);
 }
 
+/** Convert unit rank to number of base (1-star) cards consumed in pool. */
+function getCardEquivalentByRank(rank: number | undefined): number {
+  if (rank === 3) return 9;
+  if (rank === 2) return 3;
+  return 1;
+}
+
 /**
  * Build map of unit_id -> list of owned Unit (hero units only), for displaying owned copies with correct rank.
  */
@@ -186,6 +199,168 @@ export const ShopDisplay = ({
     return units.slice(0, 5);
   }, [privatePlayer]);
 
+  const ownedHeroBars = useMemo<OwnedHeroBarData[]>(() => {
+    const uniqueByUnitId = new Map<number, { unitId: number; ownedCount: number }>();
+    const heroUnits = (privatePlayerState?.units ?? []).filter(
+      (u) => !isUnderlord(u) && !isContraption(u)
+    );
+    const privateAccountId = privatePlayerState?.account_id ?? privatePlayerAccountId ?? null;
+    const opponents = players
+      .filter((p) => privateAccountId == null || p.account_id !== privateAccountId)
+      .map((p) => ({ accountId: p.account_id, playerSlot: p.player_slot }));
+
+    for (const unit of heroUnits) {
+      const existing = uniqueByUnitId.get(unit.unit_id);
+      if (!existing) {
+        uniqueByUnitId.set(unit.unit_id, {
+          unitId: unit.unit_id,
+          ownedCount: getCardEquivalentByRank(unit.rank)
+        });
+      } else {
+        existing.ownedCount += getCardEquivalentByRank(unit.rank);
+      }
+    }
+
+    return Array.from(uniqueByUnitId.values())
+      .map((hero) => {
+        const pool = poolCounts.get(hero.unitId);
+        const opponentOwnedSegments = opponents.flatMap(({ accountId, playerSlot }) => {
+          const opponent = players.find((p) => p.account_id === accountId);
+          if (!opponent?.units?.length) return [];
+          const count = opponent.units
+            .filter((u) => u.unit_id === hero.unitId && !isUnderlord(u) && !isContraption(u))
+            .reduce((sum, u) => sum + getCardEquivalentByRank(u.rank), 0);
+          return count > 0 ? [{ playerSlot, count }] : [];
+        });
+        return {
+          unitId: hero.unitId,
+          heroName: getHeroDisplayName(hero.unitId, heroesData),
+          ownedCount: hero.ownedCount,
+          remainingPool: pool?.remaining ?? 0,
+          totalPool: pool?.total ?? 0,
+          opponentOwnedSegments
+        };
+      })
+      .sort((a, b) => {
+        const tierA = getHeroTier(a.unitId, heroesData);
+        const tierB = getHeroTier(b.unitId, heroesData);
+        if (tierA !== tierB) return tierA - tierB;
+        return getHeroDisplayName(a.unitId, heroesData).localeCompare(
+          getHeroDisplayName(b.unitId, heroesData)
+        );
+      });
+  }, [privatePlayerState?.units, heroesData, poolCounts, players, privatePlayerAccountId, privatePlayerState?.account_id]);
+
+  const maxOwnedTotalPool = useMemo(() => {
+    if (ownedHeroBars.length === 0) return 1;
+    return Math.max(...ownedHeroBars.map((hero) => Math.max(hero.totalPool, 1)));
+  }, [ownedHeroBars]);
+
+  const renderHeroCard = (cardData: HeroCardData, index: number) => {
+    const unitId = cardData.unitId;
+    const isEmpty = unitId === -1;
+    const isSelected = !isEmpty && selectedUnitIds.has(unitId);
+    const isDimmed = selectedUnitIds.size > 0 && !isSelected && !isEmpty;
+    const poolCount = !isEmpty ? poolCounts.get(unitId) : null;
+    const poolText = poolCount ? `${poolCount.remaining}/${poolCount.total}` : '';
+    const heroTier = !isEmpty ? getHeroTier(unitId, heroesData) : 1;
+    const tierColor = getTierColor(heroTier);
+    const tierColors = TIER_COLORS_MAP[heroTier] || TIER_COLORS_MAP[1];
+    const heroName = !isEmpty ? getHeroDisplayName(unitId, heroesData) : '';
+    const ownedUpgrade = !isEmpty ? ownedUpgradeMap.get(unitId) : null;
+    const ownedCount = ownedUpgrade?.ownedCount ?? 0;
+    const wouldUpgrade = ownedUpgrade?.wouldUpgrade ?? false;
+    const ownedUnits = !isEmpty ? (ownedUnitsByUnitId.get(unitId) ?? []) : [];
+    const slotTitle = !isEmpty
+      ? [
+          ownedCount > 0 ? `You have ${ownedCount} copy${ownedCount !== 1 ? 'ies' : ''}` : null,
+          wouldUpgrade ? 'Buying this will upgrade to 2-star' : null
+        ]
+          .filter(Boolean)
+          .join('. ') || undefined
+      : undefined;
+
+    return (
+      <div key={`shop-${unitId}-${index}`} className="shop-display__slot-wrapper">
+        <div className="shop-display__owned-row">
+          {!isEmpty && ownedUnits.length > 0 && (
+            <div className="shop-display__owned" title={slotTitle}>
+              {ownedUnits.map((unit, i) => (
+                <HeroPortrait
+                  key={unit.entindex ?? i}
+                  unitId={unit.unit_id}
+                  rank={unit.rank || 0}
+                  heroesData={heroesData}
+                  className="shop-display__owned-portrait"
+                />
+              ))}
+            </div>
+          )}
+        </div>
+        <div
+          className={`shop-display__slot ${
+            isDimmed ? 'shop-display__slot--dimmed' : ''
+          } ${isSelected ? 'shop-display__slot--selected' : ''} ${
+            isEmpty ? 'shop-display__slot--empty' : ''
+          } ${ownedCount > 0 ? 'shop-display__slot--owned' : ''} ${wouldUpgrade ? 'shop-display__slot--upgrade' : ''}`}
+          onClick={() => !isEmpty && onUnitClick?.(unitId)}
+          style={{ borderColor: isEmpty ? undefined : tierColor }}
+          title={slotTitle}
+          aria-label={slotTitle}
+        >
+          {isEmpty ? (
+            <div className="shop-display__empty-slot">
+              <div className="shop-display__empty-indicator" />
+            </div>
+          ) : (
+            <>
+              <div className="shop-display__name">
+                {heroName}
+              </div>
+              <HeroPortrait
+                unitId={unitId}
+                rank={0}
+                heroesData={heroesData}
+                className="shop-display__hero"
+                tierColors={tierColors}
+              />
+              {cardData.keywords.length > 0 && (
+                <div className="shop-display__synergies">
+                  {cardData.keywords.map((keyword: number) => {
+                    const synergyName = getSynergyNameByKeyword(keyword);
+                    if (!synergyName) return null;
+
+                    const visual = getSynergyVisualData(synergyName);
+
+                    return (
+                      <div key={keyword} className="shop-display__synergy-icon">
+                        <SynergyIcon
+                          styleNumber={visual.styleNumber}
+                          iconFile={visual.iconFile}
+                          synergyName={synergyName}
+                          synergyColor={visual.synergyColor}
+                          brightColor={visual.brightColor}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+        {poolText && (
+          <div
+            className="shop-display__pool-count"
+            title={`${poolCount?.remaining} remaining out of ${poolCount?.total} total`}
+          >
+            {poolText}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   // Show empty state if no private player data
   if (!privatePlayer) {
     return (
@@ -201,121 +376,28 @@ export const ShopDisplay = ({
 
   return (
     <div className={`shop-display ${className}`}>
-      <div className="shop-display__grid">
-        {shopUnits.map((shopUnit, index) => {
-          const unitId = shopUnit.unit_id;
-          const isEmpty = unitId === -1;
-          const isSelected = !isEmpty && selectedUnitIds.has(unitId);
-          const isDimmed = selectedUnitIds.size > 0 && !isSelected && !isEmpty;
-          
-          const poolCount = !isEmpty ? poolCounts.get(unitId) : null;
-          const poolText = poolCount 
-            ? `${poolCount.remaining}/${poolCount.total}`
-            : '';
+      <div className="shop-display__panels">
+        <div className="shop-display__panel">
+          <h3 className="shop-display__panel-title">Shop</h3>
+          <div className="shop-display__grid">
+            {shopUnits.map((shopUnit, index) =>
+              renderHeroCard(
+                { unitId: shopUnit.unit_id, keywords: shopUnit.keywords ?? [] },
+                index
+              )
+            )}
+          </div>
+        </div>
 
-          const heroTier = !isEmpty ? getHeroTier(unitId, heroesData) : 1;
-          const tierColor = getTierColor(heroTier);
-          const tierColors = TIER_COLORS_MAP[heroTier] || TIER_COLORS_MAP[1];
-          const heroName = !isEmpty ? getHeroDisplayName(unitId, heroesData) : '';
-
-          const ownedUpgrade = !isEmpty ? ownedUpgradeMap.get(unitId) : null;
-          const ownedCount = ownedUpgrade?.ownedCount ?? 0;
-          const wouldUpgrade = ownedUpgrade?.wouldUpgrade ?? false;
-          const ownedUnits = !isEmpty ? (ownedUnitsByUnitId.get(unitId) ?? []) : [];
-          const slotTitle = !isEmpty
-            ? [
-                ownedCount > 0 ? `You have ${ownedCount} copy${ownedCount !== 1 ? 'ies' : ''}` : null,
-                wouldUpgrade ? 'Buying this will upgrade to 2-star' : null
-              ]
-                .filter(Boolean)
-                .join('. ') || undefined
-            : undefined;
-
-          return (
-            <div key={index} className="shop-display__slot-wrapper">
-              <div className="shop-display__owned-row">
-                {!isEmpty && ownedUnits.length > 0 && (
-                  <div className="shop-display__owned" title={slotTitle}>
-                    {ownedUnits.map((unit, i) => (
-                      <HeroPortrait
-                        key={unit.entindex ?? i}
-                        unitId={unit.unit_id}
-                        rank={unit.rank || 0}
-                        heroesData={heroesData}
-                        className="shop-display__owned-portrait"
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-              <div
-                className={`shop-display__slot ${
-                  isDimmed ? 'shop-display__slot--dimmed' : ''
-                } ${isSelected ? 'shop-display__slot--selected' : ''} ${
-                  isEmpty ? 'shop-display__slot--empty' : ''
-                } ${ownedCount > 0 ? 'shop-display__slot--owned' : ''} ${wouldUpgrade ? 'shop-display__slot--upgrade' : ''}`}
-                onClick={() => !isEmpty && onUnitClick?.(unitId)}
-                style={{ borderColor: isEmpty ? undefined : tierColor }}
-                title={slotTitle}
-                aria-label={slotTitle}
-              >
-                {isEmpty ? (
-                  <div className="shop-display__empty-slot">
-                    <div className="shop-display__empty-indicator" />
-                  </div>
-                ) : (
-                  <>
-                    <div className="shop-display__name">
-                      {heroName}
-                    </div>
-                    <HeroPortrait
-                      unitId={unitId}
-                      rank={0}
-                      heroesData={heroesData}
-                      className="shop-display__hero"
-                      tierColors={tierColors}
-                    />
-                    {(() => {
-                      const keywords = shopUnit.keywords || [];
-                      if (keywords.length === 0) return null;
-                      
-                      return (
-                        <div className="shop-display__synergies">
-                          {keywords.map((keyword: number) => {
-                            const synergyName = getSynergyNameByKeyword(keyword);
-                            if (!synergyName) return null;
-                            
-                            const visual = getSynergyVisualData(synergyName);
-                            
-                            return (
-                              <div key={keyword} className="shop-display__synergy-icon">
-                                <SynergyIcon
-                                  styleNumber={visual.styleNumber}
-                                  iconFile={visual.iconFile}
-                                  synergyName={synergyName}
-                                  synergyColor={visual.synergyColor}
-                                  brightColor={visual.brightColor}
-                                />
-                              </div>
-                            );
-                          })}
-                        </div>
-                      );
-                    })()}
-                  </>
-                )}
-              </div>
-              {poolText && (
-                <div
-                  className="shop-display__pool-count"
-                  title={`${poolCount?.remaining} remaining out of ${poolCount?.total} total`}
-                >
-                  {poolText}
-                </div>
-              )}
-            </div>
-          );
-        })}
+        <div className="shop-display__panel">
+          <h3 className="shop-display__panel-title">Owned Heroes</h3>
+          <OwnedHeroesChart
+            heroesData={heroesData}
+            ownedHeroBars={ownedHeroBars}
+            maxOwnedTotalPool={maxOwnedTotalPool}
+            onUnitClick={onUnitClick}
+          />
+        </div>
       </div>
     </div>
   );

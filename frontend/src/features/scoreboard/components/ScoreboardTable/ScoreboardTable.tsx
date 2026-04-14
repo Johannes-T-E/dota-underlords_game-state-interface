@@ -168,7 +168,7 @@ export const ScoreboardTable = ({
           onShowSynergyPipsChange={handleShowSynergyPipsChange}
         />
       </div>
-      <div className="scoreboard-table__scroll">
+      <div className="scoreboard-table__scroll app-scrollbar">
         <ScoreboardHeader
           sortField={sortField}
           sortDirection={sortDirection}

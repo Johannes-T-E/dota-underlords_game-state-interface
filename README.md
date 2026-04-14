@@ -70,7 +70,21 @@ npm install
 
 ### Development Mode (Recommended for Development)
 
-Run both servers in separate terminals:
+From the project root, start both servers with one command:
+
+```powershell
+.\start-dev.bat
+```
+
+This launcher will:
+- Open backend and frontend in separate PowerShell sessions
+- Prefer Windows Terminal tabs (`wt`) when available
+- Run backend with `.venv\Scripts\python.exe -m backend.app` when the virtual environment exists
+- Run frontend with `npm run dev` in `frontend/`
+
+### Manual Startup (Fallback)
+
+If you prefer launching processes manually, run both servers in separate terminals:
 
 **Terminal 1 - Flask Backend:**
 ```bash

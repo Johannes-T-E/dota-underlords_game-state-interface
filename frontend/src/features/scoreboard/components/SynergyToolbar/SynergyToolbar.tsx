@@ -70,7 +70,7 @@ export const SynergyToolbar = ({
   };
 
   return (
-    <div className={`synergy-toolbar ${className}`}>
+    <div className={`synergy-toolbar app-scrollbar ${className}`}>
       <div className="synergy-toolbar__label">Filter by Synergy:</div>
       <div className="synergy-toolbar__items">
         {allSynergies.map(({ keyword, synergyName }) => {

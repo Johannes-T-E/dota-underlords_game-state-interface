@@ -2,11 +2,32 @@
   width: 100%;
 }
 
+.shop-display__panels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.shop-display__panel {
+  flex: 1 1 640px;
+  min-width: min(100%, 640px);
+}
+
+.shop-display__panel-title {
+  margin: 0 0 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
 .shop-display__grid {
   display: grid;
   grid-template-columns: repeat(5, 126px);
   gap: 12px;
-  padding: 16px;
+  padding: 8px 0 0;
   justify-content: start;
 }
 
@@ -218,13 +239,14 @@
 
 /* Pool count displayed below the card */
 .shop-display__pool-count {
-  font-size: 16px;
-  color: rgba(255, 255, 255, 0.8);
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.95);
   text-align: center;
   font-weight: 700;
   line-height: 1;
   margin-top: 4px;
   white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 /* Synergy icons row at the bottom */
@@ -271,4 +293,11 @@
   border: 2px dashed rgba(255, 255, 255, 0.2);
   border-radius: 4px;
   background-color: rgba(255, 255, 255, 0.03);
+}
+
+@media (max-width: 1440px) {
+  .shop-display__panel {
+    min-width: 100%;
+    flex-basis: 100%;
+  }
 }
