@@ -14,14 +14,23 @@ export const MatchesContainer = () => {
   const currentMatch = useAppSelector((state) => state.match.currentMatch);
   const [selectedMatch, setSelectedMatch] = useState<ApiMatch | null>(null);
   const lastSyncedActiveMatchId = useRef<string | null>(null);
+  const matchesRef = useRef<ApiMatch[]>(matches);
+  const latestRefreshRequestId = useRef(0);
 
   const refreshMatches = useCallback(async (options?: { silent?: boolean }) => {
     const silent = options?.silent === true;
+    const requestId = ++latestRefreshRequestId.current;
+    const isLatestRequest = () => requestId === latestRefreshRequestId.current;
+
     if (!silent) {
       dispatch(setMatchesLoading(true));
     }
     try {
       const data = await apiService.getMatches();
+      if (!isLatestRequest()) {
+        return null;
+      }
+
       if (data.status === 'success') {
         dispatch(setMatches(data.matches));
         return data.matches;
@@ -32,6 +41,10 @@ export const MatchesContainer = () => {
       }
       return null;
     } catch (err) {
+      if (!isLatestRequest()) {
+        return null;
+      }
+
       if (!silent) {
         dispatch(setMatchesError('Failed to load matches'));
       } else {
@@ -63,12 +76,17 @@ export const MatchesContainer = () => {
   }, [matches, selectedMatch]);
 
   useEffect(() => {
+    matchesRef.current = matches;
+  }, [matches]);
+
+  useEffect(() => {
     const activeMatchId = currentMatch?.match_id ?? null;
     if (!activeMatchId || lastSyncedActiveMatchId.current === activeMatchId) {
       return;
     }
 
-    const alreadyInList = matches.some((match) => match.match_id === activeMatchId);
+    const currentMatches = matchesRef.current;
+    const alreadyInList = currentMatches.some((match) => match.match_id === activeMatchId);
     if (!alreadyInList) {
       const optimisticMatch: ApiMatch = {
         match_id: activeMatchId,
@@ -76,12 +94,12 @@ export const MatchesContainer = () => {
         ended_at: null,
         player_count: currentMatch?.player_count ?? 0,
       };
-      dispatch(setMatches([optimisticMatch, ...matches]));
+      dispatch(setMatches([optimisticMatch, ...currentMatches]));
     }
 
     lastSyncedActiveMatchId.current = activeMatchId;
     void refreshMatches({ silent: true });
-  }, [currentMatch, dispatch, matches, refreshMatches]);
+  }, [currentMatch, dispatch, refreshMatches]);
 
   const handleMatchSelect = (match: ApiMatch) => {
     if (selectedMatch?.match_id === match.match_id) {

@@ -467,18 +467,13 @@ def start_new_match(players_data: List[Dict], timestamp: datetime) -> str:
     # Create match in database
     db.create_match(match_id, players_data, timestamp)
     
-    # Store match counts in match state for use when processing player states
-    match_state.player_match_counts = player_match_counts
-    
-    # Update match state
+    # Reset all in-memory match state to avoid carry-over between matches.
+    match_state.reset()
+
+    # Initialize state for the new match.
     match_state.match_id = match_id
     match_state.match_start = timestamp
-    # Start each match with fresh private-player identity/state to prevent carry-over.
-    match_state.private_player_account_id = None
-    match_state.latest_processed_private_player_state = {}
-    
-    match_state.latest_processed_public_player_states = {}
-    match_state.sequences = {}
+    match_state.player_match_counts = player_match_counts
     
     # Update stats
     stats['match_count'] += 1
