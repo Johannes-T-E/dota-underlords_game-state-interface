@@ -473,6 +473,10 @@ def start_new_match(players_data: List[Dict], timestamp: datetime) -> str:
     # Update match state
     match_state.match_id = match_id
     match_state.match_start = timestamp
+    # Start each match with fresh private-player identity/state to prevent carry-over.
+    match_state.private_player_account_id = None
+    match_state.latest_processed_private_player_state = {}
+    
     match_state.latest_processed_public_player_states = {}
     match_state.sequences = {}
     
