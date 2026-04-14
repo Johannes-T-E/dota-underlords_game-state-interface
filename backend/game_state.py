@@ -106,6 +106,17 @@ class MatchState:
         self.player_vs_opponent_stats = {}
         self.new_combats_this_update = {}
 
+    def reset_for_new_match_preserve_buffers(self):
+        """Reset active match runtime state but keep pre-match buffers for bootstrap processing."""
+        # Keep buffered pre-match states so process_buffered_data can consume them.
+        buffered_public = self.public_player_buffer
+        buffered_private = self.private_player_buffer
+
+        self.reset()
+
+        self.public_player_buffer = buffered_public
+        self.private_player_buffer = buffered_private
+
 
 # Global match state
 match_state = MatchState()
@@ -467,8 +478,9 @@ def start_new_match(players_data: List[Dict], timestamp: datetime) -> str:
     # Create match in database
     db.create_match(match_id, players_data, timestamp)
     
-    # Reset all in-memory match state to avoid carry-over between matches.
-    match_state.reset()
+    # Reset active in-memory state while preserving pre-match buffers.
+    # Buffers are consumed right after this by process_buffered_data(...).
+    match_state.reset_for_new_match_preserve_buffers()
 
     # Initialize state for the new match.
     match_state.match_id = match_id
