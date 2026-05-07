@@ -149,7 +149,7 @@ export const SynergyPip: React.FC<SynergyPipProps> = ({
             key={levelIndex}
             className="synergy-pip-level-wrapper"
             style={{ 
-              left: `${levelIndex * 33.333}%`
+              left: `${(levelIndex / Math.max(levelStates.length, 1)) * 100}%`
             }}
           >
             <StateComponent />

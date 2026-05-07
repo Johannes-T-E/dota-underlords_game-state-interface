@@ -21,6 +21,7 @@ import './synergy-colors.css';
 export interface SynergiesCellProps {
   synergies: Synergy[];
   showPips?: boolean;       // Show progress pips (default: false for compact view)
+  compactPipWidthByTierCount?: boolean; // If true, pip width follows exact tier count (1/2/3)
   onlyActive?: boolean;     // Filter to active synergies only (default: true)
   maxDisplay?: number;      // Maximum number of synergies to display (default: all)
   className?: string;
@@ -65,6 +66,7 @@ function getSynergyVisualData(synergyName: string) {
 const SynergiesCell: React.FC<SynergiesCellProps> = ({
   synergies,
   showPips = false,
+  compactPipWidthByTierCount = false,
   onlyActive = true,
   maxDisplay,
   className = '',
@@ -136,6 +138,7 @@ const SynergiesCell: React.FC<SynergiesCellProps> = ({
                 levels={synergy.levels}
                 activeUnits={synergy.activeUnits}
                 benchUnits={synergy.benchUnits}
+                compactPipWidthByTierCount={compactPipWidthByTierCount}
               />
             </div>
           );

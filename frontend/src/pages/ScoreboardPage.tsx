@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { AppLayout, MainContentTemplate } from '@/components/layout';
+import { EmptyState, PageHeader } from '@/components/shared';
+import { IconScoreboard } from '@tabler/icons-react';
 import { ScoreboardTable } from '@/features/scoreboard/components/ScoreboardTable/ScoreboardTable';
-import { EmptyState } from '@/components/shared';
 import { useAppSelector } from '@/hooks/redux';
+import './ScoreboardPage.css';
 
 export const ScoreboardPage = () => {
   const { currentMatch, players } = useAppSelector((state) => state.match);
@@ -38,9 +40,10 @@ export const ScoreboardPage = () => {
 
   return (
     <AppLayout>
-      <MainContentTemplate centered>
-        <div style={{ padding: '20px' }}>
-          <h1 style={{ marginBottom: '20px', fontSize: '24px', fontWeight: 600 }}>Scoreboard</h1>
+      <MainContentTemplate centered={false} className="scoreboard-page">
+        <div className="scoreboard-page__container">
+          <PageHeader title="Scoreboard" titleIcon="📋" icon={<IconScoreboard size={18} stroke={1.8} />} />
+          <div className="scoreboard-page__content">
           {!currentMatch ? (
             <EmptyState
               title="No Active Match"
@@ -57,6 +60,7 @@ export const ScoreboardPage = () => {
               onSynergyClick={handleSynergyClick}
             />
           )}
+          </div>
         </div>
       </MainContentTemplate>
     </AppLayout>

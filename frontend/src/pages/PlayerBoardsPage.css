@@ -1,11 +1,8 @@
 .player-boards-page {
   height: 100%;
-  padding: 0 !important;
-  margin: -1rem -2rem !important;
   overflow: hidden;
   min-height: 0;
-  width: calc(100% + 4rem); /* Compensate for negative margin to fill full width */
-  max-width: none;
+  width: 100%;
 }
 
 .player-boards-page__container {

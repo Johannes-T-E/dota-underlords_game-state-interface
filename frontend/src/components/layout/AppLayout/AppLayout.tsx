@@ -1,6 +1,5 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode } from 'react';
 import { NavigationBar } from '@/components/shared';
-import { SettingsDrawer } from '@/features/settings';
 import './AppLayout.css';
 
 export interface AppLayoutProps {
@@ -12,25 +11,14 @@ export const AppLayout = ({
   children, 
   className = ''
 }: AppLayoutProps) => {
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-
-  const handleSettingsClick = () => {
-    setIsSettingsOpen(true);
-  };
-
-  const handleSettingsClose = () => {
-    setIsSettingsOpen(false);
-  };
-
   return (
     <div className={`app-layout ${className}`}>
-      <NavigationBar onSettingsClick={handleSettingsClick} />
+      <NavigationBar />
       <div className="app-layout__main">
         <div className="app-layout__content">
           {children}
         </div>
       </div>
-      <SettingsDrawer isOpen={isSettingsOpen} onClose={handleSettingsClose} />
     </div>
   );
 };

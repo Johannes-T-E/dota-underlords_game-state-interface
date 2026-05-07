@@ -1,53 +1,109 @@
 .matches-table-row {
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background 0.2s ease;
+  background: var(--primary-color);
 }
 
 .matches-table-row:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.matches-table-row:nth-child(odd) {
   background: var(--primary-color);
 }
 
+.matches-table-row:nth-child(even) {
+  background: var(--secondary-color);
+}
+
 .matches-table-row--selected {
-  background: var(--primary-color);
+  background: color-mix(in srgb, var(--accent-color) 16%, var(--primary-color));
   border-left: 3px solid var(--accent-color);
 }
 
 .matches-table-row td {
-  padding: 0.75rem;
+  padding: 0.55rem 0.6rem;
   font-size: 12px;
-  color: var(--accent-color);
-  border-bottom: 1px solid rgba(68, 74, 84, 0.3);
+  color: var(--text-color);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  white-space: nowrap;
 }
 
 .matches-table-row:last-child td {
   border-bottom: none;
 }
 
-.matches-table-row__date {
-  width: 150px;
-}
-
-.matches-table-row__duration {
-  width: 100px;
-}
-
 .matches-table-row__status {
-  width: 120px;
+  font-weight: 600;
+}
+.matches-table-row__bots {
+  color: color-mix(in srgb, var(--text-color) 80%, transparent);
 }
 
-.matches-table-row__actions {
-  width: 50px;
-  text-align: center;
-}
-
-.matches-table-row__delete-btn {
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  font-size: 14px;
-  border-radius: 4px;
+.matches-table-row__value-tag {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  border: 1px solid var(--border-color);
+  background: color-mix(in srgb, var(--secondary-color) 80%, transparent);
+  color: var(--text-color);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 2px 6px;
+  border-radius: 0;
+  white-space: nowrap;
+}
+
+.matches-table-row__status--progress {
+  color: color-mix(in srgb, var(--gold-color) 82%, var(--text-color));
+}
+
+.matches-table-row__status--complete,
+.matches-table-row__data--complete {
+  color: color-mix(in srgb, var(--win-streak-color) 82%, var(--text-color));
+}
+
+.matches-table-row__bots--heavy {
+  color: color-mix(in srgb, var(--unit-color) 82%, var(--text-color));
+}
+
+.matches-table-row__bots--human {
+  color: color-mix(in srgb, var(--win-streak-color) 82%, var(--text-color));
+}
+
+.matches-table-row__data--partial {
+  color: color-mix(in srgb, var(--lose-streak-color) 82%, var(--text-color));
+}
+
+.matches-table-row__value-tag--progress {
+  border-color: color-mix(in srgb, var(--gold-color) 55%, var(--border-color));
+  color: color-mix(in srgb, var(--gold-color) 82%, var(--text-color));
+}
+
+.matches-table-row__value-tag--complete,
+.matches-table-row__value-tag--complete-data {
+  border-color: color-mix(in srgb, var(--win-streak-color) 55%, var(--border-color));
+  color: color-mix(in srgb, var(--win-streak-color) 82%, var(--text-color));
+}
+
+.matches-table-row__value-tag--bot {
+  border-color: color-mix(in srgb, var(--unit-color) 55%, var(--border-color));
+  color: color-mix(in srgb, var(--unit-color) 82%, var(--text-color));
+}
+
+.matches-table-row__value-tag--human {
+  border-color: color-mix(in srgb, var(--win-streak-color) 55%, var(--border-color));
+  color: color-mix(in srgb, var(--win-streak-color) 82%, var(--text-color));
+}
+
+.matches-table-row__value-tag--mixed {
+  border-color: color-mix(in srgb, var(--text-color) 40%, var(--border-color));
+  color: color-mix(in srgb, var(--text-color) 88%, transparent);
+}
+
+.matches-table-row__value-tag--partial-data {
+  border-color: color-mix(in srgb, var(--lose-streak-color) 45%, var(--border-color));
+  color: color-mix(in srgb, var(--lose-streak-color) 82%, var(--text-color));
 }
 

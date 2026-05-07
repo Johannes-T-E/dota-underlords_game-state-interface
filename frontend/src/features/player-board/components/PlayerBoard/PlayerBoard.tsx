@@ -3,7 +3,7 @@ import { Button, HeroPortrait, PlayerNameDisplay } from '@/components/ui';
 import { OpenInNewTabButton } from '@/components/shared/OpenInNewTabButton';
 import { MovementTrail } from './components/MovementTrail/MovementTrail';
 import { useUnitPositions } from '@/features/player-board/hooks/useUnitPositions';
-import { calculatePosition, CELL_SIZE, GAP_SIZE } from '@/features/player-board/utils/positionUtils';
+import { calculatePosition, CELL_SIZE, GAP_SIZE, PADDING, SECTION_GAP, CELL_STEP } from '@/features/player-board/utils/positionUtils';
 import { useUnitAnimationSettings } from '@/hooks/useSettings';
 import { useItemsData } from '@/hooks/useItemsData';
 import { getHeroTier } from '@/utils/heroHelpers';
@@ -16,6 +16,9 @@ export interface PlayerBoardProps {
   heroesData: HeroesData | null;
   onClose?: () => void;
   className?: string;
+  displayScale?: number;
+  benchPosition?: 'top' | 'bottom';
+  showBench?: boolean;
 }
 
 interface ActiveTrail {
@@ -27,7 +30,15 @@ interface ActiveTrail {
   startTime: number;
 }
 
-export const PlayerBoard = ({ player, heroesData, onClose, className = '' }: PlayerBoardProps) => {
+export const PlayerBoard = ({
+  player,
+  heroesData,
+  onClose,
+  className = '',
+  displayScale,
+  benchPosition = 'bottom',
+  showBench = true,
+}: PlayerBoardProps) => {
 
   
   const units = player.units || [];
@@ -39,10 +50,22 @@ export const PlayerBoard = ({ player, heroesData, onClose, className = '' }: Pla
   
   // Track active trails for movement visualization
   const [activeTrails, setActiveTrails] = useState<ActiveTrail[]>([]);
+  const [suspendPositionTransition, setSuspendPositionTransition] = useState(false);
+  const previousShowBenchRef = useRef(showBench);
 
   // Dynamic scaling state
   const [scale, setScale] = useState(1);
   const boardRef = useRef<HTMLDivElement>(null);
+
+  // Bench visibility changes should reposition instantly (no slow tween).
+  useEffect(() => {
+    if (previousShowBenchRef.current !== showBench) {
+      setSuspendPositionTransition(true);
+      previousShowBenchRef.current = showBench;
+      const timer = setTimeout(() => setSuspendPositionTransition(false), 50);
+      return () => clearTimeout(timer);
+    }
+  }, [showBench]);
 
   // Clear trails when player changes
   useEffect(() => {
@@ -124,9 +147,25 @@ export const PlayerBoard = ({ player, heroesData, onClose, className = '' }: Pla
   // Render a unit at its position with CSS transitions
   const renderAnimatedUnit = (unit: Unit) => {
     if (!unit.position) return null;
+    if (!showBench && unit.position.y === -1) return null;
 
     const state = animationStates.find(s => s.entindex === unit.entindex);
-    const position = calculatePosition(unit.position.x, unit.position.y);
+    const calculated = calculatePosition(unit.position.x, unit.position.y);
+    const position = benchPosition === 'top'
+      ? (
+          unit.position.y === -1
+            ? {
+                x: calculated.x,
+                y: PADDING + CELL_SIZE / 2,
+              }
+            : {
+                x: calculated.x,
+                y: showBench
+                  ? PADDING + CELL_SIZE + SECTION_GAP + (3 - unit.position.y) * CELL_STEP + CELL_SIZE / 2
+                  : PADDING + (3 - unit.position.y) * CELL_STEP + CELL_SIZE / 2,
+              }
+        )
+      : calculated;
     const isNew = state?.isNew ?? false;
 
     const style: React.CSSProperties = {
@@ -135,6 +174,7 @@ export const PlayerBoard = ({ player, heroesData, onClose, className = '' }: Pla
       top: position.y,
       transform: 'translate(-50%, -50%)',
       transition: animationSettings.enablePositionAnimation && !isNew
+        && !suspendPositionTransition
         ? `left ${animationSettings.animationDuration}ms ease-out, top ${animationSettings.animationDuration}ms ease-out`
         : 'none',
       zIndex: 10
@@ -195,9 +235,9 @@ export const PlayerBoard = ({ player, heroesData, onClose, className = '' }: Pla
   return (
     <div 
       ref={boardRef}
-      className={`player-board ${className}`} 
+      className={`player-board player-board--bench-${benchPosition} ${className}`} 
       id={`board-${player.account_id}`}
-      style={{ zoom: scale, transformOrigin: 'top left' }}
+      style={{ zoom: displayScale ?? scale, transformOrigin: 'top left' }}
     >
       <div className="player-board__header">
         <PlayerNameDisplay
@@ -227,12 +267,29 @@ export const PlayerBoard = ({ player, heroesData, onClose, className = '' }: Pla
       <div className="player-board__grid-container">
         {/* Visual grid cells (empty backgrounds) */}
         <div className="player-board__grid">
-          <div className="player-board__roster-section">
-            {rosterCells}
-          </div>
-          <div className="player-board__bench-section">
-            {benchCells}
-          </div>
+          {benchPosition === 'top' ? (
+            <>
+              {showBench && (
+                <div className="player-board__bench-section">
+                  {benchCells}
+                </div>
+              )}
+              <div className="player-board__roster-section">
+                {rosterCells}
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="player-board__roster-section">
+                {rosterCells}
+              </div>
+              {showBench && (
+                <div className="player-board__bench-section">
+                  {benchCells}
+                </div>
+              )}
+            </>
+          )}
         </div>
 
         {/* Movement trails */}

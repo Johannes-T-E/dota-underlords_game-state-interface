@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { CSSProperties, ReactNode } from 'react';
 import './SidebarLayoutTemplate.css';
 
 export interface SidebarLayoutTemplateProps {
@@ -15,11 +15,11 @@ export const SidebarLayoutTemplate = ({
   className = ''
 }: SidebarLayoutTemplateProps) => {
   return (
-    <div className={`sidebar-layout-template ${className}`}>
-      <div 
-        className="sidebar-layout-template__sidebar"
-        style={{ width: sidebarWidth }}
-      >
+    <div
+      className={`sidebar-layout-template ${className}`}
+      style={{ '--sidebar-width': sidebarWidth } as CSSProperties}
+    >
+      <div className="sidebar-layout-template__sidebar">
         {sidebar}
       </div>
       <div className="sidebar-layout-template__main">

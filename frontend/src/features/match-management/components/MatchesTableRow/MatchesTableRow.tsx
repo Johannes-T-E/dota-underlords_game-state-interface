@@ -1,12 +1,12 @@
-import { Badge, Button, DurationDisplay } from '@/components/ui';
+import { DurationDisplay } from '@/components/ui';
 import type { ApiMatch } from '@/types';
+import { getMatchQualitySummary } from '@/features/match-management/utils/matchQuality';
 import './MatchesTableRow.css';
 
 export interface MatchesTableRowProps {
   match: ApiMatch;
   isSelected: boolean;
   onClick: () => void;
-  onDelete: (matchId: string) => void;
   className?: string;
 }
 
@@ -14,16 +14,11 @@ export const MatchesTableRow = ({
   match, 
   isSelected, 
   onClick, 
-  onDelete,
   className = ''
 }: MatchesTableRowProps) => {
   const started = new Date(match.started_at);
   const isComplete = !!match.ended_at;
-
-  const handleDeleteClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onDelete(match.match_id);
-  };
+  const quality = getMatchQualitySummary(match);
 
   return (
     <tr 
@@ -40,21 +35,34 @@ export const MatchesTableRow = ({
           '—'
         )}
       </td>
-      <td className="matches-table-row__status">
-        <Badge variant={isComplete ? 'completed' : 'in-progress'}>
-          {isComplete ? '✓ Complete' : '⏱ In Progress'}
-        </Badge>
+      <td className={`matches-table-row__status ${isComplete ? 'matches-table-row__status--complete' : 'matches-table-row__status--progress'}`}>
+        <span className={`matches-table-row__value-tag ${isComplete ? 'matches-table-row__value-tag--complete' : 'matches-table-row__value-tag--progress'}`}>
+          {isComplete ? 'Complete' : 'In Progress'}
+        </span>
       </td>
-      <td className="matches-table-row__actions">
-        <Button
-          variant="danger"
-          size="small"
-          onClick={handleDeleteClick}
-          title="Delete match"
-          className="matches-table-row__delete-btn"
-        >
-          ✕
-        </Button>
+      <td
+        className={`matches-table-row__bots ${
+          quality.playerType === 'bot'
+            ? 'matches-table-row__bots--heavy'
+            : quality.playerType === 'human'
+              ? 'matches-table-row__bots--human'
+              : ''
+        }`}
+      >
+        <span className={`matches-table-row__value-tag ${
+          quality.playerType === 'bot'
+            ? 'matches-table-row__value-tag--bot'
+            : quality.playerType === 'human'
+              ? 'matches-table-row__value-tag--human'
+              : 'matches-table-row__value-tag--mixed'
+        }`}>
+          {quality.playerType === 'bot' ? 'Bot' : quality.playerType === 'human' ? 'Human' : 'Mixed'}
+        </span>
+      </td>
+      <td className={`matches-table-row__data ${quality.complete ? 'matches-table-row__data--complete' : 'matches-table-row__data--partial'}`}>
+        <span className={`matches-table-row__value-tag ${quality.complete ? 'matches-table-row__value-tag--complete-data' : 'matches-table-row__value-tag--partial-data'}`}>
+          {quality.complete ? 'Complete' : 'Partial'}
+        </span>
       </td>
     </tr>
   );

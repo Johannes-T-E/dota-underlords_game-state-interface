@@ -23,6 +23,8 @@ export interface SynergyDisplayProps {
   benchUnits?: number;
   /** Whether to show pip display (default: true) */
   showPips?: boolean;
+  /** If true, pip width follows exact tier count (1/2/3). If false, reserves width as 3 tiers. */
+  compactPipWidthByTierCount?: boolean;
 }
 
 /**
@@ -62,6 +64,7 @@ function getComputedColor(varName: string, fallback: string = '#00FF00'): string
  */
 const ICON_ASPECT_RATIO = 1; // Square
 const PIP_ASPECT_RATIO = 26 / 128; // 0.203125
+const ICON_TO_PIPS_OVERLAP_RATIO = 0.12; // overlap to compensate capsule graphic side padding
 
 /**
  * SynergyDisplay - Displays a synergy icon with optional pip progress bars
@@ -78,7 +81,8 @@ const SynergyDisplay: React.FC<SynergyDisplayProps> = memo(({
   levels = [],
   activeUnits = 0,
   benchUnits = 0,
-  showPips = true
+  showPips = true,
+  compactPipWidthByTierCount = false
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerHeight, setContainerHeight] = useState<number | null>(null);
@@ -151,6 +155,9 @@ const SynergyDisplay: React.FC<SynergyDisplayProps> = memo(({
     };
   }, [shouldShowPips, levels.length]);
 
+  const pipLevelCount = levels.length;
+  const pipColumnsForWidth = compactPipWidthByTierCount ? pipLevelCount : 3;
+
   // Calculate width from height and aspect ratios
   const containerStyle = useMemo(() => {
     if (containerHeight === null) {
@@ -164,26 +171,29 @@ const SynergyDisplay: React.FC<SynergyDisplayProps> = memo(({
       } as React.CSSProperties;
     }
 
-    // With pips: icon width + pip width (always 3 levels for alignment)
+    // With pips: icon width + pip width (dynamic by level count)
     const iconWidth = containerHeight * ICON_ASPECT_RATIO;
-    const pipWidth = containerHeight * PIP_ASPECT_RATIO * 3; // Always 3 levels
-    const totalWidth = iconWidth + pipWidth;
+    const pipWidth = containerHeight * PIP_ASPECT_RATIO * pipColumnsForWidth;
+    const overlapWidth = containerHeight * ICON_TO_PIPS_OVERLAP_RATIO;
+    const totalWidth = Math.max(iconWidth, iconWidth + pipWidth - overlapWidth);
 
     return {
       width: `${totalWidth}px`
     } as React.CSSProperties;
-  }, [containerHeight, shouldShowPips]);
+  }, [containerHeight, shouldShowPips, pipColumnsForWidth]);
 
-  // Calculate pips container width (always 3 levels)
+  // Calculate pips container width from dynamic level count
   const pipsContainerStyle = useMemo(() => {
     if (!shouldShowPips || containerHeight === null) {
       return {};
     }
-    const pipWidth = containerHeight * PIP_ASPECT_RATIO * 3; // Always 3 levels
+    const pipWidth = containerHeight * PIP_ASPECT_RATIO * pipColumnsForWidth;
+    const overlapWidth = containerHeight * ICON_TO_PIPS_OVERLAP_RATIO;
     return {
-      width: `${pipWidth}px`
+      width: `${pipWidth}px`,
+      marginLeft: `${-overlapWidth}px`
     } as React.CSSProperties;
-  }, [containerHeight, shouldShowPips]);
+  }, [containerHeight, shouldShowPips, pipColumnsForWidth]);
 
   return (
     <div 

@@ -1,11 +1,8 @@
 .shop-page {
   height: 100%;
-  padding: 0 !important;
-  margin: -1rem -2rem !important;
   overflow: hidden;
   min-height: 0;
-  width: calc(100% + 4rem);
-  max-width: none;
+  width: 100%;
 }
 
 .shop-page__container {

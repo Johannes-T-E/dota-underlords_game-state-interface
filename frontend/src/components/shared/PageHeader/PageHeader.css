@@ -1,0 +1,91 @@
+.page-header {
+  --page-header-title-size: 24px;
+  /* Match sidebar ratio: 22px icon / 14px text ~= 1.571 */
+  --page-header-icon-size: calc(var(--page-header-title-size) * 1.571);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 24px;
+  background: var(--secondary-color, #2a2a2e);
+  border-bottom: 1px solid var(--border-color, #3a3a3e);
+  flex-shrink: 0;
+  min-height: 71px;
+  box-sizing: border-box;
+}
+
+.page-header__left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.page-header__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(var(--page-header-icon-size) + 4px);
+  height: calc(var(--page-header-icon-size) + 4px);
+  color: color-mix(in srgb, var(--text-color, #ffffff) 88%, transparent);
+  flex-shrink: 0;
+}
+
+.page-header__icon svg {
+  width: var(--page-header-icon-size);
+  height: var(--page-header-icon-size);
+}
+
+.page-header__text {
+  min-width: 0;
+}
+
+.page-header__title {
+  margin: 0;
+  font-size: var(--page-header-title-size);
+  font-weight: 600;
+  color: var(--text-color, #ffffff);
+  line-height: 1.2;
+}
+
+.page-header__title-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.page-header__title-suffix {
+  display: inline-flex;
+  align-items: center;
+}
+
+.page-header__description {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--text-secondary, #b9bbbe);
+  line-height: 1.45;
+}
+
+.page-header__center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+.page-header__right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+/*
+ * Prevent double-thick seams:
+ * PageHeader owns the separator line, so the first bordered block below it
+ * should not render its own top border.
+ */
+.page-header + * {
+  border-top: 0 !important;
+}

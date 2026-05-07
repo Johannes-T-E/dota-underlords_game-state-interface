@@ -1,0 +1,1 @@
+export { MatchupPredictor } from './MatchupPredictor';

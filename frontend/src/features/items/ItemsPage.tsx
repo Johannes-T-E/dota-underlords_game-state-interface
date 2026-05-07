@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { AppLayout, MainContentTemplate } from '@/components/layout';
-import { EmptyState } from '@/components/shared';
+import { EmptyState, PageHeader } from '@/components/shared';
+import { IconSock } from '@tabler/icons-react';
 import { useItemsData } from '@/hooks/useItemsData';
 import { useItemsLocalization } from './hooks/useItemsLocalization';
 import { ItemFilters } from './components/ItemFilters/ItemFilters';
@@ -81,9 +82,7 @@ export const ItemsPage = () => {
     <AppLayout>
       <MainContentTemplate className="items-page" centered={false}>
         <div className="items-page__container">
-          <div className="items-page__header">
-            <h1 className="items-page__title">Items</h1>
-          </div>
+          <PageHeader title="Items" titleIcon="🧰" icon={<IconSock size={18} stroke={1.8} />} />
           {isLoading ? (
             <div className="items-page__loading">
               <EmptyState

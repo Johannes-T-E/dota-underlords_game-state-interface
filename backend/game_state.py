@@ -12,6 +12,7 @@ from .database import UnderlordsDatabaseManager
 from .utils import generate_match_id, is_valid_new_player, get_highest_hp_player
 from .config import socketio
 from .change_detector import change_detector
+from .matchup_predictor_service import matchup_predictor_service
 from typing import Optional, Tuple
 
 
@@ -82,6 +83,13 @@ class MatchState:
         self.player_combat_history = {}  # account_id -> List[CombatRecord] - Full buffer of all combats
         self.player_vs_opponent_stats = {}  # (account_id, opponent_slot) -> Dict with wins, losses, draws
         self.new_combats_this_update = {}  # account_id -> List[CombatRecord] - New combats for this WebSocket emit
+        
+        # Matchup predictor tracking
+        self.previous_alive_player_count = None
+        self.previous_round_oriented_pairs = set()  # Set[(player_slot, opponent_slot)]
+        self.schedule_offset = 0
+        self.streak_step = 0
+        self.latest_matchup_prediction = None
 
     def reset(self):
         """Reset to initial state."""
@@ -105,6 +113,11 @@ class MatchState:
         self.player_combat_history = {}
         self.player_vs_opponent_stats = {}
         self.new_combats_this_update = {}
+        self.previous_alive_player_count = None
+        self.previous_round_oriented_pairs = set()
+        self.schedule_offset = 0
+        self.streak_step = 0
+        self.latest_matchup_prediction = None
 
     def reset_for_new_match_preserve_buffers(self):
         """Reset active match runtime state but keep pre-match buffers for bootstrap processing."""
@@ -212,6 +225,11 @@ def detect_and_record_combat(account_id: int, current_state: Dict, previous_stat
     if account_id not in match_state.new_combats_this_update:
         match_state.new_combats_this_update[account_id] = []
     match_state.new_combats_this_update[account_id].append(combat_record)
+
+    # Track oriented player-slot pairs for previous-round predictor context
+    player_slot = current_state.get('player_slot')
+    if player_slot is not None and opponent_slot is not None:
+        match_state.previous_round_oriented_pairs.add((int(player_slot), int(opponent_slot)))
     
     # Update stats
     match_state.player_vs_opponent_stats[stats_key] = {
@@ -253,12 +271,23 @@ def update_round_from_combat_type(account_id: int, combat_type: int):
     # Transition: prep → combat (0 → non-0)
     if prev_combat_type == 0 and combat_type != 0:
         match_state.round_phase = 'combat'
+        # Snapshot alive player count at the start of combat for next-round prediction context
+        alive_count = 0
+        for player in match_state.latest_processed_public_player_states.values():
+            if player.get('final_place', 0) == 0:
+                alive_count += 1
+        match_state.previous_alive_player_count = alive_count if alive_count > 0 else None
+        # Start collecting oriented pairs for the current combat round
+        match_state.previous_round_oriented_pairs = set()
+        match_state.streak_step += 1
         # Round number stays the same
     
     # Transition: combat → prep (non-0 → 0)
     elif prev_combat_type != 0 and combat_type == 0:
         match_state.round_number += 1
         match_state.round_phase = 'prep'
+        # New prep phase means a new prediction context starts
+        match_state.streak_step = 0
         # Find new highest HP player at start of prep phase
         match_state.tracked_player_account_id = get_highest_hp_player(match_state.latest_processed_public_player_states)
     
@@ -444,6 +473,14 @@ def emit_realtime_update():
         update_data['combat_results'] = combat_results
         # Clear after adding to payload
         match_state.new_combats_this_update = {}
+
+    # Add matchup prediction data for the current round
+    try:
+        prediction_payload = matchup_predictor_service.get_current_prediction(match_state)
+        if prediction_payload is not None:
+            update_data['matchup_prediction'] = prediction_payload
+    except Exception as e:
+        print(f"[MATCHUP PREDICTOR] Failed to compute prediction: {e}")
     
     # Emit immediately - broadcast to ALL connected clients!
     socketio.emit('match_update', update_data, to=None)

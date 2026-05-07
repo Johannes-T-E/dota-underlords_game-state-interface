@@ -3,6 +3,7 @@ import type { Store } from '@reduxjs/toolkit';
 import { setConnectionStatus } from '@/store/connectionSlice';
 import { updateMatch, abandonMatch } from '@/store/matchSlice';
 import { addChanges } from '@/store/changesSlice';
+import { setPrediction } from '@/store/matchupPredictorSlice';
 import type { MatchData, WebSocketEvents } from '@/types';
 
 class WebSocketService {
@@ -69,11 +70,13 @@ class WebSocketService {
       }
       
       this.store?.dispatch(updateMatch(data));
+      this.store?.dispatch(setPrediction(data.matchup_prediction ?? null));
     });
 
     this.socket.on('match_abandoned', (data: WebSocketEvents['match_abandoned']) => {
       console.log('[WebSocket] Match abandoned:', data);
       this.store?.dispatch(abandonMatch());
+      this.store?.dispatch(setPrediction(null));
     });
 
     this.socket.on('test_response', (data: WebSocketEvents['test_response']) => {

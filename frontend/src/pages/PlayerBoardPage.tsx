@@ -92,7 +92,7 @@ export const PlayerBoardPage = () => {
         <div style={{ 
           width: '100%', 
           height: '100%',
-          minHeight: 'calc(100vh - 2rem)',
+          minHeight: 0,
           display: 'flex', 
           flexDirection: 'column',
           overflow: 'hidden',

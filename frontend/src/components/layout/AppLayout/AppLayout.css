@@ -9,23 +9,18 @@
 
 .app-layout__main {
   flex: 1;
-  margin-left: 200px;
+  margin-left: 60px;
   display: flex;
   flex-direction: column;
-  transition: margin-left 0.3s ease;
+  transition: none;
   overflow-x: hidden;
-  width: calc(100vw - 200px);
-}
-
-/* When nav is collapsed */
-.app-layout:has(.navigation-bar--collapsed) .app-layout__main {
-  margin-left: 60px;
-  width: calc(100vw - 60px);
+  width: calc(100% - 60px);
+  max-width: calc(100% - 60px);
 }
 
 .app-layout__content {
   flex: 1;
-  padding: 1rem 2rem 2rem;
+  padding: 0;
   overflow-y: auto;
   overflow-x: hidden;
   max-width: 100%;
@@ -38,10 +33,12 @@
 
   .app-layout__main {
     margin-left: 0;
+    width: 100%;
+    max-width: 100%;
   }
 
   .app-layout__content {
-    padding: 1rem;
+    padding: 0;
   }
 }
 

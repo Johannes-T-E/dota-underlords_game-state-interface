@@ -168,6 +168,29 @@ export interface CombatResult {
   timestamp: string;
 }
 
+export interface MatchupPrediction {
+  known: boolean;
+  tier: string;
+  reason: string;
+  prediction_pairs: [number, number][];
+  alive_player_count: number;
+  alive_player_slots: number[];
+  eliminated_player_slots: number[];
+  round_number: number;
+  round_phase: 'prep' | 'combat';
+  schedule_offset: number;
+  streak_step: number;
+  future_rounds?: MatchupPredictionFutureRound[];
+}
+
+export interface MatchupPredictionFutureRound {
+  round_number: number;
+  known: boolean;
+  tier: string;
+  reason: string;
+  prediction_pairs: [number, number][];
+}
+
 export interface MatchData {
   match: MatchInfo;
   public_player_states: PlayerState[];  // Changed from 'players' to match backend
@@ -176,6 +199,7 @@ export interface MatchData {
   current_round: RoundInfo;
   timestamp: number;
   combat_results?: Record<string, CombatResult[]>;  // account_id (string) -> CombatResult[]
+  matchup_prediction?: MatchupPrediction | null;
 }
 
 // API Response types
@@ -196,6 +220,51 @@ export interface ApiMatchesResponse {
   status: string;
   matches: ApiMatch[];
   count: number;
+}
+
+export interface MatchSummaryPlayer {
+  account_id: number;
+  persona_name?: string;
+  bot_persona_name?: string;
+  is_bot: boolean;
+  final_place: number;
+  health: number | null;
+  gold: number | null;
+  level: number | null;
+  xp: number;
+  next_level_xp: number;
+  win_streak: number;
+  lose_streak: number;
+  net_worth: number | null;
+  wins: number;
+  losses: number;
+  unit_ids: number[];
+  units: Unit[];
+  item_slots: ItemSlot[];
+  synergies: Synergy[];
+}
+
+export interface MatchSummary {
+  player_count: number;
+  bot_count: number;
+  bot_heavy: boolean;
+  complete: boolean;
+  partial: boolean;
+  players: MatchSummaryPlayer[];
+  combat_summary: Record<string, { wins: number; losses: number; draws: number }>;
+}
+
+export interface ApiMatchSummaryResponse {
+  status: string;
+  match_id: string;
+  summary: MatchSummary;
+}
+
+export interface ApiAbandonMatchResponse {
+  status: string;
+  match_id: string;
+  ended_at: string;
+  message: string;
 }
 
 export interface ApiStatusResponse {

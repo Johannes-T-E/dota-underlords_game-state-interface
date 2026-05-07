@@ -1,11 +1,14 @@
 import type { 
   ApiMatchesResponse, 
+  ApiAbandonMatchResponse,
+  ApiMatchSummaryResponse,
   ApiStatusResponse, 
   ApiHealthResponse,
   CombatResult,
   Change,
   Build,
-  ShopHistoryEntry
+  ShopHistoryEntry,
+  MatchupPrediction
 } from '@/types';
 
 const API_BASE_URL = import.meta.env.DEV ? 'http://localhost:3000' : '';
@@ -44,10 +47,20 @@ class ApiService {
     });
   }
 
-  async abandonMatch(): Promise<{ status: string; match_id: string; message: string }> {
+  async abandonMatch(): Promise<ApiAbandonMatchResponse> {
     return this.request('/api/abandon_match', {
       method: 'POST',
     });
+  }
+
+  async abandonMatchById(matchId: string): Promise<ApiAbandonMatchResponse> {
+    return this.request(`/api/matches/${matchId}/abandon`, {
+      method: 'POST',
+    });
+  }
+
+  async getMatchSummary(matchId: string): Promise<ApiMatchSummaryResponse> {
+    return this.request<ApiMatchSummaryResponse>(`/api/matches/${matchId}/summary`);
   }
 
   async getStatus(): Promise<ApiStatusResponse> {
@@ -102,6 +115,15 @@ class ApiService {
       shopUnits: e.shop_units as ShopHistoryEntry['shopUnits'],
       purchasedSlotIndices: e.purchased_slot_indices,
     }));
+  }
+
+  async fetchMatchupPrediction(matchId: string): Promise<MatchupPrediction | null> {
+    const response = await this.request<{
+      status: string;
+      match_id: string;
+      matchup_prediction: MatchupPrediction | null;
+    }>(`/api/matches/${matchId}/matchup_prediction`);
+    return response.matchup_prediction;
   }
 
   // Build endpoints

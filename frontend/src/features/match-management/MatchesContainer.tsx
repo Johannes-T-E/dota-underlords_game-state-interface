@@ -137,16 +137,22 @@ export const MatchesContainer = () => {
     setSelectedMatch(null);
   };
 
-  const handleAbandonMatch = async () => {
-    if (!confirm('Are you sure you want to abandon the current match? This will end the active match.')) {
+  const canAbandonSelected = Boolean(
+    selectedMatch &&
+    !selectedMatch.ended_at
+  );
+
+  const handleAbandonSelectedMatch = async () => {
+    if (!selectedMatch) return;
+    if (!confirm(`Are you sure you want to abandon match ${selectedMatch.match_id}? This will mark the selected in-progress match as ended.`)) {
       return;
     }
 
     try {
-      const response = await apiService.abandonMatch();
+      const response = await apiService.abandonMatchById(selectedMatch.match_id);
       if (response.status === 'success') {
         console.log('Match abandoned:', response.match_id);
-        const endedAtIso = new Date().toISOString();
+        const endedAtIso = response.ended_at;
         const optimisticMatches = matches.map((match) =>
           match.match_id === response.match_id && !match.ended_at
             ? { ...match, ended_at: endedAtIso }
@@ -169,6 +175,7 @@ export const MatchesContainer = () => {
 
   return (
     <SidebarLayoutTemplate
+      sidebarWidth="max-content"
       sidebar={
         <MatchesTable
           matches={matches}
@@ -176,29 +183,21 @@ export const MatchesContainer = () => {
           loading={loading}
           error={error}
           onMatchSelect={handleMatchSelect}
-          onMatchDelete={handleMatchDelete}
-          onAbandonMatch={handleAbandonMatch}
         />
       }
       main={
         selectedMatch ? (
-          <div style={{ 
-            background: 'var(--secondary-color)', 
-            border: '1px solid var(--border-color)', 
-            borderRadius: 0,
-            overflow: 'hidden'
-          }}>
+          <div className="matches-container__main-panel">
             <MatchDetailPanel
               match={selectedMatch}
+              canAbandonSelected={canAbandonSelected}
+              onDeleteSelectedMatch={() => handleMatchDelete(selectedMatch.match_id)}
+              onAbandonSelectedMatch={handleAbandonSelectedMatch}
               onClose={handleCloseDetails}
             />
           </div>
         ) : (
-          <div style={{ 
-            background: 'var(--secondary-color)', 
-            border: '1px solid var(--border-color)', 
-            borderRadius: 0
-          }}>
+          <div className="matches-container__main-panel matches-container__main-panel--empty">
             <EmptyState
               title="Select a match to view details"
               message="Choose a match from the list to see player information and final standings."

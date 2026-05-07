@@ -11,8 +11,10 @@ import { ShopPage } from './pages/ShopPage';
 import { PlayerBoardsPage } from './pages/PlayerBoardsPage';
 import { PlayerBoardPage } from './pages/PlayerBoardPage';
 import { CombatResultsPage } from './pages/CombatResultsPage';
+import { MatchupPredictorPage } from './pages/MatchupPredictorPage';
 import { HeroPoolStatsPage } from './features/hero-pool-stats';
 import { BuildCreatorPage } from './pages/BuildCreatorPage';
+import { SettingsPage } from './pages/SettingsPage';
 import { HeroesPage, HeroDetailPage } from './features/heroes';
 import { ItemsPage } from './features/items';
 import { ItemDetailPage } from './features/items/components/ItemDetail';
@@ -39,8 +41,10 @@ function AppContent() {
         <Route path="/player-boards" element={<PlayerBoardsPage />} />
         <Route path="/player-board/:accountId" element={<PlayerBoardPage />} />
         <Route path="/combat-results" element={<CombatResultsPage />} />
+        <Route path="/matchup-predictor" element={<MatchupPredictorPage />} />
         <Route path="/hero-pool-stats" element={<HeroPoolStatsPage />} />
         <Route path="/build-creator" element={<BuildCreatorPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
         <Route path="/heroes" element={<HeroesPage />} />
         <Route path="/heroes/:heroId" element={<HeroDetailPage />} />
         <Route path="/items" element={<ItemsPage />} />

@@ -20,5 +20,5 @@
   width: auto;
   height: 100%;
   flex-shrink: 0;
-  margin-left: -8%; /* Overlap slightly with icon for alignment */
+  margin-left: 0;
 }

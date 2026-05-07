@@ -13,6 +13,38 @@ from .config import app, socketio, PRODUCTION, FRONTEND_BUILD_DIR, GSI_HOST, GSI
 from .change_detector import change_detector
 
 
+def _parse_snapshot_timestamp(value):
+    if isinstance(value, datetime):
+        return value
+    if isinstance(value, str):
+        normalized = value.replace('Z', '+00:00')
+        try:
+            return datetime.fromisoformat(normalized)
+        except ValueError:
+            return None
+    return None
+
+
+def _get_latest_snapshot_timestamp(match_id):
+    try:
+        snapshots = db.get_match_snapshots(match_id)
+    except Exception as e:
+        print(f"[WARN] Failed to load snapshots for abandon timestamp ({match_id}): {e}")
+        return None
+
+    latest_snapshot = None
+    latest_sort_key = None
+    for snapshot in snapshots:
+        sequence = snapshot.get('sequence_number') or 0
+        snapshot_time = _parse_snapshot_timestamp(snapshot.get('timestamp'))
+        sort_key = (int(sequence), snapshot_time or datetime.min)
+        if latest_sort_key is None or sort_key > latest_sort_key:
+            latest_sort_key = sort_key
+            latest_snapshot = snapshot_time
+
+    return latest_snapshot
+
+
 # Serve React App (Production mode)
 if PRODUCTION and FRONTEND_BUILD_DIR and os.path.exists(FRONTEND_BUILD_DIR):
     @app.route('/')
@@ -25,6 +57,7 @@ if PRODUCTION and FRONTEND_BUILD_DIR and os.path.exists(FRONTEND_BUILD_DIR):
     @app.route('/combat-results')
     @app.route('/hero-pool-stats')
     @app.route('/match-management')
+    @app.route('/matchup-predictor')
     def serve_react_app():
         """Serve the React app for all frontend routes."""
         return send_from_directory(app.static_folder, 'index.html')
@@ -73,12 +106,40 @@ def abandon_match_endpoint():
         return jsonify({'error': 'No active match'}), 400
     
     match_id = match_state.match_id
-    timestamp = datetime.now()
+    timestamp = _get_latest_snapshot_timestamp(match_id) or datetime.now()
     abandon_match(match_id, timestamp, reason="Manual abandonment")
     
     return jsonify({
         'status': 'success',
         'match_id': match_id,
+        'ended_at': timestamp.isoformat(),
+        'message': 'Match abandoned successfully'
+    })
+
+
+@app.route('/api/matches/<match_id>/abandon', methods=['POST'])
+def abandon_specific_match_endpoint(match_id):
+    """Manually abandon a specific in-progress match id."""
+    all_matches = db.get_all_matches()
+    match_meta = next((m for m in all_matches if m.get('match_id') == match_id), None)
+    if not match_meta:
+        return jsonify({'error': 'Match not found'}), 404
+
+    if match_meta.get('ended_at'):
+        return jsonify({'error': 'Match is already complete'}), 400
+
+    timestamp = _get_latest_snapshot_timestamp(match_id) or datetime.now()
+
+    if match_state.match_id == match_id:
+        abandon_match(match_id, timestamp, reason="Manual abandonment")
+    else:
+        # Historical in-progress match: mark completed without touching active in-memory state
+        db_write_queue.put(('update_match_end', match_id, timestamp))
+
+    return jsonify({
+        'status': 'success',
+        'match_id': match_id,
+        'ended_at': timestamp.isoformat(),
         'message': 'Match abandoned successfully'
     })
 
@@ -92,6 +153,122 @@ def get_matches():
         'matches': matches,
         'count': len(matches)
     })
+
+
+@app.route('/api/matches/<match_id>/summary', methods=['GET'])
+def get_match_summary(match_id):
+    """Get enriched summary/details for a match using latest snapshots and player metadata."""
+    try:
+        def to_int(value, default=0):
+            try:
+                if value is None:
+                    return default
+                return int(value)
+            except (TypeError, ValueError):
+                return default
+
+        all_matches = db.get_all_matches()
+        match_meta = next((m for m in all_matches if m.get('match_id') == match_id), None)
+        if not match_meta:
+            return jsonify({
+                'status': 'error',
+                'message': 'Match not found'
+            }), 404
+
+        players = match_meta.get('players') or []
+        players_by_account = {p.get('account_id'): p for p in players}
+
+        snapshots: List[Dict] = []
+        try:
+            snapshots = db.get_match_snapshots(match_id)
+        except Exception as snapshot_error:
+            print(f"[WARN] Failed to get snapshots for summary {match_id}: {snapshot_error}")
+
+        latest_by_account: Dict[int, Dict] = {}
+        for snapshot in snapshots:
+            account_id = to_int(snapshot.get('account_id'), default=-1)
+            if account_id is None:
+                continue
+            previous = latest_by_account.get(account_id)
+            if previous is None or to_int(snapshot.get('sequence_number'), 0) >= to_int(previous.get('sequence_number'), 0):
+                latest_by_account[account_id] = snapshot
+
+        player_summaries: List[Dict] = []
+        for account_id, player_meta in players_by_account.items():
+            normalized_account_id = to_int(account_id, default=-1)
+            latest = latest_by_account.get(normalized_account_id)
+            wins = to_int(latest.get('wins'), 0) if latest else 0
+            losses = to_int(latest.get('losses'), 0) if latest else 0
+            units = latest.get('units') if latest and isinstance(latest.get('units'), list) else []
+            unit_ids = [u.get('unit_id') for u in units if isinstance(u, dict) and u.get('unit_id') is not None]
+
+            player_summaries.append({
+                'account_id': normalized_account_id,
+                'persona_name': player_meta.get('persona_name'),
+                'bot_persona_name': player_meta.get('bot_persona_name'),
+                'is_bot': bool(player_meta.get('bot_persona_name')),
+                'final_place': to_int(player_meta.get('final_place'), 0),
+                'health': to_int(latest.get('health'), 0) if latest else None,
+                'gold': to_int(latest.get('gold'), 0) if latest else None,
+                'level': to_int(latest.get('level'), 0) if latest else None,
+                'xp': to_int(latest.get('xp'), 0) if latest else 0,
+                'next_level_xp': to_int(latest.get('next_level_xp'), 0) if latest else 1,
+                'win_streak': to_int(latest.get('win_streak'), 0) if latest else 0,
+                'lose_streak': to_int(latest.get('lose_streak'), 0) if latest else 0,
+                'net_worth': to_int(latest.get('net_worth'), 0) if latest else None,
+                'wins': wins,
+                'losses': losses,
+                'unit_ids': unit_ids,
+                'units': units,
+                'item_slots': latest.get('item_slots') if latest and isinstance(latest.get('item_slots'), list) else [],
+                'synergies': latest.get('synergies') if latest and isinstance(latest.get('synergies'), list) else []
+            })
+
+        player_summaries.sort(key=lambda p: (to_int(p.get('final_place'), 0) == 0, to_int(p.get('final_place'), 0), to_int(p.get('account_id'), 0)))
+
+        player_count = to_int(match_meta.get('player_count'), 0)
+        bot_count = sum(1 for p in player_summaries if p.get('is_bot'))
+        complete = (
+            len(player_summaries) == player_count
+            and player_count > 0
+            and all(1 <= to_int(p.get('final_place'), 0) <= 8 for p in player_summaries)
+        )
+        partial = not complete
+        bot_heavy = player_count > 0 and bot_count > (player_count / 2)
+
+        combat_summary: Dict[str, Dict[str, int]] = {}
+        if match_state.match_id == match_id:
+            for account_id, combats in match_state.player_combat_history.items():
+                win_count = sum(1 for c in combats if c.get('result') == 'win')
+                loss_count = sum(1 for c in combats if c.get('result') == 'loss')
+                draw_count = sum(1 for c in combats if c.get('result') == 'draw')
+                combat_summary[str(account_id)] = {
+                    'wins': win_count,
+                    'losses': loss_count,
+                    'draws': draw_count
+                }
+
+        return jsonify({
+            'status': 'success',
+            'match_id': match_id,
+            'summary': {
+                'player_count': player_count,
+                'bot_count': bot_count,
+                'bot_heavy': bot_heavy,
+                'complete': complete,
+                'partial': partial,
+                'players': player_summaries,
+                'combat_summary': combat_summary
+            }
+        })
+    except Exception as e:
+        print(f"[ERROR] Failed to get match summary: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
 
 
 @app.route('/api/matches/<match_id>', methods=['DELETE'])
@@ -144,6 +321,31 @@ def get_match_combats(match_id):
     
     except Exception as e:
         print(f"[ERROR] Failed to get match combats: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+
+@app.route('/api/matches/<match_id>/matchup_prediction', methods=['GET'])
+def get_matchup_prediction(match_id):
+    """Get matchup prediction for an active match."""
+    try:
+        if match_state.match_id != match_id:
+            return jsonify({
+                'status': 'error',
+                'message': 'Match not found or not active'
+            }), 404
+
+        return jsonify({
+            'status': 'success',
+            'match_id': match_id,
+            'matchup_prediction': match_state.latest_matchup_prediction
+        })
+    except Exception as e:
+        print(f"[ERROR] Failed to get matchup prediction: {e}")
         import traceback
         traceback.print_exc()
         return jsonify({

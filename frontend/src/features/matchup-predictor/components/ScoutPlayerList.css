@@ -1,0 +1,58 @@
+.scout-player-list {
+  min-width: 0;
+  overflow: hidden;
+  background: var(--primary-color, #111114);
+  border: 1px solid var(--border-color, #3a3a3e);
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.scout-player-list__header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  min-height: 28px;
+  border-bottom: 1px solid var(--border-color, #3a3a3e);
+  padding: 0 8px;
+}
+
+.scout-player-list__header > :first-child {
+  justify-content: flex-start;
+  padding-left: 8px;
+}
+
+.scout-player-list__rows {
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.scout-player-list__row {
+  border: 1px solid transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  height: var(--matchup-list-row-height, 68px);
+  min-height: var(--matchup-list-row-height, 68px);
+  max-height: var(--matchup-list-row-height, 68px);
+  box-sizing: border-box;
+}
+
+.scout-player-list__row:hover,
+.scout-player-list__row--selected {
+  border-color: var(--accent-color, #4a90e2);
+}
+
+.scout-player-list__row .scoreboard-player-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-height: 0;
+  height: 100%;
+  min-height: 100%;
+  max-height: 100%;
+  padding: 0 8px;
+}
+
+.scout-player-list__row .scoreboard-player-row__player-name {
+  padding-left: 8px;
+}

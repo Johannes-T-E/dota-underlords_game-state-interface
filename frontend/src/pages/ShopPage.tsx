@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { AppLayout, MainContentTemplate } from '@/components/layout';
 import { ShopDisplay, ShopHistoryList, ShopOddsPanel } from '@/features/shop';
-import { EmptyState } from '@/components/shared';
+import { EmptyState, PageHeader } from '@/components/shared';
+import { IconShoppingCart } from '@tabler/icons-react';
 import { useAppSelector, useAppDispatch } from '@/hooks/redux';
 import { useHeroesDataContext } from '@/contexts/HeroesDataContext';
 import { setShopHistory } from '@/store/matchSlice';
@@ -62,9 +63,7 @@ export const ShopPage = () => {
     <AppLayout>
       <MainContentTemplate className="shop-page" centered={false}>
         <div className="shop-page__container">
-          <div className="shop-page__header">
-            <h1 className="shop-page__title">Shop</h1>
-          </div>
+          <PageHeader title="Shop" titleIcon="🛒" icon={<IconShoppingCart size={18} stroke={1.8} />} />
           {!currentMatch ? (
             <div className="shop-page__empty">
               <EmptyState

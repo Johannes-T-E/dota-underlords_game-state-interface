@@ -87,6 +87,10 @@
   gap: var(--gap-size);
 }
 
+.player-board--bench-top .player-board__grid {
+  flex-direction: column;
+}
+
 .player-board__cell {
   width: var(--cell-size);
   height: var(--cell-size);

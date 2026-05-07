@@ -10,3 +10,6 @@ export type { MatchInfoBarProps } from './MatchInfoBar/MatchInfoBar';
 export { EmptyState } from './EmptyState/EmptyState';
 export type { EmptyStateProps } from './EmptyState/EmptyState';
 
+export { PageHeader } from './PageHeader/PageHeader';
+export type { PageHeaderProps } from './PageHeader/PageHeader';
+

@@ -1,60 +1,47 @@
 .placement-board {
-  background: var(--primary-color);
   border: 1px solid var(--border-color);
-  border-radius: 0;
-  overflow: hidden;
-}
-
-.placement-board__table {
   width: 100%;
-  border-collapse: collapse;
+  min-height: 0;
 }
 
-.placement-board__table thead {
-  background: var(--secondary-color);
+.placement-board.scoreboard-table {
+  box-shadow: none;
 }
 
-.placement-board__table th {
-  padding: 0.75rem 1rem;
+.placement-board__scroll {
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 100%;
+}
+
+.placement-board__scroll > .scoreboard-header,
+.placement-board__scroll > .placement-board__scaled {
+  width: max-content;
+  min-width: 100%;
+}
+
+.placement-board__scaled {
+  --placement-board-scale: 0.67;
+  zoom: var(--placement-board-scale);
+  transform-origin: top left;
+  width: calc(100% / var(--placement-board-scale));
+}
+
+.placement-board__players {
+  display: flex;
+  flex-direction: column;
+  background: var(--primary-color);
+}
+
+.placement-board__status-cell {
+  padding: 0.9rem 1rem;
+  color: color-mix(in srgb, var(--text-color) 70%, transparent);
   text-align: left;
-  font-size: 11px;
-  font-weight: bold;
-  color: #999;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-bottom: 1px solid var(--border-color);
 }
 
-.placement-board__table td {
-  padding: 0.75rem 1rem;
-  font-size: 13px;
-  color: var(--accent-color);
-  border-bottom: 1px solid rgba(68, 74, 84, 0.3);
-}
-
-.placement-board__table tbody tr:last-child td {
-  border-bottom: none;
-}
-
-.placement-board__table tbody tr:hover {
-  background: rgba(202, 202, 202, 0.05);
-}
-
-.placement-board__place {
-  width: 80px;
-  font-weight: bold;
-  color: var(--gold-color);
-}
-
-.placement-board__player {
-  min-width: 200px;
-}
-
-.placement-board__player-name .player-name-display {
-  font-size: 0.95rem;
-}
-
-.placement-board__type {
-  width: 100px;
+.placement-board__status-cell--error {
+  color: color-mix(in srgb, var(--accent-color) 70%, var(--text-color));
 }
 

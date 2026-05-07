@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 import { AppLayout, MainContentTemplate } from '@/components/layout';
 import { SynergyPoolBarChart } from '@/components/charts/SynergyPoolBarChart';
-import { EmptyState } from '@/components/shared';
+import { EmptyState, PageHeader } from '@/components/shared';
+import { IconChartBar } from '@tabler/icons-react';
 import { useAppSelector } from '@/hooks/redux';
 import { useHeroesDataContext } from '@/contexts/HeroesDataContext';
 import { calculatePoolCounts } from '@/utils/poolCalculator';
@@ -33,9 +34,7 @@ export const HeroPoolStatsPage = () => {
     <AppLayout>
       <MainContentTemplate centered={false} className="hero-pool-stats-page">
         <div className="hero-pool-stats-page__container">
-          <div className="hero-pool-stats-page__header">
-            <h1 className="hero-pool-stats-page__title">Hero Pool Stats</h1>
-          </div>
+          <PageHeader title="Hero Pool Stats" titleIcon="📊" icon={<IconChartBar size={18} stroke={1.8} />} />
           {!currentMatch ? (
             <div className="hero-pool-stats-page__empty">
               <EmptyState

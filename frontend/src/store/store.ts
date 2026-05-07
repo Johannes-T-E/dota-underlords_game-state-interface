@@ -5,6 +5,7 @@ import matchesReducer from './matchesSlice';
 import boardReducer from './boardSlice';
 import settingsReducer from './settingsSlice';
 import changesReducer from './changesSlice';
+import matchupPredictorReducer from './matchupPredictorSlice';
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     board: boardReducer,
     settings: settingsReducer,
     changes: changesReducer,
+    matchupPredictor: matchupPredictorReducer,
   },
 });
 

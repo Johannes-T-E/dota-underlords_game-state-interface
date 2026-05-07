@@ -5,6 +5,7 @@
   min-height: 0;
   background: var(--secondary-color, #2a2a2e);
   border: 1px solid var(--border-color, #3a3a3e);
+  border-top: 0;
   overflow: hidden;
 }
 

@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { AppLayout, MainContentTemplate } from '@/components/layout';
+import { PageHeader } from '@/components/shared';
+import { IconDashboard } from '@tabler/icons-react';
 import { ScoreboardTable } from '@/features/scoreboard/components/ScoreboardTable/ScoreboardTable';
 import { PlayerBoard } from '@/features/player-board/components/PlayerBoard/PlayerBoard';
 /* import { UnitChanges } from '@/features/unit-changes/UnitChanges'; */
@@ -76,7 +78,7 @@ export const Dashboard = () => {
 
   return (
     <AppLayout>
-      <MainContentTemplate centered>
+      <MainContentTemplate centered={false} className="dashboard-page">
         {/* Debug Toggle Button */}
         <div style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 100 }}>
           <Button
@@ -89,7 +91,9 @@ export const Dashboard = () => {
           </Button>
         </div>
         
-        <div className="dashboard">
+        <div className="dashboard-page__container">
+          <PageHeader title="Dashboard" titleIcon="🏠" icon={<IconDashboard size={18} stroke={1.8} />} />
+          <div className="dashboard">
           {/* Scoreboard Section */}
           <section className="dashboard__section dashboard__section--scoreboard">
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -207,6 +211,7 @@ export const Dashboard = () => {
               </div>
             )}
           </section>
+          </div>
         </div>
         
         {/* Combat Debug Table Modal */}

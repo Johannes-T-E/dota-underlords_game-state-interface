@@ -1,4 +1,4 @@
-import { Text, Spinner, Button } from '@/components/ui';
+import { Text, Spinner } from '@/components/ui';
 import { MatchesTableRow } from '@/features/match-management/components/MatchesTableRow/MatchesTableRow';
 import type { ApiMatch } from '@/types';
 import './MatchesTable.css';
@@ -9,8 +9,6 @@ export interface MatchesTableProps {
   loading: boolean;
   error: string | null;
   onMatchSelect: (match: ApiMatch) => void;
-  onMatchDelete: (matchId: string) => void;
-  onAbandonMatch?: () => void;
   className?: string;
 }
 
@@ -20,28 +18,14 @@ export const MatchesTable = ({
   loading,
   error,
   onMatchSelect, 
-  onMatchDelete,
-  onAbandonMatch,
   className = ''
 }: MatchesTableProps) => {
-  const hasActiveMatch = matches.some(match => !match.ended_at);
-
   return (
     <div className={`matches-table-wrapper ${className}`}>
       <div className="matches-table-wrapper__header">
         <Text variant="h3" weight="bold">
           Matches ({matches.length})
         </Text>
-        {hasActiveMatch && onAbandonMatch && (
-          <Button
-            variant="danger"
-            size="small"
-            onClick={onAbandonMatch}
-            title="Abandon current match"
-          >
-            Abandon Match
-          </Button>
-        )}
       </div>
 
       {loading && (
@@ -70,8 +54,9 @@ export const MatchesTable = ({
               <tr>
                 <th>Started</th>
                 <th>Duration</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <th>Match</th>
+                <th>Player type</th>
+                <th>Data</th>
               </tr>
             </thead>
             <tbody>
@@ -81,7 +66,6 @@ export const MatchesTable = ({
                   match={match}
                   isSelected={selectedMatchId === match.match_id}
                   onClick={() => onMatchSelect(match)}
-                  onDelete={onMatchDelete}
                 />
               ))}
             </tbody>

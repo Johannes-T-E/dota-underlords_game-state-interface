@@ -135,8 +135,11 @@ h1 {
 /* Shared scrollbar utility for themed scroll containers */
 .app-scrollbar {
     --app-scrollbar-size: 10px;
+    --app-scrollbar-track: #1d1c23;
+    --app-scrollbar-thumb: #5d6069;
+    --app-scrollbar-thumb-hover: #737784;
     scrollbar-width: thin;
-    scrollbar-color: var(--accent-color) var(--secondary-color);
+    scrollbar-color: var(--app-scrollbar-thumb) var(--app-scrollbar-track);
 }
 
 .app-scrollbar::-webkit-scrollbar {
@@ -145,16 +148,16 @@ h1 {
 }
 
 .app-scrollbar::-webkit-scrollbar-track {
-    background: var(--secondary-color);
+    background: var(--app-scrollbar-track);
 }
 
 .app-scrollbar::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, var(--accent-color), rgba(255, 200, 120, 0.8));
+    background: linear-gradient(180deg, var(--app-scrollbar-thumb), #4f525b);
     border-radius: 999px;
-    border: 2px solid var(--secondary-color);
+    border: 2px solid var(--app-scrollbar-track);
 }
 
 .app-scrollbar::-webkit-scrollbar-thumb:hover {
-    filter: brightness(1.08);
+    background: linear-gradient(180deg, var(--app-scrollbar-thumb-hover), #626673);
 }
 

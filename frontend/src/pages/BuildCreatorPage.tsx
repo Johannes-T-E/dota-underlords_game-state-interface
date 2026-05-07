@@ -1,6 +1,8 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { AppLayout, MainContentTemplate } from '@/components/layout';
+import { PageHeader } from '@/components/shared';
+import { IconChalkboardTeacher } from '@tabler/icons-react';
 import { HeroSelectionPanel } from '@/features/build-creator/components/HeroSelectionPanel/HeroSelectionPanel';
 import { EditablePlayerBoard } from '@/features/build-creator/components/EditablePlayerBoard/EditablePlayerBoard';
 import { BuildManager } from '@/features/build-creator/components/BuildManager/BuildManager';
@@ -195,9 +197,7 @@ export const BuildCreatorPage = () => {
     <AppLayout>
       <MainContentTemplate centered={false} className="build-creator-page">
         <div className="build-creator-page__container">
-          <div className="build-creator-page__header">
-            <h1 className="build-creator-page__title">Build Creator</h1>
-          </div>
+          <PageHeader title="Build Creator" titleIcon="🧩" icon={<IconChalkboardTeacher size={18} stroke={1.8} />} />
 
           <div className="build-creator-page__content">
             {/* Left panel: Hero selection */}

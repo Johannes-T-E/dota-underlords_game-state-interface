@@ -1,0 +1,111 @@
+.matchup-predictor {
+  --matchup-list-row-height: 70px;
+  --matchup-summary-row-height: 68px;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  color: var(--text-primary, #ffffff);
+  overflow: hidden;
+}
+
+.matchup-predictor > .page-header {
+  grid-template-columns: minmax(230px, 300px) minmax(500px, 1fr) minmax(300px, 380px);
+  gap: 0;
+}
+
+.matchup-predictor > .page-header .page-header__left {
+  grid-column: 1;
+}
+
+.matchup-predictor > .page-header .page-header__center {
+  grid-column: 2;
+  justify-content: center;
+}
+
+.matchup-predictor > .page-header .page-header__right {
+  grid-column: 3;
+  justify-content: flex-end;
+}
+
+.matchup-predictor__round-label {
+  white-space: nowrap;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: var(--text-primary, #ffffff);
+}
+
+.matchup-predictor__bench-toggle {
+  gap: 8px;
+}
+
+.matchup-predictor__bench-toggle .toggle-switch__slider {
+  background-color: color-mix(in srgb, var(--border-color, #444a54) 80%, transparent);
+}
+
+.matchup-predictor__bench-toggle .toggle-switch__input:checked + .toggle-switch__slider {
+  background-color: color-mix(in srgb, var(--health-color, #a2ff92) 50%, var(--secondary-color, #1d1c23));
+}
+
+.matchup-predictor__bench-toggle .toggle-switch__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary, #b8b8b8);
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+}
+
+.matchup-predictor__layout {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(230px, 300px) minmax(500px, 1fr) minmax(300px, 380px);
+  gap: 0;
+  padding-top: 0;
+  overflow: hidden;
+  align-items: stretch;
+  box-sizing: border-box;
+}
+
+.matchup-predictor__layout > * {
+  min-height: 0;
+}
+
+/* Header already has a bottom border; avoid doubled seam. */
+.matchup-predictor__layout > .scout-player-list,
+.matchup-predictor__layout > .perspective-match-board,
+.matchup-predictor__layout > .future-opponent-list {
+  border-top: 0;
+}
+
+/* Adjacent columns touch; keep shared seams single-pixel. */
+.matchup-predictor__layout > .scout-player-list {
+  border-right: 0;
+}
+
+.matchup-predictor__layout > .perspective-match-board {
+  border-right: 0;
+}
+
+@media (max-width: 1280px) {
+  .matchup-predictor__layout {
+    grid-template-columns: minmax(210px, 280px) minmax(460px, 1fr);
+  }
+}
+
+@media (max-width: 980px) {
+  .matchup-predictor .page-header {
+    grid-template-columns: 1fr;
+  }
+
+  .matchup-predictor .page-header__center,
+  .matchup-predictor .page-header__right {
+    justify-content: flex-start;
+  }
+
+  .matchup-predictor__layout {
+    grid-template-columns: 1fr;
+  }
+}
