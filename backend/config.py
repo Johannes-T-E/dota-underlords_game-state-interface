@@ -13,6 +13,8 @@ load_dotenv()
 DEBUG = os.getenv('DEBUG', 'false').lower() == 'true'
 SECRET_KEY = os.getenv('SECRET_KEY', 'underlords_gsi_secret_key')
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
+AUTO_ABANDON_STALE_MATCHES = os.getenv('AUTO_ABANDON_STALE_MATCHES', 'true').lower() == 'true'
+AUTO_ABANDON_STALE_MATCH_MINUTES = int(os.getenv('AUTO_ABANDON_STALE_MATCH_MINUTES', '60'))
 
 # GSI endpoint is fixed by game configuration
 GSI_HOST = '0.0.0.0'  # Must match game's GSI config
