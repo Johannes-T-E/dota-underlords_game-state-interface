@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
+  IconArrowsShuffle,
+  IconBolt,
   IconChartBar,
   IconChalkboardTeacher,
   IconDashboard,
@@ -16,6 +18,7 @@ import {
 } from '@tabler/icons-react';
 import { Text, StatusIndicator } from '@/components/ui';
 import { useAppSelector } from '@/hooks/redux';
+import { extractBenchUnits, buildTargetBench } from '@/utils/benchSort';
 import './NavigationBar.css';
 
 export interface NavigationBarProps {
@@ -24,8 +27,14 @@ export interface NavigationBarProps {
 
 export const NavigationBar = ({ className = '' }: NavigationBarProps) => {
   const location = useLocation();
-  const { status } = useAppSelector((state) => state.connection);
+  const { status, currentMatch, players, privatePlayerAccountId } = useAppSelector((state) => ({
+    status: state.connection.status,
+    currentMatch: state.match.currentMatch,
+    players: state.match.players,
+    privatePlayerAccountId: state.match.privatePlayerAccountId,
+  }));
   const [isHovered, setIsHovered] = useState(false);
+  const [isQuickSorting, setIsQuickSorting] = useState(false);
   const collapsed = !isHovered;
 
   const isActive = (path: string) => {
@@ -52,6 +61,41 @@ export const NavigationBar = ({ className = '' }: NavigationBarProps) => {
         return 'Connection Error';
       default:
         return 'Unknown';
+    }
+  };
+
+  const handleQuickBenchSort = async () => {
+    if (isQuickSorting) return;
+    const privatePlayer = players.find((p) => p.account_id === privatePlayerAccountId) ?? null;
+    if (!currentMatch || !privatePlayer) {
+      console.warn('[Bench] No active match or player state yet.');
+      return;
+    }
+    const bench = extractBenchUnits(privatePlayer.units);
+    if (bench.length < 2) {
+      console.warn('[Bench] Need at least two bench units to sort.');
+      return;
+    }
+    const targetBench = buildTargetBench(bench, 'left');
+    setIsQuickSorting(true);
+    try {
+      const response = await fetch('/api/organize_bench', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          dry_run: false,
+          desired_entindex_order: targetBench.map((u) => u.entindex),
+        }),
+      });
+      const payload = await response.json();
+      if (!response.ok || payload?.status !== 'success') {
+        throw new Error(payload?.message || payload?.error || 'Sort failed');
+      }
+      console.log('[Bench] Sort complete.', { moves: payload?.moves_executed ?? 0 });
+    } catch (e) {
+      console.error('[Bench] Sort failed:', e instanceof Error ? e.message : e);
+    } finally {
+      setIsQuickSorting(false);
     }
   };
 
@@ -177,6 +221,31 @@ export const NavigationBar = ({ className = '' }: NavigationBarProps) => {
           </span>
           {!collapsed && <Text variant="body">Settings</Text>}
         </Link>
+
+        <div className="navigation-bar__bottom-actions">
+          <Link
+            to="/bench-sorter"
+            className={`navigation-bar__link ${isActive('/bench-sorter') ? 'navigation-bar__link--active' : ''}`}
+            title="Bench Sorter"
+          >
+            <span className="navigation-bar__link-icon" aria-hidden>
+              <IconArrowsShuffle size={18} stroke={1.8} />
+            </span>
+            {!collapsed && <Text variant="body">Bench Sorter</Text>}
+          </Link>
+          <button
+            type="button"
+            className="navigation-bar__link"
+            title="Sort bench now (same order as Bench Sorter: higher rank left)"
+            onClick={handleQuickBenchSort}
+            disabled={isQuickSorting}
+          >
+            <span className="navigation-bar__link-icon" aria-hidden>
+              <IconBolt size={18} stroke={1.8} />
+            </span>
+            {!collapsed && <Text variant="body">{isQuickSorting ? 'Sorting…' : 'Sort bench'}</Text>}
+          </button>
+        </div>
       </div>
     </nav>
   );

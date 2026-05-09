@@ -1,4 +1,4 @@
-import { AppLayout, MainContentTemplate } from '@/components/layout';
+import { MainContentTemplate } from '@/components/layout';
 import { PageHeader } from '@/components/shared';
 import { IconDatabase } from '@tabler/icons-react';
 import { MatchesContainer } from '@/features/match-management';
@@ -6,7 +6,6 @@ import './MatchManagement.css';
 
 export const MatchManagement = () => {
   return (
-    <AppLayout>
       <MainContentTemplate centered={false} className="match-management-page">
         <div className="match-management-page__container">
           <PageHeader title="Matches" titleIcon="🗂️" icon={<IconDatabase size={18} stroke={1.8} />} />
@@ -15,7 +14,6 @@ export const MatchManagement = () => {
           </div>
         </div>
       </MainContentTemplate>
-    </AppLayout>
   );
 };
 

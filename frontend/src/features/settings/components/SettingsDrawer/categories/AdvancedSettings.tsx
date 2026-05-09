@@ -1,8 +1,10 @@
 import { Button } from '@/components/ui';
+import { useState } from 'react';
 import { SettingsSection } from '../../SettingsSection/SettingsSection';
 import { SettingsGroup } from '../../SettingsGroup/SettingsGroup';
 import { websocketService } from '@/services/websocket';
 import type { MatchData } from '@/types';
+import './SettingsCategories.css';
 
 export interface AdvancedSettingsProps {
   onExport: () => void;
@@ -11,6 +13,8 @@ export interface AdvancedSettingsProps {
 }
 
 export const AdvancedSettings = ({ onExport, onImport, onResetAll }: AdvancedSettingsProps) => {
+  const [isOrganizingBench, setIsOrganizingBench] = useState(false);
+
   const handleSaveNextUpdate = () => {
     websocketService.enableCaptureNextUpdate();
   };
@@ -23,6 +27,43 @@ export const AdvancedSettings = ({ onExport, onImport, onResetAll }: AdvancedSet
     } catch (error) {
       console.error('[Debug] Failed to load debug data:', error);
       alert('Failed to load debug data. Please ensure the file exists and is valid JSON.');
+    }
+  };
+
+  const handleOrganizeBench = async (dryRun: boolean) => {
+    if (isOrganizingBench) {
+      return;
+    }
+
+    setIsOrganizingBench(true);
+    try {
+      const response = await fetch('/api/organize_bench', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ dry_run: dryRun }),
+      });
+
+      const payload = await response.json();
+      if (!response.ok || payload?.status !== 'success') {
+        const errorMessage = payload?.message || payload?.error || 'Failed to organize bench.';
+        throw new Error(errorMessage);
+      }
+
+      const movesExecuted = payload?.moves_executed ?? 0;
+      if (dryRun) {
+        const plannedMoves = payload?.diagnostics?.planned_moves?.length ?? movesExecuted;
+        console.log('[Bench] Dry-run complete.', { plannedMoves, movesExecuted });
+      } else {
+        console.log('[Bench] Organize complete.', { movesExecuted });
+      }
+    } catch (error) {
+      const fallbackMessage = dryRun ? 'Failed to run bench dry-run.' : 'Failed to organize bench.';
+      const message = error instanceof Error ? error.message : fallbackMessage;
+      console.error('[Bench]', message, error);
+    } finally {
+      setIsOrganizingBench(false);
     }
   };
 
@@ -44,84 +85,70 @@ export const AdvancedSettings = ({ onExport, onImport, onResetAll }: AdvancedSet
         defaultOpen={true}
       >
         <SettingsGroup variant="card">
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '16px'
-          }}>
+          <div className="settings-card-stack">
             {/* Capture Match Data */}
-            <div style={{
-              padding: '20px',
-              background: 'var(--primary-color)',
-              borderRadius: '8px',
-              border: `2px solid ${isCaptureEnabled ? '#5865f2' : 'var(--border-color)'}`,
-              transition: 'all 0.2s ease'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                <span style={{ fontSize: '32px' }}>📸</span>
-                <div style={{ flex: 1 }}>
-                  <h4 style={{ 
-                    color: 'var(--text-color)', 
-                    fontSize: '16px', 
-                    fontWeight: 600, 
-                    margin: 0 
-                  }}>
-                    Capture Match Data
-                  </h4>
-                  <p style={{ 
-                    color: 'var(--text-secondary, #b9bbbe)', 
-                    fontSize: '13px', 
-                    margin: '4px 0 0 0' 
-                  }}>
-                    Next match update will auto-download as JSON
-                  </p>
+            <div className={`settings-card ${isCaptureEnabled ? 'settings-card--active' : ''}`}>
+              <div className="settings-card__header">
+                <div className="settings-card__content">
+                  <h4 className="settings-card__title">Capture Match Data</h4>
+                  <p className="settings-card__description">Next match update will auto-download as JSON</p>
                 </div>
               </div>
               <Button
                 variant={isCaptureEnabled ? 'primary' : 'secondary'}
                 size="medium"
                 onClick={handleSaveNextUpdate}
-                style={{ width: '100%' }}
-                className={isCaptureEnabled ? 'pulse-animation' : ''}
+                className={`settings-button--full ${isCaptureEnabled ? 'pulse-animation' : ''}`}
               >
-                {isCaptureEnabled ? '⏳ Waiting for Update...' : '▶️ Enable Capture Mode'}
+                {isCaptureEnabled ? 'Waiting for update...' : 'Enable capture mode'}
               </Button>
             </div>
 
             {/* Replay Match Data */}
-            <div style={{
-              padding: '20px',
-              background: 'var(--primary-color)',
-              borderRadius: '8px',
-              border: '2px solid var(--border-color)'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                <span style={{ fontSize: '32px' }}>📁</span>
-                <div style={{ flex: 1 }}>
-                  <h4 style={{ 
-                    color: 'var(--text-color)', 
-                    fontSize: '16px', 
-                    fontWeight: 600, 
-                    margin: 0 
-                  }}>
-                    Replay Match Data
-                  </h4>
-                  <p style={{ 
-                    color: 'var(--text-secondary, #b9bbbe)', 
-                    fontSize: '13px', 
-                    margin: '4px 0 0 0' 
-                  }}>
-                    Simulate a live match using saved data
-                  </p>
+            <div className="settings-card">
+              <div className="settings-card__header">
+                <div className="settings-card__content">
+                  <h4 className="settings-card__title">Replay Match Data</h4>
+                  <p className="settings-card__description">Simulate a live match using saved data</p>
                 </div>
               </div>
               <Button
                 variant="secondary"
                 size="medium"
                 onClick={handleLoadDebugData}
-                style={{ width: '100%' }}
+                className="settings-button--full"
               >
-                📂 Load Debug JSON File
+                Load debug JSON file
+              </Button>
+            </div>
+
+            {/* Organize Bench */}
+            <div className="settings-card">
+              <div className="settings-card__header">
+                <div className="settings-card__content">
+                  <h4 className="settings-card__title">Organize Bench</h4>
+                  <p className="settings-card__description">
+                    Focuses Underlords and reorders your bench with backend automation
+                  </p>
+                </div>
+              </div>
+              <Button
+                variant="secondary"
+                size="medium"
+                onClick={() => handleOrganizeBench(false)}
+                disabled={isOrganizingBench}
+                className="settings-button--full"
+              >
+                {isOrganizingBench ? 'Organizing bench...' : 'Organize bench now'}
+              </Button>
+              <Button
+                variant="ghost"
+                size="medium"
+                onClick={() => handleOrganizeBench(true)}
+                disabled={isOrganizingBench}
+                className="settings-button--full"
+              >
+                {isOrganizingBench ? 'Running dry-run...' : 'Dry-run bench organize'}
               </Button>
             </div>
           </div>
@@ -135,119 +162,58 @@ export const AdvancedSettings = ({ onExport, onImport, onResetAll }: AdvancedSet
         defaultOpen={true}
       >
         <SettingsGroup variant="card">
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '16px'
-          }}>
+          <div className="settings-card-stack">
             {/* Backup Settings */}
-            <div style={{
-              padding: '20px',
-              background: 'var(--primary-color)',
-              borderRadius: '8px',
-              border: '2px solid var(--border-color)'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                <span style={{ fontSize: '32px' }}>💾</span>
-                <div style={{ flex: 1 }}>
-                  <h4 style={{ 
-                    color: 'var(--text-color)', 
-                    fontSize: '16px', 
-                    fontWeight: 600, 
-                    margin: 0 
-                  }}>
-                    Backup Settings
-                  </h4>
-                  <p style={{ 
-                    color: 'var(--text-secondary, #b9bbbe)', 
-                    fontSize: '13px', 
-                    margin: '4px 0 0 0' 
-                  }}>
-                    Export all settings to a JSON file
-                  </p>
+            <div className="settings-card">
+              <div className="settings-card__header">
+                <div className="settings-card__content">
+                  <h4 className="settings-card__title">Backup Settings</h4>
+                  <p className="settings-card__description">Export all settings to a JSON file</p>
                 </div>
               </div>
               <Button
                 variant="secondary"
                 size="medium"
                 onClick={onExport}
-                style={{ width: '100%' }}
+                className="settings-button--full"
               >
-                💾 Export Settings
+                Export settings
               </Button>
             </div>
 
             {/* Restore Settings */}
-            <div style={{
-              padding: '20px',
-              background: 'var(--primary-color)',
-              borderRadius: '8px',
-              border: '2px solid rgba(251, 191, 36, 0.3)'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                <span style={{ fontSize: '32px' }}>📥</span>
-                <div style={{ flex: 1 }}>
-                  <h4 style={{ 
-                    color: 'var(--text-color)', 
-                    fontSize: '16px', 
-                    fontWeight: 600, 
-                    margin: 0 
-                  }}>
-                    Restore Settings
-                  </h4>
-                  <p style={{ 
-                    color: 'var(--text-secondary, #b9bbbe)', 
-                    fontSize: '13px', 
-                    margin: '4px 0 0 0' 
-                  }}>
-                    ⚠️ Will override current settings
-                  </p>
+            <div className="settings-card">
+              <div className="settings-card__header">
+                <div className="settings-card__content">
+                  <h4 className="settings-card__title">Restore Settings</h4>
+                  <p className="settings-card__description">Will override current settings</p>
                 </div>
               </div>
               <Button
                 variant="secondary"
                 size="medium"
                 onClick={onImport}
-                style={{ width: '100%' }}
+                className="settings-button--full"
               >
-                📥 Import Settings
+                Import settings
               </Button>
             </div>
 
             {/* Reset Everything */}
-            <div style={{
-              padding: '20px',
-              background: 'var(--primary-color)',
-              borderRadius: '8px',
-              border: '2px solid rgba(239, 68, 68, 0.3)'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                <span style={{ fontSize: '32px' }}>🔄</span>
-                <div style={{ flex: 1 }}>
-                  <h4 style={{ 
-                    color: '#ef4444', 
-                    fontSize: '16px', 
-                    fontWeight: 600, 
-                    margin: 0 
-                  }}>
-                    Reset Everything
-                  </h4>
-                  <p style={{ 
-                    color: 'var(--text-secondary, #b9bbbe)', 
-                    fontSize: '13px', 
-                    margin: '4px 0 0 0' 
-                  }}>
-                    ⚠️ This action cannot be undone
-                  </p>
+            <div className="settings-card">
+              <div className="settings-card__header">
+                <div className="settings-card__content">
+                  <h4 className="settings-card__title">Reset Everything</h4>
+                  <p className="settings-card__description">This action cannot be undone</p>
                 </div>
               </div>
               <Button
                 variant="danger"
                 size="medium"
                 onClick={onResetAll}
-                style={{ width: '100%' }}
+                className="settings-button--full"
               >
-                🔄 Reset All Settings
+                Reset All Settings
               </Button>
             </div>
           </div>

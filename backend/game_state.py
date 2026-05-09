@@ -694,30 +694,53 @@ def process_buffered_data(match_id: str, timestamp: datetime):
         db_write_queue.put(('insert_snapshot', match_id, 'public_player', account_id, processed_public_state, time))
         print(f"[BUFFER] Queued buffered public snapshot for player {account_id}, match {match_id}")
     
-    # Process private player states - find and process latest in one pass
-    # Filter out stale private states from a previous match by comparing timestamps
-    # with the earliest valid public buffer entry. Private states that arrived before
-    # any valid new-game public state are likely leftover post-match data.
+    # Process private player states — pick one bootstrap snapshot for shop + slot resolution.
+    # (1) Timestamp: drop packets received before any public packet in this lobby batch.
+    # (2) shop_generation_id must be 0 or 1 — late-match stragglers carry much higher IDs.
+    # (3) Among remaining, take the newest snapshot in the low-sequence cluster (new-match era),
+    #     not global max sequence (which favors stale post-match packets).
     earliest_public_time = min(buf_time for _, buf_time, _ in public_buffer) if public_buffer else None
-    
-    latest_gsi_private_player_state = None
-    latest_private_time = None
-    latest_private_sequence = 0
-    stale_count = 0
-    
+
+    stale_time_count = 0
+    rejected_shop_gen_count = 0
+    candidates = []  # (gsi_state, private_time, sequence_number)
+
     for gsi_private_state, private_time in private_buffer:
-        # Skip private states that predate the earliest valid public state
         if earliest_public_time and private_time < earliest_public_time:
-            stale_count += 1
+            stale_time_count += 1
+            continue
+        shop_gen = gsi_private_state.get('shop_generation_id')
+        if shop_gen not in (0, 1):
+            rejected_shop_gen_count += 1
             continue
         private_sequence = gsi_private_state.get('sequence_number', 0)
-        if private_sequence > latest_private_sequence:
-            latest_private_sequence = private_sequence
-            latest_gsi_private_player_state = gsi_private_state
-            latest_private_time = private_time
-    
-    if stale_count > 0:
-        print(f"[BUFFER] Filtered {stale_count} stale private state(s) from previous match (arrived before earliest valid public state)")
+        candidates.append((gsi_private_state, private_time, private_sequence))
+
+    latest_gsi_private_player_state = None
+    latest_private_time = None
+
+    if candidates:
+        seq_min = min(c[2] for c in candidates)
+        cluster_pad = 40
+        cluster = [c for c in candidates if c[2] <= seq_min + cluster_pad]
+        best = max(cluster, key=lambda c: (c[2], c[1]))
+        latest_gsi_private_player_state = best[0]
+        latest_private_time = best[1]
+        shop_gen_b = best[0].get('shop_generation_id')
+        seq_b = best[0].get('sequence_number')
+        slot_b = best[0].get('player_slot')
+        print(
+            f"[BUFFER] Private bootstrap: picked seq={seq_b} slot={slot_b} shop_generation_id={shop_gen_b} "
+            f"(candidates={len(candidates)}, seq_min={seq_min}, after_time_filter_skipped={stale_time_count}, "
+            f"shop_gen_rejected={rejected_shop_gen_count})"
+        )
+
+    if stale_time_count > 0:
+        print(f"[BUFFER] Filtered {stale_time_count} private state(s) (timestamp before earliest public in batch)")
+    if rejected_shop_gen_count > 0:
+        print(f"[BUFFER] Rejected {rejected_shop_gen_count} private state(s) (shop_generation_id not 0 or 1)")
+    if not candidates and private_buffer:
+        print("[BUFFER] No acceptable buffered private for bootstrap — waiting for first live private update")
     
     # Process the latest private player state
     # NOTE: Do NOT set match_state.sequences['private_sequence'] here.

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { AppLayout, MainContentTemplate } from '@/components/layout';
+import { MainContentTemplate } from '@/components/layout';
 import { EmptyState, PageHeader } from '@/components/shared';
 import { IconUsersGroup } from '@tabler/icons-react';
 import { useHeroesDataContext } from '@/contexts/HeroesDataContext';
@@ -90,7 +90,6 @@ export const HeroesPage = () => {
   };
 
   return (
-    <AppLayout>
       <MainContentTemplate centered={false} className="heroes-page">
         <div className="heroes-page__container">
           <PageHeader
@@ -147,7 +146,6 @@ export const HeroesPage = () => {
           )}
         </div>
       </MainContentTemplate>
-    </AppLayout>
   );
 };
 

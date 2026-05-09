@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from 'react';
-import { AppLayout, MainContentTemplate } from '@/components/layout';
+import { MainContentTemplate } from '@/components/layout';
 import { PlayerBoard } from '@/features/player-board/components/PlayerBoard/PlayerBoard';
 import { EmptyState } from '@/components/shared';
 import { Button } from '@/components/ui';
@@ -54,7 +54,6 @@ export const PlayerBoardsPage = () => {
   }, [players]);
   
   return (
-    <AppLayout>
       <MainContentTemplate className="player-boards-page" centered={false}>
         <div className="player-boards-page__container">
           <div className="player-boards-page__header">
@@ -117,7 +116,6 @@ export const PlayerBoardsPage = () => {
           )}
         </div>
       </MainContentTemplate>
-    </AppLayout>
   );
 };
 

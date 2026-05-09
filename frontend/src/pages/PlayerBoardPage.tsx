@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useMemo, useEffect, useRef, useState } from 'react';
-import { AppLayout, MainContentTemplate } from '@/components/layout';
+import { MainContentTemplate } from '@/components/layout';
 import { PlayerBoard } from '@/features/player-board/components/PlayerBoard/PlayerBoard';
 import { EmptyState } from '@/components/shared';
 import { PlayerNameDisplay } from '@/components/ui';
@@ -87,7 +87,6 @@ export const PlayerBoardPage = () => {
   }, [player]);
 
   return (
-    <AppLayout>
       <MainContentTemplate className="player-board-page">
         <div style={{ 
           width: '100%', 
@@ -179,7 +178,6 @@ export const PlayerBoardPage = () => {
           )}
         </div>
       </MainContentTemplate>
-    </AppLayout>
   );
 };
 

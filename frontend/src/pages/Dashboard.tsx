@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { AppLayout, MainContentTemplate } from '@/components/layout';
+import { MainContentTemplate } from '@/components/layout';
 import { PageHeader } from '@/components/shared';
 import { IconDashboard } from '@tabler/icons-react';
 import { ScoreboardTable } from '@/features/scoreboard/components/ScoreboardTable/ScoreboardTable';
@@ -77,7 +77,6 @@ export const Dashboard = () => {
   }, [players]);
 
   return (
-    <AppLayout>
       <MainContentTemplate centered={false} className="dashboard-page">
         {/* Debug Toggle Button */}
         <div style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 100 }}>
@@ -220,6 +219,5 @@ export const Dashboard = () => {
           onClose={() => setIsDebugModalOpen(false)}
         />
       </MainContentTemplate>
-    </AppLayout>
   );
 };

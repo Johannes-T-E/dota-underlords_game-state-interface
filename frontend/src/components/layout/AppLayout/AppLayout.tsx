@@ -1,25 +1,20 @@
-import { ReactNode } from 'react';
+import { Outlet } from 'react-router-dom';
 import { NavigationBar } from '@/components/shared';
 import './AppLayout.css';
 
 export interface AppLayoutProps {
-  children: ReactNode;
   className?: string;
 }
 
-export const AppLayout = ({ 
-  children, 
-  className = ''
-}: AppLayoutProps) => {
+export const AppLayout = ({ className = '' }: AppLayoutProps) => {
   return (
     <div className={`app-layout ${className}`}>
       <NavigationBar />
       <div className="app-layout__main">
         <div className="app-layout__content">
-          {children}
+          <Outlet />
         </div>
       </div>
     </div>
   );
 };
-

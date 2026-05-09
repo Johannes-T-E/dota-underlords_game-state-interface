@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { AppLayout, MainContentTemplate } from '@/components/layout';
+import { MainContentTemplate } from '@/components/layout';
 import { SynergyPoolBarChart } from '@/components/charts/SynergyPoolBarChart';
 import { EmptyState, PageHeader } from '@/components/shared';
 import { IconChartBar } from '@tabler/icons-react';
@@ -31,7 +31,6 @@ export const HeroPoolStatsPage = () => {
   }, [heroesData, poolCounts]);
 
   return (
-    <AppLayout>
       <MainContentTemplate centered={false} className="hero-pool-stats-page">
         <div className="hero-pool-stats-page__container">
           <PageHeader title="Hero Pool Stats" titleIcon="📊" icon={<IconChartBar size={18} stroke={1.8} />} />
@@ -68,7 +67,6 @@ export const HeroPoolStatsPage = () => {
           )}
         </div>
       </MainContentTemplate>
-    </AppLayout>
   );
 };
 

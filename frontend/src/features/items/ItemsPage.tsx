@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { AppLayout, MainContentTemplate } from '@/components/layout';
+import { MainContentTemplate } from '@/components/layout';
 import { EmptyState, PageHeader } from '@/components/shared';
 import { IconSock } from '@tabler/icons-react';
 import { useItemsData } from '@/hooks/useItemsData';
@@ -79,7 +79,6 @@ export const ItemsPage = () => {
   const isLoading = !loaded || localizationLoading;
 
   return (
-    <AppLayout>
       <MainContentTemplate className="items-page" centered={false}>
         <div className="items-page__container">
           <PageHeader title="Items" titleIcon="🧰" icon={<IconSock size={18} stroke={1.8} />} />
@@ -125,7 +124,6 @@ export const ItemsPage = () => {
           )}
         </div>
       </MainContentTemplate>
-    </AppLayout>
   );
 };
 

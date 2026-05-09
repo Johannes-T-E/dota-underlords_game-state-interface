@@ -15,6 +15,7 @@ MarkupSafe==3.0.3
 python-dotenv==1.1.0
 python-engineio==4.12.3
 python-socketio==5.14.1
+pywin32==311
 requests==2.32.5
 simple-websocket==1.1.0
 urllib3==2.5.0

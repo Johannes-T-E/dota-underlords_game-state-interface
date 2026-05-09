@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { AppLayout, MainContentTemplate } from '@/components/layout';
+import { MainContentTemplate } from '@/components/layout';
 import { PageHeader } from '@/components/shared';
 import { IconChalkboardTeacher } from '@tabler/icons-react';
 import { HeroSelectionPanel } from '@/features/build-creator/components/HeroSelectionPanel/HeroSelectionPanel';
@@ -194,7 +194,6 @@ export const BuildCreatorPage = () => {
   }, [buildUnits, heroesData]);
 
   return (
-    <AppLayout>
       <MainContentTemplate centered={false} className="build-creator-page">
         <div className="build-creator-page__container">
           <PageHeader title="Build Creator" titleIcon="🧩" icon={<IconChalkboardTeacher size={18} stroke={1.8} />} />
@@ -286,7 +285,6 @@ export const BuildCreatorPage = () => {
           </div>
         </div>
       </MainContentTemplate>
-    </AppLayout>
   );
 };
 

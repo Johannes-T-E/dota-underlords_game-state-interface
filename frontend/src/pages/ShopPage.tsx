@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { AppLayout, MainContentTemplate } from '@/components/layout';
+import { MainContentTemplate } from '@/components/layout';
 import { ShopDisplay, ShopHistoryList, ShopOddsPanel } from '@/features/shop';
 import { EmptyState, PageHeader } from '@/components/shared';
 import { IconShoppingCart } from '@tabler/icons-react';
@@ -60,7 +60,6 @@ export const ShopPage = () => {
   );
 
   return (
-    <AppLayout>
       <MainContentTemplate className="shop-page" centered={false}>
         <div className="shop-page__container">
           <PageHeader title="Shop" titleIcon="🛒" icon={<IconShoppingCart size={18} stroke={1.8} />} />
@@ -108,7 +107,6 @@ export const ShopPage = () => {
           )}
         </div>
       </MainContentTemplate>
-    </AppLayout>
   );
 };
 

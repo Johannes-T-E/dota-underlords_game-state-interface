@@ -3,8 +3,13 @@ import { ToggleSwitch } from '../../ToggleSwitch/ToggleSwitch';
 import { IconRadio } from '../../IconRadio/IconRadio';
 import { SettingsSection } from '../../SettingsSection/SettingsSection';
 import { SettingsGroup } from '../../SettingsGroup/SettingsGroup';
+import { SettingsRow } from '../../SettingsRow/SettingsRow';
+import SynergyDisplay from '@/components/ui/SynergyDisplay/SynergyDisplay';
 import { useScoreboardSettings } from '@/features/scoreboard/hooks/useScoreboardSettings';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+import { selectShowSynergyPips, updateShowSynergyPips } from '@/store/settingsSlice';
 import type { ScoreboardColumnConfig } from '@/types';
+import './SettingsCategories.css';
 
 const COLUMN_CONFIG: Array<{
   key: keyof ScoreboardColumnConfig;
@@ -12,18 +17,18 @@ const COLUMN_CONFIG: Array<{
   icon: string;
   recommended?: boolean;
 }> = [
-  { key: 'place', label: 'Place', icon: '🏆', recommended: true },
-  { key: 'playerName', label: 'Player Name', icon: '👤', recommended: true },
-  { key: 'level', label: 'Level', icon: '⭐', recommended: true },
-  { key: 'gold', label: 'Gold', icon: '💰', recommended: true },
-  { key: 'streak', label: 'Streak', icon: '🔥' },
-  { key: 'health', label: 'Health', icon: '❤️', recommended: true },
-  { key: 'record', label: 'Win/Loss', icon: '📊', recommended: true },
-  { key: 'networth', label: 'Net Worth', icon: '💎' },
-  { key: 'roster', label: 'Roster', icon: '⚔️', recommended: true },
-  { key: 'underlord', label: 'Underlord', icon: '👑' },
-  { key: 'contraptions', label: 'Contraptions', icon: '🔧' },
-  { key: 'bench', label: 'Bench', icon: '🪑' }
+  { key: 'place', label: 'Place', icon: '', recommended: true },
+  { key: 'playerName', label: 'Player Name', icon: '', recommended: true },
+  { key: 'level', label: 'Level', icon: '', recommended: true },
+  { key: 'gold', label: 'Gold', icon: '', recommended: true },
+  { key: 'streak', label: 'Streak', icon: '' },
+  { key: 'health', label: 'Health', icon: '', recommended: true },
+  { key: 'record', label: 'Win/Loss', icon: '', recommended: true },
+  { key: 'networth', label: 'Net Worth', icon: '' },
+  { key: 'roster', label: 'Roster', icon: '', recommended: true },
+  { key: 'underlord', label: 'Underlord', icon: '' },
+  { key: 'contraptions', label: 'Contraptions', icon: '' },
+  { key: 'bench', label: 'Bench', icon: '' }
 ];
 
 const LAYOUT_PRESETS: { [key: string]: Partial<ScoreboardColumnConfig> } = {
@@ -76,6 +81,8 @@ export const GameplaySettings = () => {
   // Individual widgets have their own settings via the widget header
   // For now, we'll use a default widget ID - users should use widget-specific settings
   const { settings, updateColumns, updateSort, resetSettings } = useScoreboardSettings('scoreboard-1');
+  const dispatch = useAppDispatch();
+  const showSynergyPips = useAppSelector(selectShowSynergyPips);
 
   const handleColumnToggle = (key: keyof ScoreboardColumnConfig, value: boolean) => {
     updateColumns({ [key]: value });
@@ -135,7 +142,7 @@ export const GameplaySettings = () => {
       >
         {/* Layout Presets */}
         <SettingsGroup variant="card" title="Layout Presets">
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+          <div className="settings-row-wrap">
             <Button variant="secondary" size="small" onClick={() => handlePresetChange('compact')}>
               Compact
             </Button>
@@ -146,7 +153,7 @@ export const GameplaySettings = () => {
               Complete
             </Button>
           </div>
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <div className="settings-row-wrap settings-row-wrap--compact">
             <Button variant="ghost" size="small" onClick={handleShowAll}>
               Show All
             </Button>
@@ -161,11 +168,18 @@ export const GameplaySettings = () => {
 
         {/* Column Visibility Grid */}
         <SettingsGroup variant="card" title="Column Visibility">
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-            gap: '12px'
-          }}>
+          <div className="settings-inline-preview settings-inline-preview--synergy">
+            <span className="settings-inline-preview__label">Synergy preview:</span>
+            <SynergyDisplay
+              keyword={1}
+              levels={[{ unitcount: 2 }, { unitcount: 4 }, { unitcount: 6 }]}
+              activeUnits={4}
+              benchUnits={1}
+              showPips={showSynergyPips}
+              compactPipWidthByTierCount={showSynergyPips}
+            />
+          </div>
+          <div className="settings-grid">
             {COLUMN_CONFIG.map((col) => {
               const isChecked = typeof settings.columns[col.key] === 'boolean' 
                 ? settings.columns[col.key] as boolean
@@ -174,34 +188,12 @@ export const GameplaySettings = () => {
               return (
                 <div
                   key={col.key}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    padding: '10px 12px',
-                    background: isChecked
-                      ? 'rgba(88, 101, 242, 0.1)' 
-                      : 'rgba(255, 255, 255, 0.02)',
-                    border: `2px solid ${isChecked ? '#5865f2' : 'var(--border-color)'}`,
-                    borderRadius: '6px',
-                    transition: 'all 0.15s ease'
-                  }}
+                  className={`settings-option-tile ${isChecked ? 'settings-option-tile--active' : ''}`}
                 >
-                  <span style={{ fontSize: '20px' }}>{col.icon}</span>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ 
-                      color: 'var(--text-color)', 
-                      fontSize: '14px', 
-                      fontWeight: 500 
-                    }}>
-                      {col.label}
-                    </div>
+                  <div className="settings-fill">
+                    <div className="settings-option-tile__label">{col.label}</div>
                     {col.recommended && (
-                      <div style={{ 
-                        color: '#5865f2', 
-                        fontSize: '11px',
-                        fontWeight: 600 
-                      }}>
+                      <div className="settings-option-tile__meta">
                         RECOMMENDED
                       </div>
                     )}
@@ -218,11 +210,9 @@ export const GameplaySettings = () => {
 
         {/* Sorting Options */}
         <SettingsGroup variant="card" title="Sorting">
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <label style={{ color: 'var(--text-color)', fontSize: '14px', fontWeight: 500 }}>
-              Sort By:
-            </label>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div className="settings-stack">
+            <label className="settings-section-heading">Sort By:</label>
+            <div className="settings-stack settings-stack--compact">
               <IconRadio
                 name="sortField"
                 value="health"
@@ -230,7 +220,7 @@ export const GameplaySettings = () => {
                 onChange={(value) => updateSort({ field: value as 'health' | 'record' | 'networth' })}
                 label="Health"
                 description="100 → 0"
-                icon="❤️"
+                icon=""
               />
               <IconRadio
                 name="sortField"
@@ -239,7 +229,7 @@ export const GameplaySettings = () => {
                 onChange={(value) => updateSort({ field: value as 'health' | 'record' | 'networth' })}
                 label="Wins/Losses"
                 description="7W-2L"
-                icon="📊"
+                icon=""
               />
               <IconRadio
                 name="sortField"
@@ -247,16 +237,14 @@ export const GameplaySettings = () => {
                 checked={settings.sortField === 'networth'}
                 onChange={(value) => updateSort({ field: value as 'health' | 'record' | 'networth' })}
                 label="Net Worth"
-                description="💰 9999"
-                icon="💎"
+                description="9999"
+                icon=""
               />
             </div>
 
-            <div style={{ marginTop: '8px' }}>
-              <label style={{ color: 'var(--text-color)', fontSize: '14px', fontWeight: 500 }}>
-                Sort Direction:
-              </label>
-              <div style={{ marginTop: '8px' }}>
+            <div className="settings-section-offset">
+              <label className="settings-section-heading">Sort Direction:</label>
+              <div className="settings-section-offset">
                 <Button
                   variant={settings.sortDirection === 'desc' ? 'primary' : 'secondary'}
                   size="small"
@@ -267,6 +255,17 @@ export const GameplaySettings = () => {
               </div>
             </div>
           </div>
+        </SettingsGroup>
+        <SettingsGroup variant="card" title="Synergy Display">
+          <SettingsRow
+            label="Show Synergy Pips"
+            description="Enable pip segments in the synergy column."
+          >
+            <ToggleSwitch
+              checked={showSynergyPips}
+              onChange={(checked) => dispatch(updateShowSynergyPips(checked))}
+            />
+          </SettingsRow>
         </SettingsGroup>
 
         <Button variant="secondary" onClick={resetSettings}>

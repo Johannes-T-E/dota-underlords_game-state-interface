@@ -11,6 +11,7 @@ from .game_state import match_state, db, db_write_queue, connected_clients, stat
 from .gsi_handler import process_gsi_data
 from .config import app, socketio, PRODUCTION, FRONTEND_BUILD_DIR, GSI_HOST, GSI_PORT
 from .change_detector import change_detector
+from .bench_organizer import organize_bench, BenchOrganizerError
 
 
 def _parse_snapshot_timestamp(value):
@@ -58,6 +59,7 @@ if PRODUCTION and FRONTEND_BUILD_DIR and os.path.exists(FRONTEND_BUILD_DIR):
     @app.route('/hero-pool-stats')
     @app.route('/match-management')
     @app.route('/matchup-predictor')
+    @app.route('/bench-sorter')
     def serve_react_app():
         """Serve the React app for all frontend routes."""
         return send_from_directory(app.static_folder, 'index.html')
@@ -153,6 +155,60 @@ def get_matches():
         'matches': matches,
         'count': len(matches)
     })
+
+
+@app.route('/api/organize_bench', methods=['POST'])
+def organize_bench_endpoint():
+    """Trigger frontend-requested bench organization automation."""
+    try:
+        request_data = request.get_json(silent=True) or {}
+        dry_run = bool(request_data.get('dry_run', False))
+        desired_entindex_order = request_data.get('desired_entindex_order')
+
+        if match_state.match_id is None:
+            return jsonify({
+                'status': 'error',
+                'message': 'No active match'
+            }), 400
+
+        private_account_id = match_state.private_player_account_id
+        if private_account_id is None:
+            return jsonify({
+                'status': 'error',
+                'message': 'Private player account is not resolved yet'
+            }), 400
+
+        public_player_state = match_state.latest_processed_public_player_states.get(private_account_id)
+        if not public_player_state:
+            return jsonify({
+                'status': 'error',
+                'message': 'Unable to find current player state'
+            }), 404
+
+        result = organize_bench(
+            public_player_state,
+            dry_run=dry_run,
+            desired_entindex_order=desired_entindex_order,
+        )
+        return jsonify({
+            'status': 'success',
+            'dry_run': dry_run,
+            'moves_executed': result.get('moves_executed', 0),
+            'diagnostics': result.get('diagnostics', {})
+        }), 200
+    except BenchOrganizerError as e:
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 400
+    except Exception as e:
+        print(f"[ERROR] Failed to organize bench: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
 
 
 @app.route('/api/matches/<match_id>/summary', methods=['GET'])

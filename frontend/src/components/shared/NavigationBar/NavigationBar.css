@@ -1,4 +1,8 @@
 .navigation-bar {
+  --nav-rail-collapsed-width: 60px;
+  --nav-icon-box: 30px;
+  /* Icon centered in collapsed rail: (60 - 30) / 2; same inset when expanded → no horizontal jump */
+  --nav-icon-start: calc((var(--nav-rail-collapsed-width) - var(--nav-icon-box)) / 2);
   width: 240px;
   background: var(--secondary-color);
   border-right: 1px solid var(--border-color);
@@ -14,7 +18,7 @@
 }
 
 .navigation-bar--collapsed {
-  width: 60px;
+  width: var(--nav-rail-collapsed-width);
 }
 
 .navigation-bar__header {
@@ -36,8 +40,9 @@
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 0.75rem 0.5rem;
-  gap: 0.25rem;
+  padding: 0;
+  margin: 0;
+  gap: 0;
 }
 
 .navigation-bar__link {
@@ -45,16 +50,43 @@
   align-items: center;
   justify-content: flex-start;
   gap: 0.65rem;
-  padding: 0.62rem 0.72rem;
+  margin: 0;
+  padding: 0.62rem 0.62rem;
   text-decoration: none;
-  color: color-mix(in srgb, var(--text-color) 34%, transparent);
-  transition: background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease;
-  border-left: 2px solid transparent;
+  color: color-mix(in srgb, var(--text-color) 38%, var(--text-color-secondary));
+  transition: background-color 0.16s ease, color 0.16s ease;
   position: relative;
   white-space: nowrap;
   overflow: visible;
   min-width: 0;
   border-radius: 0;
+}
+
+.navigation-bar__bottom-actions {
+  margin-top: auto;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  margin-bottom: 0;
+}
+
+.navigation-bar__bottom-actions .navigation-bar__link {
+  width: 100%;
+}
+
+.navigation-bar__bottom-actions button.navigation-bar__link {
+  background: transparent;
+  border: none;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.navigation-bar__bottom-actions button.navigation-bar__link:disabled {
+  cursor: wait;
+  color: color-mix(in srgb, var(--text-color) 28%, var(--text-color-secondary));
 }
 
 .navigation-bar__link .text {
@@ -72,27 +104,19 @@
   line-height: 1.25;
 }
 
-.navigation-bar--collapsed .navigation-bar__link {
-  padding: 0.62rem 0.72rem;
-  justify-content: flex-start;
-  border-left-color: transparent;
-}
-
 .navigation-bar__link:hover {
-  background: rgba(255, 255, 255, 0.03);
-  border-left-color: color-mix(in srgb, var(--text-color) 20%, transparent);
-  color: color-mix(in srgb, var(--text-color) 90%, transparent);
+  background: color-mix(in srgb, var(--text-color) 4%, var(--secondary-color));
+  color: color-mix(in srgb, var(--text-color) 88%, var(--accent-color));
 }
 
 .navigation-bar__link--active {
-  background: transparent;
-  border-left-color: var(--accent-color);
+  background: color-mix(in srgb, var(--text-color) 6%, var(--secondary-color));
   color: var(--text-color);
 }
 
 .navigation-bar__link-icon {
-  width: 30px;
-  height: 30px;
+  width: var(--nav-icon-box);
+  height: var(--nav-icon-box);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -118,7 +142,7 @@
 
 .navigation-bar__round-info {
   margin-top: auto;
-  padding: 0.62rem 0.72rem;
+  padding: 0.62rem 0.62rem;
   border-top: 1px solid var(--border-color);
   display: flex;
   align-items: center;
@@ -147,7 +171,7 @@
 }
 
 .navigation-bar__status {
-  padding: 0.62rem 0.72rem;
+  padding: 0.62rem 0.62rem;
   border-top: 1px solid var(--border-color);
   display: flex;
   align-items: center;
@@ -171,7 +195,7 @@
 }
 
 .navigation-bar__actions {
-  padding: 0.62rem 0.72rem;
+  padding: 0.62rem 0.62rem;
   border-top: 1px solid var(--border-color);
   display: flex;
   align-items: center;
@@ -219,6 +243,11 @@
   cursor: default;
 }
 
+@media (min-width: 769px) {
+  .navigation-bar__link {
+    padding-left: var(--nav-icon-start);
+  }
+}
 
 @media (max-width: 768px) {
   .navigation-bar {
@@ -232,23 +261,23 @@
   .navigation-bar__links {
     flex-direction: row;
     padding: 0;
+    margin: 0;
+    gap: 0;
   }
 
   .navigation-bar__link {
     flex: 1;
     justify-content: center;
-    border-left: none;
-    border-top: 3px solid transparent;
+    padding: 0;
+    margin: 0;
   }
 
   .navigation-bar__link:hover {
-    border-left-color: transparent;
-    border-top-color: rgba(202, 202, 202, 0.3);
+    background: color-mix(in srgb, var(--text-color) 4%, var(--secondary-color));
   }
 
   .navigation-bar__link--active {
-    border-left-color: transparent;
-    border-top-color: var(--accent-color);
+    background: color-mix(in srgb, var(--text-color) 6%, var(--secondary-color));
   }
 }
 

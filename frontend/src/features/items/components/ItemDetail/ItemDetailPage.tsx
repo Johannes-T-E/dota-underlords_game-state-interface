@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { AppLayout, MainContentTemplate } from '@/components/layout';
+import { MainContentTemplate } from '@/components/layout';
 import { EmptyState } from '@/components/shared';
 import { useItemsData } from '@/hooks/useItemsData';
 import { useItemsLocalization } from '../../hooks/useItemsLocalization';
@@ -69,7 +69,6 @@ export const ItemDetailPage = () => {
 
   if (isLoading) {
     return (
-      <AppLayout>
         <MainContentTemplate className="item-detail-page" centered={false}>
           <div className="item-detail-page__container">
             <EmptyState
@@ -79,13 +78,11 @@ export const ItemDetailPage = () => {
             />
           </div>
         </MainContentTemplate>
-      </AppLayout>
     );
   }
 
   if (!item) {
     return (
-      <AppLayout>
         <MainContentTemplate className="item-detail-page" centered={false}>
           <div className="item-detail-page__container">
             <EmptyState
@@ -94,7 +91,6 @@ export const ItemDetailPage = () => {
             />
           </div>
         </MainContentTemplate>
-      </AppLayout>
     );
   }
 
@@ -108,7 +104,6 @@ export const ItemDetailPage = () => {
   };
 
   return (
-    <AppLayout>
       <MainContentTemplate className="item-detail-page" centered={false}>
         <div className="item-detail-page__container">
           <div className="item-detail-page__header">
@@ -222,7 +217,6 @@ export const ItemDetailPage = () => {
           </div>
         </div>
       </MainContentTemplate>
-    </AppLayout>
   );
 };
 

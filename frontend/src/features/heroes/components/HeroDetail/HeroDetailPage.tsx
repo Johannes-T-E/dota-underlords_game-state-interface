@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { AppLayout, MainContentTemplate } from '@/components/layout';
+import { MainContentTemplate } from '@/components/layout';
 import { EmptyState } from '@/components/shared';
 import { useHeroesDataContext } from '@/contexts/HeroesDataContext';
 import { getHeroIconPath } from '@/utils/heroHelpers';
@@ -230,7 +230,6 @@ export const HeroDetailPage = () => {
 
   if (heroesLoading || abilitiesLoading) {
     return (
-      <AppLayout>
         <MainContentTemplate centered={false} className="hero-detail-page">
           <div className="hero-detail-page__empty">
             <EmptyState
@@ -240,13 +239,11 @@ export const HeroDetailPage = () => {
             />
           </div>
         </MainContentTemplate>
-      </AppLayout>
     );
   }
 
   if (!hero) {
     return (
-      <AppLayout>
         <MainContentTemplate centered={false} className="hero-detail-page">
           <div className="hero-detail-page__empty">
             <EmptyState
@@ -256,14 +253,12 @@ export const HeroDetailPage = () => {
             />
           </div>
         </MainContentTemplate>
-      </AppLayout>
     );
   }
 
   const heroIconPath = getHeroIconPath(hero.id, heroesData);
 
   return (
-    <AppLayout>
       <MainContentTemplate centered={false} className="hero-detail-page">
         <div className="hero-detail-page__container">
           <div className="hero-detail-page__header">
@@ -513,7 +508,6 @@ export const HeroDetailPage = () => {
           </div>
         </div>
       </MainContentTemplate>
-    </AppLayout>
   );
 };
 

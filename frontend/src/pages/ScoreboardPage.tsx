@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AppLayout, MainContentTemplate } from '@/components/layout';
+import { MainContentTemplate } from '@/components/layout';
 import { EmptyState, PageHeader } from '@/components/shared';
 import { IconScoreboard } from '@tabler/icons-react';
 import { ScoreboardTable } from '@/features/scoreboard/components/ScoreboardTable/ScoreboardTable';
@@ -39,7 +39,6 @@ export const ScoreboardPage = () => {
   };
 
   return (
-    <AppLayout>
       <MainContentTemplate centered={false} className="scoreboard-page">
         <div className="scoreboard-page__container">
           <PageHeader title="Scoreboard" titleIcon="📋" icon={<IconScoreboard size={18} stroke={1.8} />} />
@@ -63,7 +62,6 @@ export const ScoreboardPage = () => {
           </div>
         </div>
       </MainContentTemplate>
-    </AppLayout>
   );
 };
 

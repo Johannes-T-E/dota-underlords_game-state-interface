@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Text, HealthDisplay, Button } from '@/components/ui';
 import { ToggleSwitch } from '../../ToggleSwitch/ToggleSwitch';
 import { SliderInput } from '../../SliderInput/SliderInput';
@@ -8,8 +8,11 @@ import { SettingsSection } from '../../SettingsSection/SettingsSection';
 import { SettingsGroup } from '../../SettingsGroup/SettingsGroup';
 import { SettingsRow } from '../../SettingsRow/SettingsRow';
 import { GradientEditor } from '../../GradientEditor/GradientEditor';
+import { HeroPortrait } from '@/components/ui/HeroPortrait/HeroPortrait';
 import { useHealthSettings, useHeroPortraitSettings, useUnitAnimationSettings } from '@/hooks/useSettings';
+import { useHeroesDataContext } from '@/contexts/HeroesDataContext';
 import type { HealthColorConfig } from '@/components/ui/HealthDisplay/HealthDisplaySettings';
+import './SettingsCategories.css';
 
 // Preset configurations
 const GRADIENT_PRESETS: { [key: string]: HealthColorConfig } = {
@@ -71,9 +74,33 @@ export const AppearanceSettings = () => {
   const { settings: healthSettings, updateSettings: updateHealthSettings, resetSettings: resetHealthSettings } = useHealthSettings();
   const { settings: heroSettings, updateSettings: updateHeroSettings, updateTierGlowConfig } = useHeroPortraitSettings();
   const { settings: animationSettings, updateSettings: updateAnimationSettings, resetSettings: resetAnimationSettings } = useUnitAnimationSettings();
+  const { heroesData } = useHeroesDataContext();
   
   const [gradientPreset, setGradientPreset] = useState<string>('custom');
   const [typographyPreset, setTypographyPreset] = useState<string>('custom');
+
+  const previewHeroUnitIds = useMemo(() => {
+    if (!heroesData?.heroes) {
+      return [6, 18, 93];
+    }
+
+    const entries = Object.values(heroesData.heroes);
+    const perTier = new Map<number, number>();
+
+    for (const hero of entries) {
+      const tier = Math.min(Math.max(hero.draftTier ?? 1, 1), 5);
+      if (!perTier.has(tier)) {
+        perTier.set(tier, hero.id);
+      }
+      if (perTier.size === 5) {
+        break;
+      }
+    }
+
+    return [1, 2, 3, 4, 5]
+      .map((tier) => perTier.get(tier))
+      .filter((id): id is number => typeof id === 'number');
+  }, [heroesData]);
 
   // Health Display Handlers
   const handleGradientPresetChange = (preset: string) => {
@@ -157,6 +184,12 @@ export const AppearanceSettings = () => {
               onChange={(checked) => updateHealthSettings({ useColorTransition: checked })}
             />
           </SettingsRow>
+          <div className="settings-inline-preview settings-inline-preview--health">
+            <span className="settings-inline-preview__label">Health preview:</span>
+            <HealthDisplay health={100} settings={healthSettings} />
+            <HealthDisplay health={65} settings={healthSettings} />
+            <HealthDisplay health={30} settings={healthSettings} />
+          </div>
         </SettingsGroup>
 
         {/* Color & Gradient */}
@@ -286,24 +319,6 @@ export const AppearanceSettings = () => {
           )}
         </SettingsGroup>
 
-        {/* Preview */}
-        <SettingsGroup variant="card" title="Preview">
-          <div style={{ 
-            display: 'flex', 
-            gap: '16px', 
-            justifyContent: 'space-around',
-            padding: '16px',
-            background: 'var(--primary-color)',
-            borderRadius: '6px'
-          }}>
-            <HealthDisplay health={100} settings={healthSettings} />
-            <HealthDisplay health={75} settings={healthSettings} />
-            <HealthDisplay health={50} settings={healthSettings} />
-            <HealthDisplay health={25} settings={healthSettings} />
-            <HealthDisplay health={0} settings={healthSettings} />
-          </div>
-        </SettingsGroup>
-
         <Button variant="secondary" onClick={resetHealthSettings}>
           Reset Health Display Settings
         </Button>
@@ -384,6 +399,15 @@ export const AppearanceSettings = () => {
                   />
                 </SettingsRow>
               )}
+
+              <div className="settings-inline-preview settings-inline-preview--portrait">
+                <span className="settings-inline-preview__label">Tier glow preview:</span>
+                <div className="settings-example-portrait-row">
+                  {previewHeroUnitIds.map((unitId) => (
+                    <HeroPortrait key={unitId} unitId={unitId} rank={1} heroesData={heroesData} />
+                  ))}
+                </div>
+              </div>
             </>
           )}
         </SettingsGroup>
@@ -453,7 +477,7 @@ export const AppearanceSettings = () => {
                         onChange={(e) => updateAnimationSettings({ trailColor: e.target.value })}
                         style={{ width: '40px', height: '32px', border: 'none', borderRadius: '4px' }}
                       />
-                      <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                      <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
                         {animationSettings?.trailColor || '#ffffff'}
                       </span>
                     </div>
@@ -497,6 +521,26 @@ export const AppearanceSettings = () => {
     )}
             </>
           )}
+
+          <div className="settings-inline-preview settings-inline-preview--trail">
+            <span className="settings-inline-preview__label">Movement trail preview:</span>
+            <div className="settings-trail-preview">
+              <div className="settings-trail-preview__unit" />
+              {animationSettings?.enableMovementTrail && (
+                <div
+                  className="settings-trail-preview__trail"
+                  style={{
+                    background: animationSettings?.useTierColor
+                      ? 'var(--tier-color-3, var(--accent-color))'
+                      : animationSettings?.trailColor || '#ffffff',
+                    opacity: animationSettings?.trailOpacity || 0.6,
+                    height: `${Math.max(2, (animationSettings?.trailThickness || 2) * 2)}px`,
+                    width: `${Math.max(28, (animationSettings?.trailLength || 3) * 26)}px`
+                  }}
+                />
+              )}
+            </div>
+          </div>
         </SettingsGroup>
 
         <SettingsGroup variant="card" title="New Unit Effects">
