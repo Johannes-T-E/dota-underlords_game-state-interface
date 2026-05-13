@@ -16,6 +16,16 @@
   gap: 8px;
 }
 
+.bench-sorter-page__timing-slider {
+  margin-top: 12px;
+}
+
+.bench-sorter-page__timing-hint {
+  display: block;
+  margin-top: 8px;
+  line-height: 1.35;
+}
+
 .bench-sorter-page__bench-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;

@@ -5,6 +5,13 @@ import { DEFAULT_HEALTH_DISPLAY_SETTINGS } from '@/components/ui/HealthDisplay/H
 
 const SETTINGS_VERSION = 2;
 
+const clampBenchOrganizeTimingScale = (value: unknown): number => {
+  if (typeof value !== 'number' || !Number.isFinite(value)) {
+    return 1;
+  }
+  return Math.min(4, Math.max(0.25, value));
+};
+
 export interface ScoreboardSettings {
   columns: ScoreboardColumnConfig;
   sortField: 'health' | 'record' | 'networth';
@@ -40,6 +47,8 @@ export interface GeneralSettings {
   heroPortrait: HeroPortraitSettings;
   unitAnimation: UnitAnimationSettings;
   showSynergyPips: boolean;
+  /** Multiplier for bench automation delays (1 = default; higher = slower). */
+  benchOrganizeTimingScale: number;
 }
 
 export interface SettingsState {
@@ -99,11 +108,12 @@ const initialState: SettingsState = {
   version: SETTINGS_VERSION,
   health: DEFAULT_HEALTH_DISPLAY_SETTINGS,
   scoreboards: {},
-  general: {
-    heroPortrait: defaultHeroPortraitSettings,
-    unitAnimation: defaultUnitAnimationSettings,
-    showSynergyPips: false
-  }
+    general: {
+      heroPortrait: defaultHeroPortraitSettings,
+      unitAnimation: defaultUnitAnimationSettings,
+      showSynergyPips: false,
+      benchOrganizeTimingScale: 1
+    }
 };
 
 // Validate and ensure settings have required structure
@@ -127,7 +137,8 @@ const validateSettings = (settings: unknown): SettingsState => {
       theme: s.general?.theme,
       heroPortrait: s.general?.heroPortrait ?? defaultHeroPortraitSettings,
       unitAnimation: s.general?.unitAnimation ?? defaultUnitAnimationSettings,
-      showSynergyPips: s.general?.showSynergyPips ?? false
+      showSynergyPips: s.general?.showSynergyPips ?? false,
+      benchOrganizeTimingScale: clampBenchOrganizeTimingScale(s.general?.benchOrganizeTimingScale)
     }
   };
 };
@@ -245,7 +256,8 @@ const settingsSlice = createSlice({
       state.general = {
         heroPortrait: defaultHeroPortraitSettings,
         unitAnimation: defaultUnitAnimationSettings,
-        showSynergyPips: false
+        showSynergyPips: false,
+        benchOrganizeTimingScale: 1
       };
       state.version = SETTINGS_VERSION;
     },
@@ -305,3 +317,5 @@ export const selectGeneralSettings = (state: { settings: SettingsState }) => sta
 export const selectHeroPortraitSettings = (state: { settings: SettingsState }) => state.settings.general.heroPortrait;
 export const selectUnitAnimationSettings = (state: { settings: SettingsState }) => state.settings.general.unitAnimation;
 export const selectShowSynergyPips = (state: { settings: SettingsState }) => state.settings.general.showSynergyPips;
+export const selectBenchOrganizeTimingScale = (state: { settings: SettingsState }) =>
+  state.settings.general.benchOrganizeTimingScale ?? 1;

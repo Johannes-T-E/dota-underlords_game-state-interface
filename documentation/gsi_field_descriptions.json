@@ -99,7 +99,7 @@
     "examples": [0, 1, 3, 4, 6]
   },
   "block.data.public_player_state.units.position.y": {
-    "description": "Y coordinate. Negative values indicate bench.",
+    "description": "Y coordinate. -1 = bench. On board: 0–3 with 3 = top row (back), 0 = bottom row (near player); matches frontend PlayerBoard grid.",
     "type": "integer",
     "examples": [-1, 0, 1, 2, 3]
   },

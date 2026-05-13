@@ -4,9 +4,11 @@ import { MainContentTemplate } from '@/components/layout';
 import { EmptyState, PageHeader } from '@/components/shared';
 import { Button, HeroPortrait, Text } from '@/components/ui';
 import { useAppSelector } from '@/hooks/redux';
+import { useGeneralSettings } from '@/hooks/useSettings';
 import { useHeroesDataContext } from '@/contexts/HeroesDataContext';
 import { SettingsSection } from '@/features/settings/components/SettingsSection/SettingsSection';
 import { SettingsGroup } from '@/features/settings/components/SettingsGroup/SettingsGroup';
+import { SliderInput } from '@/features/settings/components/SliderInput/SliderInput';
 import type { Unit } from '@/types';
 import { extractBenchUnits, buildTargetBench, type BenchRankDirection } from '@/utils/benchSort';
 import './BenchSorterPage.css';
@@ -16,6 +18,7 @@ const BENCH_SLOT_COUNT = 8;
 export const BenchSorterPage = () => {
   const { currentMatch, players, privatePlayerAccountId } = useAppSelector((state) => state.match);
   const { heroesData } = useHeroesDataContext();
+  const { settings: generalSettings, updateSettings: updateGeneral } = useGeneralSettings();
   const [rankDirection, setRankDirection] = useState<BenchRankDirection>('left');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -53,6 +56,7 @@ export const BenchSorterPage = () => {
         body: JSON.stringify({
           dry_run: dryRun,
           desired_entindex_order: targetBench.map((unit) => unit.entindex),
+          timing_scale: generalSettings.benchOrganizeTimingScale,
         }),
       });
       const payload = await response.json();
@@ -105,6 +109,26 @@ export const BenchSorterPage = () => {
                       Higher rank right
                     </Button>
                   </div>
+                  <SliderInput
+                    label="Sort automation speed"
+                    value={generalSettings.benchOrganizeTimingScale}
+                    onChange={(v) =>
+                      updateGeneral({
+                        benchOrganizeTimingScale: Math.min(4, Math.max(0.25, Math.round(v * 100) / 100)),
+                      })
+                    }
+                    min={0.25}
+                    max={4}
+                    step={0.05}
+                    leftLabel="Faster"
+                    rightLabel="Slower"
+                    unit="×"
+                    showValue
+                    className="bench-sorter-page__timing-slider"
+                  />
+                  <Text variant="label" color="secondary" className="bench-sorter-page__timing-hint">
+                    Multiplies delay between each automated drag in the game client. Increase if sorting misses slots.
+                  </Text>
                   <div className="bench-sorter-page__actions">
                     <Button variant="secondary" size="medium" onClick={() => executeSort(true)} disabled={isSubmitting}>
                       {isSubmitting ? 'Working...' : 'Dry-run backend'}

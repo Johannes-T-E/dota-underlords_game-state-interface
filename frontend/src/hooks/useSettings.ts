@@ -17,7 +17,7 @@ import {
   selectUnitAnimationSettings
 } from '@/store/settingsSlice';
 import type { HealthDisplaySettings } from '@/components/ui/HealthDisplay/HealthDisplaySettings';
-import type { HeroPortraitSettings, TierGlowConfig, UnitAnimationSettings } from '@/store/settingsSlice';
+import type { GeneralSettings, HeroPortraitSettings, TierGlowConfig, UnitAnimationSettings } from '@/store/settingsSlice';
 
 /**
  * Hook for managing Health Display settings
@@ -55,7 +55,7 @@ export const useGeneralSettings = () => {
   const settings = useAppSelector(selectGeneralSettings);
 
   const updateSettings = useCallback(
-    (newSettings: { theme?: string }) => {
+    (newSettings: Partial<GeneralSettings>) => {
       dispatch(updateGeneralSettings(newSettings));
     },
     [dispatch]

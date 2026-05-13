@@ -19,6 +19,7 @@ import {
 import { Text, StatusIndicator } from '@/components/ui';
 import { useAppSelector } from '@/hooks/redux';
 import { extractBenchUnits, buildTargetBench } from '@/utils/benchSort';
+import { selectBenchOrganizeTimingScale } from '@/store/settingsSlice';
 import './NavigationBar.css';
 
 export interface NavigationBarProps {
@@ -33,6 +34,7 @@ export const NavigationBar = ({ className = '' }: NavigationBarProps) => {
     players: state.match.players,
     privatePlayerAccountId: state.match.privatePlayerAccountId,
   }));
+  const benchOrganizeTimingScale = useAppSelector(selectBenchOrganizeTimingScale);
   const [isHovered, setIsHovered] = useState(false);
   const [isQuickSorting, setIsQuickSorting] = useState(false);
   const collapsed = !isHovered;
@@ -85,6 +87,7 @@ export const NavigationBar = ({ className = '' }: NavigationBarProps) => {
         body: JSON.stringify({
           dry_run: false,
           desired_entindex_order: targetBench.map((u) => u.entindex),
+          timing_scale: benchOrganizeTimingScale,
         }),
       });
       const payload = await response.json();

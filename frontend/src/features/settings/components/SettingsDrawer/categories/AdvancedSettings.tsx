@@ -2,8 +2,10 @@ import { Button } from '@/components/ui';
 import { useState } from 'react';
 import { SettingsSection } from '../../SettingsSection/SettingsSection';
 import { SettingsGroup } from '../../SettingsGroup/SettingsGroup';
+import { SliderInput } from '../../SliderInput/SliderInput';
 import { websocketService } from '@/services/websocket';
 import type { MatchData } from '@/types';
+import { useGeneralSettings } from '@/hooks/useSettings';
 import './SettingsCategories.css';
 
 export interface AdvancedSettingsProps {
@@ -14,6 +16,7 @@ export interface AdvancedSettingsProps {
 
 export const AdvancedSettings = ({ onExport, onImport, onResetAll }: AdvancedSettingsProps) => {
   const [isOrganizingBench, setIsOrganizingBench] = useState(false);
+  const { settings: generalSettings, updateSettings: updateGeneral } = useGeneralSettings();
 
   const handleSaveNextUpdate = () => {
     websocketService.enableCaptureNextUpdate();
@@ -42,7 +45,7 @@ export const AdvancedSettings = ({ onExport, onImport, onResetAll }: AdvancedSet
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ dry_run: dryRun }),
+        body: JSON.stringify({ dry_run: dryRun, timing_scale: generalSettings.benchOrganizeTimingScale }),
       });
 
       const payload = await response.json();
@@ -132,6 +135,26 @@ export const AdvancedSettings = ({ onExport, onImport, onResetAll }: AdvancedSet
                   </p>
                 </div>
               </div>
+              <SliderInput
+                label="Sort automation speed"
+                value={generalSettings.benchOrganizeTimingScale}
+                onChange={(v) =>
+                  updateGeneral({
+                    benchOrganizeTimingScale: Math.min(4, Math.max(0.25, Math.round(v * 100) / 100)),
+                  })
+                }
+                min={0.25}
+                max={4}
+                step={0.05}
+                leftLabel="Faster"
+                rightLabel="Slower"
+                unit="×"
+                showValue
+                className="settings-card__slider"
+              />
+              <p className="settings-card__hint">
+                Multiplies delays between simulated drags. Raise this if units miss slots on slower PCs.
+              </p>
               <Button
                 variant="secondary"
                 size="medium"

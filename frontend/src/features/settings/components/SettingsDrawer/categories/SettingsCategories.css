@@ -38,6 +38,17 @@
   margin: 4px 0 0;
 }
 
+.settings-card__slider {
+  margin-top: 10px;
+}
+
+.settings-card__hint {
+  margin: 10px 0 12px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
 .settings-button--full {
   width: 100%;
 }
