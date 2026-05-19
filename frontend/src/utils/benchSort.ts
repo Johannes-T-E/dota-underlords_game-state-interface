@@ -28,7 +28,7 @@ export const buildTargetBench = (benchUnits: Unit[], rankDirection: BenchRankDir
   groups.sort((a, b) => {
     const topA = Math.max(...a.map((u) => u.rank));
     const topB = Math.max(...b.map((u) => u.rank));
-    return topB - topA || b.length - a.length || b[0].unit_id - a[0].unit_id;
+    return topB - topA || b.length - a.length || (b[0]?.unit_id ?? 0) - (a[0]?.unit_id ?? 0);
   });
 
   return groups.flat();

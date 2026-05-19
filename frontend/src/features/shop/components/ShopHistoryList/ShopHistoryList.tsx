@@ -34,8 +34,8 @@ function computePurchasedIndices(fullShop: ShopUnit[], currentShop: ShopUnit[]):
   const current = padShopUnits(currentShop);
   const indices: number[] = [];
   for (let i = 0; i < 5; i++) {
-    const hadUnit = full[i].unit_id !== -1;
-    const nowEmpty = current[i].unit_id === -1;
+    const hadUnit = (full[i]?.unit_id ?? -1) !== -1;
+    const nowEmpty = (current[i]?.unit_id ?? -1) === -1;
     if (hadUnit && nowEmpty) indices.push(i);
   }
   return indices;

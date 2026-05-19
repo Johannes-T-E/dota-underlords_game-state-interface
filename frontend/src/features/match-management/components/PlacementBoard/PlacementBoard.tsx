@@ -103,6 +103,8 @@ export const PlacementBoard = ({
         lobby_team: 0,
         sequence_number: 0,
         timestamp: '',
+        round_number: 0,
+        round_phase: 'prep',
       };
     });
   }, [summary, fallbackByAccount]);

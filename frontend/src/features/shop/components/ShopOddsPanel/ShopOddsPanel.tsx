@@ -83,7 +83,7 @@ export const ShopOddsPanel = ({
 
   const totalPercent = items.reduce((sum, { percent }) => sum + percent, 0);
   const totalByLevel = LEVELS.map((_, i) =>
-    items.reduce((sum, { byLevel }) => sum + byLevel[i].percent, 0)
+    items.reduce((sum, { byLevel }) => sum + (byLevel[i]?.percent ?? 0), 0)
   );
 
   return (
@@ -153,7 +153,7 @@ export const ShopOddsPanel = ({
                   key={l}
                   className={`shop-odds-panel__td shop-odds-panel__td--total ${l === level ? 'shop-odds-panel__td--current' : ''}`}
                 >
-                  {totalByLevel[i] <= 0 ? '0%' : `${(totalByLevel[i] * 100).toFixed(1)}%`}
+                  {(totalByLevel[i] ?? 0) <= 0 ? '0%' : `${((totalByLevel[i] ?? 0) * 100).toFixed(1)}%`}
                 </td>
               ))}
             </tr>
