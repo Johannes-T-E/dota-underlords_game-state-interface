@@ -46,6 +46,15 @@
   width: 100%;
 }
 
+.pool-bar-chart__bar-wrapper--clickable {
+  cursor: pointer;
+}
+
+.pool-bar-chart__bar-wrapper--clickable:focus-visible {
+  outline: 2px solid var(--accent-color, #5865f2);
+  outline-offset: 2px;
+}
+
 .pool-bar-chart__bar-container {
   width: 100%;
   flex: 1;
@@ -184,6 +193,17 @@
 
 .pool-bar-chart--tooltip {
   --pool-bar-tooltip-icon-size: 40px;
+}
+
+/* Owned heroes panel: same pip size as synergy tooltip breakdown */
+.pool-bar-chart--owned-heroes.pool-bar-chart--fixed-metrics {
+  height: auto;
+  min-height: 0;
+}
+
+.pool-bar-chart--owned-heroes.pool-bar-chart--fixed-metrics .pool-bar-chart__container {
+  align-items: flex-end;
+  overflow: visible;
 }
 
 .pool-bar-tooltip .pool-bar-chart--tooltip {

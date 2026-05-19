@@ -9,15 +9,22 @@ import {
 import type { PoolBarStat } from '@/utils/poolBarStats';
 import { HoverTooltip } from '@/components/ui/HoverTooltip/HoverTooltip';
 import { PoolBarPipFill } from './PoolBarPipFill';
+import { PoolBarSegmentFill } from './PoolBarSegmentFill';
 import {
   PoolBarTooltipContent,
   type PoolBarTooltipMetrics,
 } from './PoolBarTooltipContent';
 import './PoolBarChart.css';
 
-const MAIN_LABEL_HEIGHT_PX = 60;
-const TOOLTIP_CHART_PADDING_Y_PX = 24;
-const TOOLTIP_BAR_ICON_GAP_PX = 6;
+export const POOL_BAR_MAIN_LABEL_HEIGHT_PX = 60;
+const MAIN_LABEL_HEIGHT_PX = POOL_BAR_MAIN_LABEL_HEIGHT_PX;
+export const POOL_BAR_TOOLTIP_CHART_PADDING_Y_PX = 24;
+const TOOLTIP_CHART_PADDING_Y_PX = POOL_BAR_TOOLTIP_CHART_PADDING_Y_PX;
+export const POOL_BAR_TOOLTIP_BAR_ICON_GAP_PX = 6;
+const TOOLTIP_BAR_ICON_GAP_PX = POOL_BAR_TOOLTIP_BAR_ICON_GAP_PX;
+/** Synergy-tooltip breakdown: ~4px per pool copy at typical measured bar heights */
+export const POOL_BAR_TOOLTIP_PX_PER_POOL_UNIT = 4;
+export const POOL_BAR_TOOLTIP_ICON_SIZE_PX = 40;
 
 export interface PoolBarChartProps {
   items: PoolBarStat[];
@@ -30,6 +37,9 @@ export interface PoolBarChartProps {
   /** Tooltip: pip height from hovered synergy bar; column width comes from CSS icon size */
   pixelsPerPoolUnit?: number;
   labelHeightPx?: number;
+  /** Per-column pip colors (index 0 = top); uses PoolBarSegmentFill instead of PoolBarPipFill */
+  pipSegmentsByItemId?: Map<string | number, string[]>;
+  onItemClick?: (item: PoolBarStat) => void;
 }
 
 function measureTooltipMetrics(
@@ -58,6 +68,8 @@ export const PoolBarChart = ({
   renderTooltipLabel,
   pixelsPerPoolUnit,
   labelHeightPx = MAIN_LABEL_HEIGHT_PX,
+  pipSegmentsByItemId,
+  onItemClick,
 }: PoolBarChartProps) => {
   const maxTotalPool = useMemo(() => {
     if (items.length === 0) return 1;
@@ -133,16 +145,30 @@ export const PoolBarChart = ({
             breakdown != null &&
             breakdown.length > 0;
           const tooltipMetrics = tooltipMetricsByItemId.get(item.id);
+          const pipSegments = pipSegmentsByItemId?.get(item.id);
 
           const barWrapper = (
             <div
               key={item.id}
-              className="pool-bar-chart__bar-wrapper"
+              className={`pool-bar-chart__bar-wrapper${onItemClick ? ' pool-bar-chart__bar-wrapper--clickable' : ''}`}
               onMouseEnter={
                 hasTooltip
                   ? (event) => handleTooltipBarMouseEnter(item, event)
                   : undefined
               }
+              onClick={onItemClick ? () => onItemClick(item) : undefined}
+              onKeyDown={
+                onItemClick
+                  ? (event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        onItemClick(item);
+                      }
+                    }
+                  : undefined
+              }
+              role={onItemClick ? 'button' : undefined}
+              tabIndex={onItemClick ? 0 : undefined}
             >
               <div className="pool-bar-chart__bar-container">
                 <div
@@ -157,11 +183,15 @@ export const PoolBarChart = ({
                     } as CSSProperties
                   }
                 >
-                  <PoolBarPipFill
-                    totalPool={item.totalPool}
-                    remainingPool={item.remainingPool}
-                    fillColor={item.color}
-                  />
+                  {pipSegments != null && pipSegments.length > 0 ? (
+                    <PoolBarSegmentFill segments={pipSegments} />
+                  ) : (
+                    <PoolBarPipFill
+                      totalPool={item.totalPool}
+                      remainingPool={item.remainingPool}
+                      fillColor={item.color}
+                    />
+                  )}
                 </div>
               </div>
               <div className="pool-bar-chart__label">

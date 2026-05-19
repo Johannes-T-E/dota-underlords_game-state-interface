@@ -14,8 +14,10 @@ import {
 import { getSynergyNameByKeyword } from '@/components/ui/SynergyDisplay/utils';
 import { useItemsData } from '@/hooks/useItemsData';
 import type { PlayerState, ScoreboardColumnConfig, Unit } from '@/types';
+import { HeroPoolTooltip } from '@/components/charts/HeroPoolTooltip';
 import type { HeroesData } from '@/utils/heroHelpers';
 import { getHeroTier } from '@/utils/heroHelpers';
+import type { PoolCount } from '@/utils/poolCalculator';
 import './ScoreboardPlayerRow.css';
 
 export interface ScoreboardPlayerRowProps {
@@ -30,6 +32,7 @@ export interface ScoreboardPlayerRowProps {
   selectedSynergyKeyword?: number | null;
   onSynergyClick?: (keyword: number | null) => void;
   showSynergyPips?: boolean;
+  poolCounts?: Map<number, PoolCount>;
 }
 
 /**
@@ -76,7 +79,8 @@ export const ScoreboardPlayerRow = memo(({
   onUnitClick,
   selectedSynergyKeyword = null,
   onSynergyClick,
-  showSynergyPips = false
+  showSynergyPips = false,
+  poolCounts,
 }: ScoreboardPlayerRowProps) => {
   const { itemsData } = useItemsData();
   const defaultVisible: ScoreboardColumnConfig = {
@@ -280,15 +284,21 @@ export const ScoreboardPlayerRow = memo(({
                   onClick={() => onUnitClick?.(unit.unit_id)}
                   style={{ cursor: 'pointer' }}
                 >
-                  <HeroPortrait 
+                  <HeroPoolTooltip
                     unitId={unit.unit_id}
-                    rank={unit.rank || 0}
                     heroesData={heroesData}
-                    tierColors={tierColors}
-                    entindex={unit.entindex}
-                    itemSlots={player.item_slots}
-                    itemsData={itemsData}
-                  />
+                    poolCounts={poolCounts}
+                  >
+                    <HeroPortrait
+                      unitId={unit.unit_id}
+                      rank={unit.rank || 0}
+                      heroesData={heroesData}
+                      tierColors={tierColors}
+                      entindex={unit.entindex}
+                      itemSlots={player.item_slots}
+                      itemsData={itemsData}
+                    />
+                  </HeroPoolTooltip>
                 </div>
               );
             })}
@@ -356,15 +366,21 @@ export const ScoreboardPlayerRow = memo(({
                   onClick={() => onUnitClick?.(unit.unit_id)}
                   style={{ cursor: 'pointer' }}
                 >
-                  <HeroPortrait 
+                  <HeroPoolTooltip
                     unitId={unit.unit_id}
-                    rank={unit.rank || 0}
                     heroesData={heroesData}
-                    tierColors={tierColors}
-                    entindex={unit.entindex}
-                    itemSlots={player.item_slots}
-                    itemsData={itemsData}
-                  />
+                    poolCounts={poolCounts}
+                  >
+                    <HeroPortrait
+                      unitId={unit.unit_id}
+                      rank={unit.rank || 0}
+                      heroesData={heroesData}
+                      tierColors={tierColors}
+                      entindex={unit.entindex}
+                      itemSlots={player.item_slots}
+                      itemsData={itemsData}
+                    />
+                  </HeroPoolTooltip>
                 </div>
               );
             })}

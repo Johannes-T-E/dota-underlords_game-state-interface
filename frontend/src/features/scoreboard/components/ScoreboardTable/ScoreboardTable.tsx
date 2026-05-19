@@ -13,6 +13,7 @@ import {
   updateScoreboardFitToViewport,
 } from '@/store/settingsSlice';
 import { getSynergiesColumnWidth, isSynergyActive } from '@/components/ui/SynergyDisplay/utils';
+import { calculatePoolCounts } from '@/utils/poolCalculator';
 import type { PlayerState } from '@/types';
 import type { SortField } from '@/features/scoreboard/components/ScoreboardHeader/ScoreboardHeader';
 import './ScoreboardTable.css';
@@ -57,6 +58,11 @@ export const ScoreboardTable = ({
   const scrollRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const { heroesData } = useHeroesDataContext();
+
+  const poolCounts = useMemo(
+    () => calculatePoolCounts(players, heroesData),
+    [players, heroesData]
+  );
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -203,6 +209,7 @@ export const ScoreboardTable = ({
                 player={player}
                 rank={index + 1}
                 heroesData={heroesData}
+                poolCounts={poolCounts}
                 visibleColumns={visibleColumns}
                 columnOrder={visibleColumns.columnOrder}
                 selectedUnitIds={selectedUnitIds}

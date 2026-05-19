@@ -10,7 +10,11 @@ import type { PrivatePlayerState, PlayerState, Unit } from '@/types';
 import type { HeroesData } from '@/utils/heroHelpers';
 import { calculatePoolCounts } from '@/utils/poolCalculator';
 import { OwnedHeroesChart, type OwnedHeroBarData } from '../OwnedHeroesChart/OwnedHeroesChart';
+import { ShopPanelScaler } from '../ShopPanelScaler/ShopPanelScaler';
 import './ShopDisplay.css';
+
+/** Dashboard shop grid scale; owned-heroes bars stay full size */
+export const DASHBOARD_SHOP_PANEL_SCALE = 0.8;
 
 export interface OwnedUpgradeState {
   ownedCount: number;
@@ -30,6 +34,10 @@ export interface ShopDisplayProps {
   selectedUnitIds?: Set<number>;
   onUnitClick?: (unitId: number) => void;
   className?: string;
+  /** Shop + owned heroes side by side (dashboard) vs stacked (shop page) */
+  panelsLayout?: 'wrap' | 'row';
+  /** Scale shop hero cards only (e.g. dashboard); owned heroes panel is not scaled */
+  shopPanelScale?: number;
 }
 
 /**
@@ -162,7 +170,9 @@ export const ShopDisplay = ({
   heroesData,
   selectedUnitIds = new Set<number>(),
   onUnitClick,
-  className = ''
+  className = '',
+  panelsLayout = 'wrap',
+  shopPanelScale,
 }: ShopDisplayProps) => {
   // Resolve private player by account_id (backend sends private_player_account_id)
   const privatePlayerState = useMemo(() => {
@@ -361,6 +371,17 @@ export const ShopDisplay = ({
     );
   };
 
+  const shopGrid = (
+    <div className="shop-display__grid">
+      {shopUnits.map((shopUnit, index) =>
+        renderHeroCard(
+          { unitId: shopUnit.unit_id, keywords: shopUnit.keywords ?? [] },
+          index
+        )
+      )}
+    </div>
+  );
+
   // Show empty state if no private player data
   if (!privatePlayer) {
     return (
@@ -376,20 +397,19 @@ export const ShopDisplay = ({
 
   return (
     <div className={`shop-display ${className}`}>
-      <div className="shop-display__panels">
-        <div className="shop-display__panel">
+      <div
+        className={`shop-display__panels ${panelsLayout === 'row' ? 'shop-display__panels--row' : ''}`}
+      >
+        <div className="shop-display__panel shop-display__panel--shop">
           <h3 className="shop-display__panel-title">Shop</h3>
-          <div className="shop-display__grid">
-            {shopUnits.map((shopUnit, index) =>
-              renderHeroCard(
-                { unitId: shopUnit.unit_id, keywords: shopUnit.keywords ?? [] },
-                index
-              )
-            )}
-          </div>
+          {shopPanelScale != null ? (
+            <ShopPanelScaler scale={shopPanelScale}>{shopGrid}</ShopPanelScaler>
+          ) : (
+            shopGrid
+          )}
         </div>
 
-        <div className="shop-display__panel">
+        <div className="shop-display__panel shop-display__panel--owned">
           <h3 className="shop-display__panel-title">Owned Heroes</h3>
           <OwnedHeroesChart
             heroesData={heroesData}

@@ -6,7 +6,10 @@ import { ScoreboardTable } from '@/features/scoreboard/components/ScoreboardTabl
 import { SCOREBOARD_WIDGET_IDS } from '@/features/scoreboard/constants';
 import { PlayerBoard } from '@/features/player-board/components/PlayerBoard/PlayerBoard';
 /* import { UnitChanges } from '@/features/unit-changes/UnitChanges'; */
-import { ShopDisplay } from '@/features/shop';
+import {
+  DASHBOARD_SHOP_PANEL_SCALE,
+  ShopDisplay,
+} from '@/features/shop';
 import { CombatResults } from '@/features/combat-results';
 import { EmptyState } from '@/components/shared';
 import { Button } from '@/components/ui';
@@ -96,10 +99,6 @@ export const Dashboard = () => {
           <div className="dashboard">
           {/* Scoreboard Section */}
           <section className="dashboard__section dashboard__section--scoreboard">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <h2 className="dashboard__section-title">Scoreboard</h2>
-              <OpenInNewTabButton href="/scoreboard" />
-            </div>
             {!currentMatch ? (
               <EmptyState
                 title="No Active Match"
@@ -120,10 +119,6 @@ export const Dashboard = () => {
 
           {/* Shop Section */}
           <section className="dashboard__section dashboard__section--shop">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <h2 className="dashboard__section-title">Shop</h2>
-              <OpenInNewTabButton href="/shop" />
-            </div>
             {!currentMatch ? (
               <EmptyState
                 title="No Active Match"
@@ -138,6 +133,8 @@ export const Dashboard = () => {
                 heroesData={heroesData}
                 selectedUnitIds={selectedUnitIds}
                 onUnitClick={handleUnitClick}
+                panelsLayout="row"
+                shopPanelScale={DASHBOARD_SHOP_PANEL_SCALE}
               />
             )}
           </section>

@@ -14,6 +14,31 @@
   min-width: min(100%, 640px);
 }
 
+.shop-display__panels--row {
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 16px;
+}
+
+.shop-display__panels--row .shop-display__panel--shop {
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.shop-display__panels--row .shop-display__panel--owned {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 280px;
+}
+
+.shop-display__panels--row .shop-display__panel--owned .owned-heroes-chart {
+  flex: 1;
+  min-height: 0;
+}
+
 .shop-display__panel-title {
   margin: 0 0 8px;
   font-size: 0.9rem;
@@ -296,7 +321,7 @@
 }
 
 @media (max-width: 1440px) {
-  .shop-display__panel {
+  .shop-display__panels:not(.shop-display__panels--row) .shop-display__panel {
     min-width: 100%;
     flex-basis: 100%;
   }

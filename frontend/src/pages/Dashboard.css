@@ -17,7 +17,7 @@
   gap: 32px;
   width: 100%;
   max-width: 100%;
-  padding: 24px;
+  padding: 0;
 }
 
 .dashboard__section {
@@ -27,6 +27,18 @@
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+}
+
+.dashboard__section--shop {
+  overflow: hidden;
+}
+
+.dashboard__section--shop .shop-display__panels--row {
+  width: 100%;
+}
+
+.dashboard__section--shop .shop-display {
+  margin-left: 12px;
 }
 
 .dashboard__section--player-boards {
@@ -93,7 +105,6 @@
 
 @media (max-width: 768px) {
   .dashboard {
-    padding: 16px;
     gap: 24px;
   }
 

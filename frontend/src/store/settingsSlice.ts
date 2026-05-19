@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createSelector, PayloadAction } from '@reduxjs/toolkit';
 import type { HealthDisplaySettings } from '@/components/ui/HealthDisplay/HealthDisplaySettings';
 import type { ScoreboardColumnConfig } from '@/types';
 import { DEFAULT_HEALTH_DISPLAY_SETTINGS } from '@/components/ui/HealthDisplay/HealthDisplaySettings';
@@ -349,8 +349,26 @@ export default settingsSlice.reducer;
 
 // Selectors
 export const selectHealthSettings = (state: { settings: SettingsState }) => state.settings.health;
-export const selectScoreboardSettings = (widgetId: string) => (state: { settings: SettingsState }): ScoreboardSettings => {
-  return mergeScoreboardSettings(widgetId, state.settings.scoreboards);
+
+const _scoreboardsSelector = (state: { settings: SettingsState }) => state.settings.scoreboards;
+const _scoreboardSelectorCache = new Map<string, (state: { settings: SettingsState }) => ScoreboardSettings>();
+
+/**
+ * Returns a memoized selector for a specific widget's scoreboard settings.
+ * The same selector instance is reused per widgetId so createSelector's cache
+ * kicks in and prevents new object references on every render.
+ */
+export const selectScoreboardSettings = (widgetId: string) => {
+  if (!_scoreboardSelectorCache.has(widgetId)) {
+    _scoreboardSelectorCache.set(
+      widgetId,
+      createSelector(
+        _scoreboardsSelector,
+        (scoreboards) => mergeScoreboardSettings(widgetId, scoreboards)
+      )
+    );
+  }
+  return _scoreboardSelectorCache.get(widgetId)!;
 };
 export const selectGeneralSettings = (state: { settings: SettingsState }) => state.settings.general;
 export const selectHeroPortraitSettings = (state: { settings: SettingsState }) => state.settings.general.heroPortrait;

@@ -1,6 +1,10 @@
 import type { SynergyPoolStat } from './synergyPoolCalculator';
 import type { HeroPoolStat } from './synergyHeroPoolCalculator';
 import type { TierPoolStat } from './tierPoolCalculator';
+import type { HeroesData } from './heroHelpers';
+import { isDraftPoolHero } from './heroHelpers';
+import type { PoolCount } from './poolCalculator';
+import { cardsPerTier } from './poolCalculator';
 import { getTierColor } from './tierColors';
 import synergyStyles from '@/components/ui/SynergyDisplay/data/synergy-styles.json';
 import synergyIconMap from '@/components/ui/SynergyDisplay/data/synergy-icon-map.json';
@@ -50,6 +54,42 @@ export function heroPoolStatToBarStat(stat: HeroPoolStat): PoolBarStat {
     percentageRemaining: stat.percentageRemaining,
     color: getTierColor(stat.draftTier),
   };
+}
+
+/**
+ * Pool bar stat for a single draft-pool hero (scoreboard tooltips, etc.).
+ */
+export function getHeroPoolBarStat(
+  unitId: number,
+  heroesData: HeroesData | null,
+  poolCounts: Map<number, PoolCount> | undefined
+): PoolBarStat | null {
+  if (!heroesData?.heroes || !poolCounts || !isDraftPoolHero(unitId)) {
+    return null;
+  }
+
+  const heroData = Object.values(heroesData.heroes).find((h) => h.id === unitId);
+  if (!heroData) {
+    return null;
+  }
+
+  const tier = heroData.draftTier;
+  const totalPool = cardsPerTier[String(tier) as keyof typeof cardsPerTier] || 0;
+  const poolCount = poolCounts.get(unitId);
+  const remainingPool = poolCount?.remaining ?? 0;
+  const usedPool = totalPool - remainingPool;
+  const percentageRemaining =
+    totalPool > 0 ? (remainingPool / totalPool) * 100 : 0;
+
+  return heroPoolStatToBarStat({
+    unitId,
+    heroName: heroData.displayName,
+    draftTier: tier,
+    totalPool,
+    remainingPool,
+    usedPool,
+    percentageRemaining,
+  });
 }
 
 export function tierStatToBarStat(stat: TierPoolStat): PoolBarStat {

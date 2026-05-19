@@ -1,0 +1,8 @@
+.shop-panel-scaler {
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.shop-panel-scaler__inner {
+  width: fit-content;
+}
