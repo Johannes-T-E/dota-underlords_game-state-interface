@@ -46,6 +46,9 @@ backend/recordings/
 # Local scripts in scripts/ starting with board (benchmarks; not shared)
 scripts/board*
 
+# Local GSI replay capture helper (not shared)
+scripts/replay_gsi_capture*
+
 # React/Node.js
 frontend/node_modules/
 frontend/dist/
