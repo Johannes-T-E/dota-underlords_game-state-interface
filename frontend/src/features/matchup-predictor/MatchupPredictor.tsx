@@ -124,7 +124,6 @@ export const MatchupPredictor = () => {
     <div className="matchup-predictor">
       <PageHeader
         title="Opponent Forecast"
-        titleIcon="🕵️"
         icon={<IconSpy size={18} stroke={1.8} />}
         centerContent={(
           <Text variant="body" color="secondary" className="matchup-predictor__round-label">

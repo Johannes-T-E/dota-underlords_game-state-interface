@@ -3,6 +3,7 @@ import { MainContentTemplate } from '@/components/layout';
 import { PageHeader } from '@/components/shared';
 import { IconDashboard } from '@tabler/icons-react';
 import { ScoreboardTable } from '@/features/scoreboard/components/ScoreboardTable/ScoreboardTable';
+import { SCOREBOARD_WIDGET_IDS } from '@/features/scoreboard/constants';
 import { PlayerBoard } from '@/features/player-board/components/PlayerBoard/PlayerBoard';
 /* import { UnitChanges } from '@/features/unit-changes/UnitChanges'; */
 import { ShopDisplay } from '@/features/shop';
@@ -91,7 +92,7 @@ export const Dashboard = () => {
         </div>
         
         <div className="dashboard-page__container">
-          <PageHeader title="Dashboard" titleIcon="🏠" icon={<IconDashboard size={18} stroke={1.8} />} />
+          <PageHeader title="Dashboard" icon={<IconDashboard size={18} stroke={1.8} />} />
           <div className="dashboard">
           {/* Scoreboard Section */}
           <section className="dashboard__section dashboard__section--scoreboard">
@@ -108,7 +109,7 @@ export const Dashboard = () => {
             ) : (
               <ScoreboardTable 
                 players={players || []} 
-                widgetId="scoreboard-default"
+                widgetId={SCOREBOARD_WIDGET_IDS.dashboard}
                 selectedUnitIds={selectedUnitIds}
                 onUnitClick={handleUnitClick}
                 selectedSynergyKeyword={selectedSynergyKeyword}

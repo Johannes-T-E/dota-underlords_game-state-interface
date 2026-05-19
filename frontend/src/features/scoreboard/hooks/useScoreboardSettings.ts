@@ -10,7 +10,7 @@ import type { ScoreboardColumnConfig } from '@/types';
 
 /**
  * Hook for managing Scoreboard settings for a specific widget
- * @param widgetId - Unique identifier for the widget instance (e.g., "scoreboard-1")
+ * @param widgetId - Widget instance id, or GLOBAL_SCOREBOARD_SETTINGS_ID for app-wide defaults
  */
 export const useScoreboardSettings = (widgetId: string) => {
   const dispatch = useAppDispatch();

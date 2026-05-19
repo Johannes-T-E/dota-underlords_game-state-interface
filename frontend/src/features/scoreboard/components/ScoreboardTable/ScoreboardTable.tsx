@@ -2,12 +2,17 @@ import { useMemo, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { ScoreboardHeader } from '@/features/scoreboard/components/ScoreboardHeader/ScoreboardHeader';
 import { ScoreboardPlayerRow } from '@/features/scoreboard/components/ScoreboardPlayerRow/ScoreboardPlayerRow';
-import { ScoreboardSettings } from '@/features/scoreboard/components/ScoreboardSettings/ScoreboardSettings';
 import { SynergyToolbar } from '@/features/scoreboard/components/SynergyToolbar';
 import { useHeroesDataContext } from '@/contexts/HeroesDataContext';
 import { useScoreboardSettings } from '@/features/scoreboard/hooks/useScoreboardSettings';
-import { selectShowSynergyPips, updateShowSynergyPips } from '@/store/settingsSlice';
-import { isSynergyActive } from '@/components/ui/SynergyDisplay/utils';
+import { useScoreboardFitScale } from '@/features/scoreboard/hooks/useScoreboardFitScale';
+import {
+  selectShowSynergyPips,
+  selectScoreboardFitToViewport,
+  updateShowSynergyPips,
+  updateScoreboardFitToViewport,
+} from '@/store/settingsSlice';
+import { getSynergiesColumnWidth, isSynergyActive } from '@/components/ui/SynergyDisplay/utils';
 import type { PlayerState } from '@/types';
 import type { SortField } from '@/features/scoreboard/components/ScoreboardHeader/ScoreboardHeader';
 import './ScoreboardTable.css';
@@ -38,12 +43,19 @@ export const ScoreboardTable = ({
   // Get global synergy pips setting
   const dispatch = useDispatch();
   const showSynergyPips = useSelector(selectShowSynergyPips);
-  
+  const fitToViewport = useSelector(selectScoreboardFitToViewport);
+
   const handleShowSynergyPipsChange = (show: boolean) => {
     dispatch(updateShowSynergyPips(show));
   };
-  
+
+  const handleFitToViewportChange = (fit: boolean) => {
+    dispatch(updateScoreboardFitToViewport(fit));
+  };
+
   const tableRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const { heroesData } = useHeroesDataContext();
 
   const handleSort = (field: SortField) => {
@@ -65,37 +77,6 @@ export const ScoreboardTable = ({
       return Math.max(max, activeSynergies.length);
     }, 0);
   }, [players]);
-
-  // Calculate synergies column width based on max active synergies
-  // Slot-based like roster: each synergy gets a fixed-width slot with gap between them
-  // Uses row-height based sizing (same as SynergyDisplay component)
-  const synergiesColumnWidth = useMemo(() => {
-    // Get row height from CSS variable (defaults to 80px)
-    const rowHeight = typeof window !== 'undefined' 
-      ? parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--row-height').trim()) || 80
-      : 80;
-    
-    // Aspect ratios (matching SynergyDisplay constants)
-    const ICON_ASPECT_RATIO = 1; // Square icon
-    const PIP_ASPECT_RATIO = 26 / 128; // 0.203125
-    
-    // Calculate slot width based on row height
-    // Icon-only: square (height = width)
-    // With pips: icon (square) + pips (always 3 levels)
-    const iconWidth = rowHeight * ICON_ASPECT_RATIO;
-    const pipWidth = showSynergyPips ? rowHeight * PIP_ASPECT_RATIO * 3 : 0;
-    const slotWidth = iconWidth + pipWidth;
-    
-    const gap = 4; // Gap between synergies (matches CSS gap)
-    const minWidth = rowHeight; // Minimum column width (one icon)
-    
-    if (maxActiveSynergies === 0) return minWidth;
-    
-    // Width = (numSynergies * slotWidth) + ((numSynergies - 1) * gap)
-    const totalSlotWidth = maxActiveSynergies * slotWidth;
-    const totalGapWidth = (maxActiveSynergies - 1) * gap;
-    return totalSlotWidth + totalGapWidth;
-  }, [maxActiveSynergies, showSynergyPips]);
 
   const sortedPlayers = useMemo(() => {
     const sorted = [...players];
@@ -139,6 +120,36 @@ export const ScoreboardTable = ({
     return sorted;
   }, [players, sortField, sortDirection]);
 
+  const synergiesColumnWidth = useMemo(() => {
+    const rowHeight =
+      typeof window !== 'undefined'
+        ? parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--row-height').trim()) || 80
+        : 80;
+
+    return getSynergiesColumnWidth(rowHeight, maxActiveSynergies, showSynergyPips);
+  }, [maxActiveSynergies, showSynergyPips]);
+
+  const { scale: fitScale, naturalWidth, naturalHeight } = useScoreboardFitScale(
+    fitToViewport,
+    scrollRef,
+    contentRef,
+    [sortedPlayers.length, visibleColumns, showSynergyPips, maxActiveSynergies, synergiesColumnWidth]
+  );
+
+  const fitSlotStyle =
+    fitToViewport && naturalWidth > 0 && naturalHeight > 0
+      ? ({
+          width: naturalWidth * fitScale,
+          height: naturalHeight * fitScale,
+        } as React.CSSProperties)
+      : undefined;
+
+  const scaledContentStyle = fitToViewport
+    ? ({
+        transform: `scale(${fitScale})`,
+        transformOrigin: 'top left',
+      } as React.CSSProperties)
+    : undefined;
 
   if (players.length === 0) {
     return null;
@@ -158,25 +169,31 @@ export const ScoreboardTable = ({
       <SynergyToolbar
         selectedSynergyKeyword={selectedSynergyKeyword}
         onSynergyClick={onSynergyClick}
+        columnConfig={visibleColumns}
+        onColumnConfigChange={updateColumns}
+        showSynergyPips={showSynergyPips}
+        onShowSynergyPipsChange={handleShowSynergyPipsChange}
+        fitToViewport={fitToViewport}
+        onFitToViewportChange={handleFitToViewportChange}
       />
-      <div className="scoreboard-table__controls">
-        <div className="scoreboard-table__controls-spacer" />
-        <ScoreboardSettings 
-          config={visibleColumns}
-          onChange={updateColumns}
-          showSynergyPips={showSynergyPips}
-          onShowSynergyPipsChange={handleShowSynergyPipsChange}
-        />
-      </div>
-      <div className="scoreboard-table__scroll app-scrollbar">
-        <ScoreboardHeader
-          sortField={sortField}
-          sortDirection={sortDirection}
-          onSort={handleSort}
-          visibleColumns={visibleColumns}
-          columnOrder={visibleColumns.columnOrder}
-          onColumnReorder={handleColumnReorder}
-        />
+      <div
+        ref={scrollRef}
+        className={`scoreboard-table__scroll app-scrollbar ${fitToViewport ? 'scoreboard-table__scroll--fit' : ''}`}
+      >
+        <div className="scoreboard-table__fit-slot" style={fitSlotStyle}>
+          <div
+            ref={contentRef}
+            className="scoreboard-table__scaled-content"
+            style={scaledContentStyle}
+          >
+            <ScoreboardHeader
+            sortField={sortField}
+            sortDirection={sortDirection}
+            onSort={handleSort}
+            visibleColumns={visibleColumns}
+            columnOrder={visibleColumns.columnOrder}
+            onColumnReorder={handleColumnReorder}
+          />
 
         <div className="scoreboard-table__players">
           {sortedPlayers.map((player, index) => {
@@ -196,6 +213,8 @@ export const ScoreboardTable = ({
               />
             );
           })}
+            </div>
+          </div>
         </div>
       </div>
     </div>

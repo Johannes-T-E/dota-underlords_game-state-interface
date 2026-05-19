@@ -1,0 +1,27 @@
+.hover-tooltip-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+}
+
+.hover-tooltip {
+  position: fixed;
+  background: var(--secondary-color, #2a2a2e);
+  border: 1px solid var(--border-color, #3a3a3e);
+  border-radius: 4px;
+  padding: 10px;
+  color: var(--text-primary, #ffffff);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.65);
+  pointer-events: none;
+  z-index: 100000;
+  isolation: isolate;
+}
+
+/* Pool bar chart tooltip supplies its own panel chrome */
+.hover-tooltip.hover-tooltip--pool-bar {
+  padding: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+}

@@ -55,8 +55,12 @@
 
 .settings-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.settings-page__form .settings-grid {
+  grid-template-columns: 1fr;
 }
 
 .settings-option-tile {
@@ -259,6 +263,38 @@
   letter-spacing: 0.2px;
 }
 
+.settings-inline-preview--columns {
+  margin-bottom: 12px;
+}
+
+.settings-column-preview {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 6px 8px;
+  border: 1px solid color-mix(in srgb, var(--border-color) 70%, transparent);
+  background: color-mix(in srgb, var(--secondary-color) 85%, transparent);
+}
+
+.settings-column-preview__col {
+  padding: 2px 8px;
+  border: 1px solid color-mix(in srgb, var(--accent-color) 45%, var(--border-color));
+  color: var(--text-color);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.settings-column-preview__empty {
+  color: color-mix(in srgb, var(--text-color) 55%, transparent);
+  font-size: 12px;
+  font-style: italic;
+}
+
 .settings-inline-preview--synergy {
   margin-bottom: 12px;
 }
@@ -286,4 +322,53 @@
 
 .settings-trail-preview__trail {
   border: 1px solid color-mix(in srgb, var(--border-color) 55%, transparent);
+}
+
+.settings-preset-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.settings-custom-gradient {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.settings-live-preview {
+  margin-top: 0.5rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--accent-color) 28%, var(--border-color));
+  background: color-mix(in srgb, var(--secondary-color) 90%, transparent);
+}
+
+.settings-live-preview__header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin-bottom: 0.65rem;
+}
+
+.settings-live-preview__title {
+  color: var(--text-color);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.settings-live-preview__hint {
+  color: color-mix(in srgb, var(--text-color) 62%, transparent);
+  font-size: 12px;
+}
+
+.settings-live-preview__samples {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+}
+
+.settings-live-preview--health .settings-live-preview__samples {
+  min-height: 40px;
 }

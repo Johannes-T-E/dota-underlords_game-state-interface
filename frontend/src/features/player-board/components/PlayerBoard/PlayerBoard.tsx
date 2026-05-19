@@ -3,7 +3,7 @@ import { Button, HeroPortrait, PlayerNameDisplay } from '@/components/ui';
 import { OpenInNewTabButton } from '@/components/shared/OpenInNewTabButton';
 import { MovementTrail } from './components/MovementTrail/MovementTrail';
 import { useUnitPositions } from '@/features/player-board/hooks/useUnitPositions';
-import { calculatePosition, CELL_SIZE, GAP_SIZE, PADDING, SECTION_GAP, CELL_STEP } from '@/features/player-board/utils/positionUtils';
+import { resolveUnitPixelPosition, CELL_SIZE, GAP_SIZE } from '@/features/player-board/utils/positionUtils';
 import { useUnitAnimationSettings } from '@/hooks/useSettings';
 import { useItemsData } from '@/hooks/useItemsData';
 import { getHeroTier } from '@/utils/heroHelpers';
@@ -19,6 +19,8 @@ export interface PlayerBoardProps {
   displayScale?: number;
   benchPosition?: 'top' | 'bottom';
   showBench?: boolean;
+  /** When true, units jump instantly (no CSS transition) — used for replay snap-back. */
+  instantPosition?: boolean;
 }
 
 interface ActiveTrail {
@@ -38,6 +40,7 @@ export const PlayerBoard = ({
   displayScale,
   benchPosition = 'bottom',
   showBench = true,
+  instantPosition = false,
 }: PlayerBoardProps) => {
 
   
@@ -72,9 +75,19 @@ export const PlayerBoard = ({
     setActiveTrails([]);
   }, [player.account_id]);
 
+  useEffect(() => {
+    if (instantPosition) {
+      setActiveTrails([]);
+    }
+  }, [instantPosition]);
+
   // Create trails when units move
   useEffect(() => {
-    if (!animationSettings.enablePositionAnimation || !animationSettings.enableMovementTrail) {
+    if (
+      !animationSettings.enablePositionAnimation
+      || !animationSettings.enableMovementTrail
+      || instantPosition
+    ) {
       return;
     }
 
@@ -98,7 +111,7 @@ export const PlayerBoard = ({
     if (newTrails.length > 0) {
       setActiveTrails(prev => [...prev, ...newTrails]);
     }
-  }, [animationStates, animationSettings.enablePositionAnimation, animationSettings.enableMovementTrail, units]);
+  }, [animationStates, animationSettings.enablePositionAnimation, animationSettings.enableMovementTrail, instantPosition, units]);
 
   // Clean up expired trails
   useEffect(() => {
@@ -150,22 +163,10 @@ export const PlayerBoard = ({
     if (!showBench && unit.position.y === -1) return null;
 
     const state = animationStates.find(s => s.entindex === unit.entindex);
-    const calculated = calculatePosition(unit.position.x, unit.position.y);
-    const position = benchPosition === 'top'
-      ? (
-          unit.position.y === -1
-            ? {
-                x: calculated.x,
-                y: PADDING + CELL_SIZE / 2,
-              }
-            : {
-                x: calculated.x,
-                y: showBench
-                  ? PADDING + CELL_SIZE + SECTION_GAP + (3 - unit.position.y) * CELL_STEP + CELL_SIZE / 2
-                  : PADDING + (3 - unit.position.y) * CELL_STEP + CELL_SIZE / 2,
-              }
-        )
-      : calculated;
+    const position = resolveUnitPixelPosition(unit.position.x, unit.position.y, {
+      benchPosition,
+      showBench,
+    });
     const isNew = state?.isNew ?? false;
 
     const style: React.CSSProperties = {
@@ -175,6 +176,7 @@ export const PlayerBoard = ({
       transform: 'translate(-50%, -50%)',
       transition: animationSettings.enablePositionAnimation && !isNew
         && !suspendPositionTransition
+        && !instantPosition
         ? `left ${animationSettings.animationDuration}ms ease-out, top ${animationSettings.animationDuration}ms ease-out`
         : 'none',
       zIndex: 10
@@ -300,14 +302,20 @@ export const PlayerBoard = ({
               fromPosition={trail.from}
               toPosition={trail.to}
               duration={animationSettings.animationDuration}
-              trailLength={animationSettings.trailLength}
+              trailLength={1}
               cellSize={CELL_SIZE}
               gapSize={GAP_SIZE}
               trailColor={animationSettings.trailColor}
               trailOpacity={animationSettings.trailOpacity}
               trailThickness={animationSettings.trailThickness}
               useTierColor={animationSettings.useTierColor}
-              unitId={getHeroTier(trail.unitId, heroesData)}
+              unitTier={
+                animationSettings.useTierColor
+                  ? getHeroTier(trail.unitId, heroesData)
+                  : undefined
+              }
+              benchPosition={benchPosition}
+              showBench={showBench}
             />
           ))
         )}

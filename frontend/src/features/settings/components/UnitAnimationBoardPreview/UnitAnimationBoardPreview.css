@@ -1,0 +1,62 @@
+.unit-animation-board-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 100%;
+}
+
+.unit-animation-board-preview__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  pointer-events: auto;
+}
+
+.unit-animation-board-preview__replay {
+  min-width: 2rem;
+  min-height: 2rem;
+  padding: 0.35rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.unit-animation-board-preview__board-wrap {
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.unit-animation-board-preview__trail-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.unit-animation-board-preview__trail-shell {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+.unit-animation-board-preview__trail-shell .player-board__grid-container {
+  position: relative;
+}
+
+.unit-animation-board-preview__board {
+  width: fit-content;
+  max-width: 100%;
+}
+
+.unit-animation-board-preview__board .player-board__header {
+  display: none;
+}

@@ -2,35 +2,47 @@
   background-color: var(--primary-color);
   border-radius: 0;
   overflow: hidden;
-  box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+  box-shadow: none;
   width: 100%;
   min-width: 0;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  flex-shrink: 1;
-}
-
-.scoreboard-table__controls {
-  padding: 0.5rem 1rem;
-  display: flex;
-  justify-content: flex-end;
-  background: var(--primary-color);
-  border-bottom: 1px solid var(--border-color);
-}
-
-.scoreboard-table__controls-spacer {
   flex: 1;
+  min-height: 0;
 }
 
 .scoreboard-table__scroll {
+  position: relative;
+  z-index: 1;
   width: 100%;
   min-width: 0;
+  flex: 1;
+  min-height: 0;
   overflow-x: auto;
   overflow-y: hidden;
 }
 
+.scoreboard-table__scroll--fit {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.scoreboard-table__fit-slot {
+  flex-shrink: 0;
+}
+
+.scoreboard-table__scaled-content {
+  transform-origin: top left;
+  width: max-content;
+  min-width: 100%;
+}
+
 .scoreboard-table__scroll > .scoreboard-header,
-.scoreboard-table__scroll > .scoreboard-table__players {
+.scoreboard-table__scroll > .scoreboard-table__players,
+.scoreboard-table__scaled-content > .scoreboard-header,
+.scoreboard-table__scaled-content > .scoreboard-table__players {
   width: max-content;
   min-width: 100%;
 }
@@ -43,5 +55,3 @@
   overflow-y: hidden;
   padding-bottom: 12px;
 }
-
-

@@ -90,6 +90,8 @@ class MatchState:
         self.schedule_offset = 0
         self.streak_step = 0
         self.latest_matchup_prediction = None
+        # True when match was started from GSI replay (no DB persistence for that match)
+        self.gsi_emulated = False
 
     def reset(self):
         """Reset to initial state."""
@@ -118,6 +120,7 @@ class MatchState:
         self.schedule_offset = 0
         self.streak_step = 0
         self.latest_matchup_prediction = None
+        self.gsi_emulated = False
 
     def reset_for_new_match_preserve_buffers(self):
         """Reset active match runtime state but keep pre-match buffers for bootstrap processing."""
@@ -461,7 +464,8 @@ def emit_realtime_update():
             'round_number': match_state.round_number,
             'round_phase': match_state.round_phase
         },
-        'timestamp': time.time()
+        'timestamp': time.time(),
+        'gsi_emulated': match_state.gsi_emulated,
     }
     
     # Add combat results if there are new combats
@@ -490,7 +494,7 @@ def emit_realtime_update():
 # Match Lifecycle Functions
 # ==========================================
 
-def start_new_match(players_data: List[Dict], timestamp: datetime) -> str:
+def start_new_match(players_data: List[Dict], timestamp: datetime, persist_to_db: bool = True) -> str:
     """Start a new match with the given players."""
     # Generate match_id
     match_id = generate_match_id(players_data)
@@ -512,8 +516,9 @@ def start_new_match(players_data: List[Dict], timestamp: datetime) -> str:
             match_count = db.get_player_match_count(account_id)
             player_match_counts[account_id] = match_count
     
-    # Create match in database
-    db.create_match(match_id, players_data, timestamp)
+    if persist_to_db:
+        # Create match in database
+        db.create_match(match_id, players_data, timestamp)
     
     # Reset active in-memory state while preserving pre-match buffers.
     # Buffers are consumed right after this by process_buffered_data(...).
@@ -523,9 +528,11 @@ def start_new_match(players_data: List[Dict], timestamp: datetime) -> str:
     match_state.match_id = match_id
     match_state.match_start = timestamp
     match_state.player_match_counts = player_match_counts
+    match_state.gsi_emulated = not persist_to_db
     
-    # Update stats
-    stats['match_count'] += 1
+    # Update stats (only persisted matches)
+    if persist_to_db:
+        stats['match_count'] += 1
     
     print(f"\n{'='*60}")
     print(f"[MATCH START] Match ID: {match_id}")
@@ -535,7 +542,7 @@ def start_new_match(players_data: List[Dict], timestamp: datetime) -> str:
     return match_id
 
 
-def check_match_end(match_id: str, timestamp: datetime) -> bool:
+def check_match_end(match_id: str, timestamp: datetime, persist_to_db: bool = True) -> bool:
     """Check if match has ended using in-memory player states."""
     if not match_state.latest_processed_public_player_states:
         return False
@@ -562,8 +569,11 @@ def check_match_end(match_id: str, timestamp: datetime) -> bool:
                 match_state.latest_processed_public_player_states[winner_id]['final_place'] = 1
                 
                 # Queue all match end operations as a single transaction
-                db_write_queue.put(('match_end_transaction', match_id, winner_id, timestamp))
-                print(f"[MATCH END] Match {match_id} ended - transaction queued")
+                if persist_to_db:
+                    db_write_queue.put(('match_end_transaction', match_id, winner_id, timestamp))
+                    print(f"[MATCH END] Match {match_id} ended - transaction queued")
+                else:
+                    print(f"[MATCH END] Match {match_id} ended (GSI replay — no DB transaction)")
                 return True
             except Exception as e:
                 print(f"[ERROR] Failed to queue match end transaction: {e}")
@@ -575,18 +585,21 @@ def check_match_end(match_id: str, timestamp: datetime) -> bool:
     if len(still_playing) == 0 and len(match_state.latest_processed_public_player_states) > 0:
         print(f"[MATCH END] All {len(match_state.latest_processed_public_player_states)} players have final places - ending match")
         # All players have final places, just update match end time
-        db_write_queue.put(('update_match_end', match_id, timestamp))
+        if persist_to_db:
+            db_write_queue.put(('update_match_end', match_id, timestamp))
         return True
     
     return False
 
 
-def abandon_match(match_id: str, timestamp: datetime, reason: str = "Manual"):
+def abandon_match(match_id: str, timestamp: datetime, reason: str = "Manual", persist_to_db: bool = True):
     """Mark a match as abandoned and reset game state."""
     print(f"[MATCH ABANDONED] Match {match_id} - Reason: {reason}")
     
-    # Queue database update: set match end time
-    db_write_queue.put(('update_match_end', match_id, timestamp))
+    was_emulated = match_state.gsi_emulated
+    if persist_to_db:
+        # Queue database update: set match end time
+        db_write_queue.put(('update_match_end', match_id, timestamp))
     
     # Reset match state to allow new game detection
     match_state.reset()
@@ -598,7 +611,8 @@ def abandon_match(match_id: str, timestamp: datetime, reason: str = "Manual"):
     socketio.emit('match_abandoned', {
         'match_id': match_id,
         'reason': reason,
-        'timestamp': timestamp.isoformat()
+        'timestamp': timestamp.isoformat(),
+        'gsi_emulated': was_emulated,
     }, to=None)
 
 
@@ -661,7 +675,7 @@ def _resolve_private_player_account_id(gsi_private_player_state: Dict):
     print(f"[GSI] WARNING: Could not resolve private player account_id for player_slot {private_slot}")
 
 
-def process_buffered_data(match_id: str, timestamp: datetime):
+def process_buffered_data(match_id: str, timestamp: datetime, persist_to_db: bool = True):
     """Process buffered data for newly started match. Derives confirmed players from buffer."""
     # Copy buffers to local variables before clearing to prevent race conditions
     # This ensures we only process data that was buffered before match started
@@ -691,7 +705,8 @@ def process_buffered_data(match_id: str, timestamp: datetime):
     for account_id, (gsi_state, time, sequence) in latest_public_player_states.items():
         processed_public_state = process_and_store_gsi_public_player_state(account_id, gsi_state, time)
         match_state.sequences[account_id] = sequence
-        db_write_queue.put(('insert_snapshot', match_id, 'public_player', account_id, processed_public_state, time))
+        if persist_to_db:
+            db_write_queue.put(('insert_snapshot', match_id, 'public_player', account_id, processed_public_state, time))
         print(f"[BUFFER] Queued buffered public snapshot for player {account_id}, match {match_id}")
     
     # Process private player states — pick one bootstrap snapshot for shop + slot resolution.
@@ -750,7 +765,8 @@ def process_buffered_data(match_id: str, timestamp: datetime):
     # Leaving private_sequence unset ensures the first real-time private state is always accepted.
     if latest_gsi_private_player_state is not None:
         processed_private_state = process_and_store_gsi_private_player_state(latest_gsi_private_player_state, latest_private_time)
-        db_write_queue.put(('insert_snapshot', match_id, 'private_player', None, processed_private_state, latest_private_time))
+        if persist_to_db:
+            db_write_queue.put(('insert_snapshot', match_id, 'private_player', None, processed_private_state, latest_private_time))
         print(f"[BUFFER] Queued buffered private snapshot for match {match_id}")
         
         _resolve_private_player_account_id(latest_gsi_private_player_state)

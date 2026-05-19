@@ -62,7 +62,7 @@ export const ShopPage = () => {
   return (
       <MainContentTemplate className="shop-page" centered={false}>
         <div className="shop-page__container">
-          <PageHeader title="Shop" titleIcon="🛒" icon={<IconShoppingCart size={18} stroke={1.8} />} />
+          <PageHeader title="Shop" icon={<IconShoppingCart size={18} stroke={1.8} />} />
           {!currentMatch ? (
             <div className="shop-page__empty">
               <EmptyState

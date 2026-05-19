@@ -1,5 +1,6 @@
 import type { PlayerState, ShopUnit, Unit } from '@/types';
 import type { HeroesData } from './heroHelpers';
+import { isDraftPoolHero } from './heroHelpers';
 
 // Shop odds per level (probability of each tier appearing)
 export const shopOdds = {
@@ -89,6 +90,9 @@ export function calculatePoolCounts(
   // Calculate pool counts for each hero
   for (const [, heroData] of Object.entries(heroesData.heroes)) {
     const unitId = heroData.id;
+    if (!isDraftPoolHero(unitId)) {
+      continue;
+    }
     const tier = heroData.draftTier;
     const totalPool = cardsPerTier[String(tier) as keyof typeof cardsPerTier] || 0;
     const used = usedUnits.get(unitId) || 0;

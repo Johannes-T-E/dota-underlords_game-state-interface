@@ -1,36 +1,62 @@
 .synergy-toolbar {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 8px 16px;
-  background: var(--bg-secondary, #1a1a1a);
-  border-bottom: 1px solid var(--border-color, #333);
-  overflow-x: auto;
-  overflow-y: hidden;
+  background: var(--primary-color);
+  border-bottom: 1px solid var(--border-color);
+  overflow: visible;
+  flex-shrink: 0;
 }
 
 .synergy-toolbar__label {
   font-size: 14px;
   font-weight: 500;
-  color: var(--text-secondary, #aaa);
+  color: var(--text-secondary, #b9bbbe);
   white-space: nowrap;
   flex-shrink: 0;
 }
 
 .synergy-toolbar__items {
   display: flex;
-  gap: 4px;
+  gap: 0;
   align-items: center;
-  width: max-content;
-  min-width: max-content;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.synergy-toolbar__actions {
+  position: relative;
+  z-index: 3;
+  margin-left: auto;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-left: 12px;
+  overflow: visible;
+}
+
+.synergy-toolbar__fit-toggle {
+  gap: 8px;
+}
+
+.synergy-toolbar__fit-toggle .toggle-switch__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary, #b9bbbe);
+  white-space: nowrap;
+  letter-spacing: 0.2px;
 }
 
 .synergy-toolbar__item {
   background: none;
-  border: 2px solid transparent;
-  border-radius: 4px;
-  padding: 4px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  padding: 1px;
   cursor: pointer;
   transition: all 0.2s ease;
   flex-shrink: 0;
@@ -40,14 +66,13 @@
 }
 
 .synergy-toolbar__item:hover {
-  background: var(--bg-hover, rgba(255, 255, 255, 0.05));
-  border-color: var(--border-hover, rgba(255, 255, 255, 0.1));
+  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--border-color);
 }
 
 .synergy-toolbar__item--selected {
-  border-color: var(--accent-color, #4a9eff);
-  background: var(--bg-selected, rgba(74, 158, 255, 0.1));
-  box-shadow: 0 0 8px rgba(74, 158, 255, 0.3);
+  border-color: var(--accent-color);
+  background: rgba(255, 255, 255, 0.046);
 }
 
 .synergy-toolbar__icon-wrapper {

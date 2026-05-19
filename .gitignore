@@ -40,6 +40,9 @@ Thumbs.db
 
 analytics/
 
+# Local GSI recordings / captures (not versioned)
+backend/recordings/
+
 # Local scripts in scripts/ starting with board (benchmarks; not shared)
 scripts/board*
 

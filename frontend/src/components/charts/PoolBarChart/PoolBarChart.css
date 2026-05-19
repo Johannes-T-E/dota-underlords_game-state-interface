@@ -1,0 +1,283 @@
+.pool-bar-chart {
+  --pool-bar-empty-color: rgba(128, 128, 128, 0.22);
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.pool-bar-chart__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: var(--text-secondary, #b9bbbe);
+  font-size: 16px;
+}
+
+.pool-bar-chart__container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 12px;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* HoverTooltip wrapper must share column flex equally with bare bar-wrapper */
+.pool-bar-chart__container > .hover-tooltip-container,
+.pool-bar-chart__bar-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100%;
+  position: relative;
+}
+
+.pool-bar-chart__bar-wrapper {
+  width: 100%;
+}
+
+.pool-bar-chart__bar-container {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  position: relative;
+  min-height: 0;
+  padding-bottom: 60px;
+}
+
+.pool-bar-chart__bar {
+  width: 100%;
+  min-width: 0;
+  position: relative;
+  overflow: hidden;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+.pool-bar-chart__pip-measure {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.pool-bar-chart__pip-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.pool-bar-chart__label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 60px;
+  justify-content: flex-start;
+}
+
+.pool-bar-chart__label-icon {
+  width: 100%;
+  min-width: 0;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pool-bar-chart__label-icon .synergy-icon-container {
+  width: 100%;
+  height: 100%;
+}
+
+.pool-bar-chart__label-text {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-secondary, #b9bbbe);
+  word-break: break-word;
+  max-width: 100%;
+  line-height: 1.2;
+}
+
+.pool-bar-chart__tier-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+  aspect-ratio: 1;
+  border-radius: 4px;
+  font-size: clamp(9px, 2.5vw, 14px);
+  font-weight: 700;
+  border: 2px solid currentColor;
+  box-sizing: border-box;
+}
+
+/* Tooltip mini-chart */
+.pool-bar-tooltip {
+  display: grid;
+  grid-template-rows: auto auto;
+  row-gap: 12px;
+  width: max-content;
+  max-width: min(95vw, 100%);
+  pointer-events: auto;
+  padding: 10px 12px;
+  border: 2px solid var(--pool-bar-tooltip-border-color, var(--border-color, #3a3a3e));
+  border-radius: 4px;
+  background: var(--secondary-color, #2a2a2e);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.65);
+  box-sizing: border-box;
+}
+
+.pool-bar-tooltip__title {
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  min-width: 0;
+}
+
+.pool-bar-tooltip__title-icon {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pool-bar-tooltip__title-icon .synergy-icon-container {
+  width: 100%;
+  height: 100%;
+}
+
+.pool-bar-tooltip__title-text {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text-primary, #ffffff);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pool-bar-chart--tooltip {
+  --pool-bar-tooltip-icon-size: 40px;
+}
+
+.pool-bar-tooltip .pool-bar-chart--tooltip {
+  grid-row: 2;
+  height: auto;
+  min-height: 0;
+  width: max-content;
+}
+
+.pool-bar-chart--tooltip.pool-bar-chart--fixed-metrics .pool-bar-chart__container {
+  height: var(--pool-bar-tooltip-chart-height);
+  min-height: var(--pool-bar-tooltip-chart-height);
+  max-height: var(--pool-bar-tooltip-chart-height);
+  gap: 8px;
+  padding: 12px;
+  overflow: visible;
+  align-items: flex-end;
+  width: max-content;
+  box-sizing: border-box;
+}
+
+.pool-bar-chart--tooltip.pool-bar-chart--fixed-metrics .pool-bar-chart__bar-wrapper {
+  flex: 0 0 var(--pool-bar-tooltip-icon-size);
+  width: var(--pool-bar-tooltip-icon-size);
+  min-width: var(--pool-bar-tooltip-icon-size);
+  max-width: var(--pool-bar-tooltip-icon-size);
+  height: var(--pool-bar-tooltip-content-height);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.pool-bar-chart--tooltip.pool-bar-chart--fixed-metrics .pool-bar-chart__bar-container {
+  flex: 0 0 auto;
+  padding-bottom: 0;
+  width: var(--pool-bar-tooltip-icon-size);
+}
+
+.pool-bar-chart--tooltip.pool-bar-chart--fixed-metrics .pool-bar-chart__bar {
+  width: var(--pool-bar-tooltip-icon-size);
+  flex-shrink: 0;
+  margin-bottom: var(--pool-bar-icon-gap);
+}
+
+.pool-bar-chart--tooltip.pool-bar-chart--fixed-metrics .pool-bar-chart__label {
+  position: static;
+  flex-shrink: 0;
+  width: var(--pool-bar-tooltip-icon-size);
+  height: auto;
+  min-height: var(--pool-bar-label-height);
+}
+
+.pool-bar-chart--tooltip.pool-bar-chart--fixed-metrics .pool-bar-chart__label-icon {
+  width: var(--pool-bar-tooltip-icon-size);
+  height: var(--pool-bar-tooltip-icon-size);
+  max-width: var(--pool-bar-tooltip-icon-size);
+  max-height: var(--pool-bar-tooltip-icon-size);
+  flex-shrink: 0;
+  aspect-ratio: 1;
+}
+
+.pool-bar-chart--tooltip.pool-bar-chart--fixed-metrics .pool-bar-chart__label-icon .hero-portrait {
+  width: var(--pool-bar-tooltip-icon-size);
+  height: var(--pool-bar-tooltip-icon-size);
+  max-width: var(--pool-bar-tooltip-icon-size);
+  margin-top: 0;
+}
+
+.pool-bar-chart--tooltip.pool-bar-chart--fixed-metrics .pool-bar-chart__label-icon .hero-portrait__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pool-bar-chart--tooltip.pool-bar-chart--fixed-metrics .pool-bar-chart__label-text {
+  font-size: 10px;
+}
+
+@media (max-width: 900px) {
+  .pool-bar-chart__container {
+    gap: 4px;
+    padding: 8px;
+  }
+
+  .pool-bar-chart__bar-container {
+    padding-bottom: 48px;
+  }
+
+  .pool-bar-chart__label {
+    height: 48px;
+  }
+
+  .pool-bar-chart__label-text {
+    font-size: 9px;
+  }
+}

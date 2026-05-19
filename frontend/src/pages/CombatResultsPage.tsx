@@ -8,7 +8,7 @@ export const CombatResultsPage = () => {
   return (
       <MainContentTemplate className="combat-results-page" centered={false}>
         <div className="combat-results-page__container">
-          <PageHeader title="Combat Results" titleIcon="🏆" icon={<IconTrophy size={18} stroke={1.8} />} />
+          <PageHeader title="Combat Results" icon={<IconTrophy size={18} stroke={1.8} />} />
           <div className="combat-results-page__content">
             <CombatResults />
           </div>

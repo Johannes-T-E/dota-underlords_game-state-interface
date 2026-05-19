@@ -94,7 +94,6 @@ export const HeroesPage = () => {
         <div className="heroes-page__container">
           <PageHeader
             title="Heroes"
-            titleIcon="🧙"
             icon={<IconUsersGroup size={18} stroke={1.8} />}
             description="In a match of Underlords, players build their crew from a shared pool of heroes that consists of 30 copies of each tier 1 hero; 20 copies of each tier 2 hero; 18 copies of each tier 3 hero; 12 copies of each tier 4 hero; and 10 copies of each tier 5 hero. When a player is eliminated from a match, all units they have hired are returned to the shared pool."
           />

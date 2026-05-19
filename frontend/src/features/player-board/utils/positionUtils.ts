@@ -45,6 +45,41 @@ export const calculatePosition = (gridX: number, gridY: number): PixelPosition =
   }
 };
 
+export interface UnitPixelPositionOptions {
+  benchPosition?: 'top' | 'bottom';
+  showBench?: boolean;
+}
+
+/**
+ * Resolve grid coordinates to pixel position, accounting for bench layout.
+ * When benchPosition is 'top', bench sits above roster (opponent forecast board).
+ */
+export const resolveUnitPixelPosition = (
+  gridX: number,
+  gridY: number,
+  options: UnitPixelPositionOptions = {}
+): PixelPosition => {
+  const { benchPosition = 'bottom', showBench = true } = options;
+  const calculated = calculatePosition(gridX, gridY);
+
+  if (benchPosition === 'top') {
+    if (gridY === -1) {
+      return {
+        x: calculated.x,
+        y: PADDING + CELL_SIZE / 2,
+      };
+    }
+    return {
+      x: calculated.x,
+      y: showBench
+        ? PADDING + CELL_SIZE + SECTION_GAP + (3 - gridY) * CELL_STEP + CELL_SIZE / 2
+        : PADDING + (3 - gridY) * CELL_STEP + CELL_SIZE / 2,
+    };
+  }
+
+  return calculated;
+};
+
 /**
  * Check if a grid position is valid
  */

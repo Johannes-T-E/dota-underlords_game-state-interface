@@ -10,17 +10,12 @@
 }
 
 .movement-trail__line {
-  stroke-width: 2;
   fill: none;
-  stroke-dasharray: 5,5;
   animation: drawPath 0.3s ease-out forwards;
 }
 
 .movement-trail__segment {
   position: absolute;
-  width: 6px;
-  height: 6px;
-  background: rgba(255, 255, 255, 0.8);
   border-radius: 50%;
   animation: fadeTrailSegment linear forwards;
 }
@@ -47,4 +42,13 @@
     opacity: 0;
     transform: scale(0.5);
   }
+}
+
+.movement-trail--persist .movement-trail__line {
+  animation: none;
+  stroke-dashoffset: 0;
+}
+
+.movement-trail__segment--persist {
+  animation: none;
 }

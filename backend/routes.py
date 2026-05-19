@@ -7,11 +7,17 @@ from flask import request, jsonify, send_from_directory
 from flask_socketio import emit
 from datetime import datetime
 import json
-from .game_state import match_state, db, db_write_queue, connected_clients, stats, abandon_match, emit_realtime_update
+from .game_state import match_state, db, db_write_queue, connected_clients, stats, abandon_match, emit_realtime_update, data_lock
 from .gsi_handler import process_gsi_data
 from .config import app, socketio, PRODUCTION, FRONTEND_BUILD_DIR, GSI_HOST, GSI_PORT
 from .change_detector import change_detector
 from .bench_organizer import organize_bench, BenchOrganizerError
+
+
+def _gsi_replay_header_truthy():
+    """True when client requests GSI replay mode (no DB writes for this upload path)."""
+    v = (request.headers.get('X-GSI-Replay') or '').strip().lower()
+    return v in ('1', 'true', 'yes')
 
 
 def _parse_snapshot_timestamp(value):
@@ -698,8 +704,18 @@ def receive_gsi_data():
         gsi_payload = request.get_json()
         
         if gsi_payload:
+            persist_to_db = not _gsi_replay_header_truthy()
+            if not persist_to_db:
+                with data_lock:
+                    # Block replay only while a *live* match is in memory. Emulated replay
+                    # sets match_id after the first packets, so later replay lines must be allowed.
+                    if match_state.match_id is not None and not match_state.gsi_emulated:
+                        return jsonify({
+                            'status': 'error',
+                            'message': 'Cannot start GSI replay while a live match is active in memory. Abandon the match first.'
+                        }), 409
             # Process in background to not block game (SocketIO-compatible)
-            socketio.start_background_task(process_gsi_data, gsi_payload)
+            socketio.start_background_task(process_gsi_data, gsi_payload, persist_to_db)
         else:
             print(f"[DEBUG] Received empty GSI data")
         

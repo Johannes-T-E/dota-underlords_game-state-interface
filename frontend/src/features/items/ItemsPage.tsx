@@ -81,7 +81,7 @@ export const ItemsPage = () => {
   return (
       <MainContentTemplate className="items-page" centered={false}>
         <div className="items-page__container">
-          <PageHeader title="Items" titleIcon="🧰" icon={<IconSock size={18} stroke={1.8} />} />
+          <PageHeader title="Items" icon={<IconSock size={18} stroke={1.8} />} />
           {isLoading ? (
             <div className="items-page__loading">
               <EmptyState

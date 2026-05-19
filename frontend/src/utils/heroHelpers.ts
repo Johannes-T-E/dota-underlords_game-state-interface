@@ -54,6 +54,17 @@ export interface HeroesData {
   };
 }
 
+/** Contraption units — not part of the shared hero draft pool */
+export const CONTRAPTION_UNIT_IDS = [117, 143, 127] as const;
+
+/** Draft-pool heroes only (excludes underlords and contraptions) */
+export function isDraftPoolHero(unitId: number): boolean {
+  return (
+    unitId <= 1000 &&
+    !(CONTRAPTION_UNIT_IDS as readonly number[]).includes(unitId)
+  );
+}
+
 // Helper function to get hero icon path from unit ID
 export const getHeroIconPath = (unitId: number, heroesData: HeroesData | null): string => {
   if (!heroesData || !heroesData.heroes) {

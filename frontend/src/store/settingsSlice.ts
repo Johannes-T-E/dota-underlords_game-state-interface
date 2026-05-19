@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { HealthDisplaySettings } from '@/components/ui/HealthDisplay/HealthDisplaySettings';
 import type { ScoreboardColumnConfig } from '@/types';
 import { DEFAULT_HEALTH_DISPLAY_SETTINGS } from '@/components/ui/HealthDisplay/HealthDisplaySettings';
+import { GLOBAL_SCOREBOARD_SETTINGS_ID } from '@/features/scoreboard/constants';
 
 const SETTINGS_VERSION = 2;
 
@@ -47,6 +48,8 @@ export interface GeneralSettings {
   heroPortrait: HeroPortraitSettings;
   unitAnimation: UnitAnimationSettings;
   showSynergyPips: boolean;
+  /** Scale scoreboard rows/columns to fit the viewport without scrolling. */
+  scoreboardFitToViewport: boolean;
   /** Multiplier for bench automation delays (1 = default; higher = slower). */
   benchOrganizeTimingScale: number;
 }
@@ -97,7 +100,7 @@ const defaultUnitAnimationSettings: UnitAnimationSettings = {
   animationDuration: 300,
   enableNewUnitFade: true,
   enableMovementTrail: true,
-  trailLength: 3,
+  trailLength: 1,
   trailColor: '#ffffff',
   trailOpacity: 0.6,
   trailThickness: 2,
@@ -112,8 +115,40 @@ const initialState: SettingsState = {
       heroPortrait: defaultHeroPortraitSettings,
       unitAnimation: defaultUnitAnimationSettings,
       showSynergyPips: false,
+      scoreboardFitToViewport: false,
       benchOrganizeTimingScale: 1
     }
+};
+
+const migrateScoreboards = (
+  scoreboards: Record<string, ScoreboardSettings>
+): Record<string, ScoreboardSettings> => {
+  const migrated = { ...scoreboards };
+  if (migrated['scoreboard-1'] && !migrated[GLOBAL_SCOREBOARD_SETTINGS_ID]) {
+    migrated[GLOBAL_SCOREBOARD_SETTINGS_ID] = migrated['scoreboard-1'];
+  }
+  delete migrated['scoreboard-1'];
+  return migrated;
+};
+
+const mergeScoreboardSettings = (
+  widgetId: string,
+  scoreboards: Record<string, ScoreboardSettings>
+): ScoreboardSettings => {
+  const global = scoreboards[GLOBAL_SCOREBOARD_SETTINGS_ID];
+  const widget =
+    widgetId !== GLOBAL_SCOREBOARD_SETTINGS_ID ? scoreboards[widgetId] : undefined;
+
+  return {
+    columns: {
+      ...defaultScoreboardSettings.columns,
+      ...global?.columns,
+      ...widget?.columns,
+    },
+    sortField: widget?.sortField ?? global?.sortField ?? defaultScoreboardSettings.sortField,
+    sortDirection:
+      widget?.sortDirection ?? global?.sortDirection ?? defaultScoreboardSettings.sortDirection,
+  };
 };
 
 // Validate and ensure settings have required structure
@@ -132,12 +167,13 @@ const validateSettings = (settings: unknown): SettingsState => {
   return {
     version: SETTINGS_VERSION,
     health: s.health ?? DEFAULT_HEALTH_DISPLAY_SETTINGS,
-    scoreboards: s.scoreboards ?? {},
+    scoreboards: migrateScoreboards(s.scoreboards ?? {}),
     general: {
       theme: s.general?.theme,
       heroPortrait: s.general?.heroPortrait ?? defaultHeroPortraitSettings,
       unitAnimation: s.general?.unitAnimation ?? defaultUnitAnimationSettings,
       showSynergyPips: s.general?.showSynergyPips ?? false,
+      scoreboardFitToViewport: s.general?.scoreboardFitToViewport ?? false,
       benchOrganizeTimingScale: clampBenchOrganizeTimingScale(s.general?.benchOrganizeTimingScale)
     }
   };
@@ -250,6 +286,10 @@ const settingsSlice = createSlice({
       state.general.showSynergyPips = action.payload;
     },
 
+    updateScoreboardFitToViewport: (state, action: PayloadAction<boolean>) => {
+      state.general.scoreboardFitToViewport = action.payload;
+    },
+
     resetAllSettings: (state) => {
       state.health = DEFAULT_HEALTH_DISPLAY_SETTINGS;
       state.scoreboards = {};
@@ -257,6 +297,7 @@ const settingsSlice = createSlice({
         heroPortrait: defaultHeroPortraitSettings,
         unitAnimation: defaultUnitAnimationSettings,
         showSynergyPips: false,
+        scoreboardFitToViewport: false,
         benchOrganizeTimingScale: 1
       };
       state.version = SETTINGS_VERSION;
@@ -298,6 +339,7 @@ export const {
   updateUnitAnimationSettings,
   resetUnitAnimationSettings,
   updateShowSynergyPips,
+  updateScoreboardFitToViewport,
   resetAllSettings,
   loadSettings,
   importSettings
@@ -308,14 +350,13 @@ export default settingsSlice.reducer;
 // Selectors
 export const selectHealthSettings = (state: { settings: SettingsState }) => state.settings.health;
 export const selectScoreboardSettings = (widgetId: string) => (state: { settings: SettingsState }): ScoreboardSettings => {
-  if (!state.settings.scoreboards[widgetId]) {
-    return defaultScoreboardSettings;
-  }
-  return state.settings.scoreboards[widgetId];
+  return mergeScoreboardSettings(widgetId, state.settings.scoreboards);
 };
 export const selectGeneralSettings = (state: { settings: SettingsState }) => state.settings.general;
 export const selectHeroPortraitSettings = (state: { settings: SettingsState }) => state.settings.general.heroPortrait;
 export const selectUnitAnimationSettings = (state: { settings: SettingsState }) => state.settings.general.unitAnimation;
 export const selectShowSynergyPips = (state: { settings: SettingsState }) => state.settings.general.showSynergyPips;
+export const selectScoreboardFitToViewport = (state: { settings: SettingsState }) =>
+  state.settings.general.scoreboardFitToViewport ?? false;
 export const selectBenchOrganizeTimingScale = (state: { settings: SettingsState }) =>
   state.settings.general.benchOrganizeTimingScale ?? 1;

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './SliderInput.css';
 
 export interface SliderInputProps {
@@ -13,6 +13,8 @@ export interface SliderInputProps {
   rightLabel?: string;
   showValue?: boolean;
   disabled?: boolean;
+  /** When true, only calls onChange when the user releases the slider (or blurs). */
+  commitOnRelease?: boolean;
   className?: string;
 }
 
@@ -28,18 +30,46 @@ export const SliderInput = ({
   rightLabel,
   showValue = true,
   disabled = false,
+  commitOnRelease = false,
   className = ''
 }: SliderInputProps) => {
   const [localValue, setLocalValue] = useState(value);
+  const isDraggingRef = useRef(false);
+  const localValueRef = useRef(value);
 
   useEffect(() => {
-    setLocalValue(value);
+    localValueRef.current = localValue;
+  }, [localValue]);
+
+  useEffect(() => {
+    if (!isDraggingRef.current) {
+      setLocalValue(value);
+      localValueRef.current = value;
+    }
   }, [value]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = parseFloat(e.target.value);
     setLocalValue(newValue);
-    onChange(newValue);
+    localValueRef.current = newValue;
+    if (!commitOnRelease) {
+      onChange(newValue);
+    } else if (!isDraggingRef.current) {
+      // Keyboard or click on track without an active pointer drag.
+      onChange(newValue);
+    }
+  };
+
+  const handlePointerDown = () => {
+    isDraggingRef.current = true;
+  };
+
+  const handleRelease = () => {
+    if (!commitOnRelease || !isDraggingRef.current) {
+      return;
+    }
+    isDraggingRef.current = false;
+    onChange(localValueRef.current);
   };
 
   const percentage = ((localValue - min) / (max - min)) * 100;
@@ -59,6 +89,10 @@ export const SliderInput = ({
             step={step}
             value={localValue}
             onChange={handleChange}
+            onPointerDown={handlePointerDown}
+            onPointerUp={handleRelease}
+            onPointerCancel={handleRelease}
+            onBlur={handleRelease}
             disabled={disabled}
             className="slider-input__slider"
             style={{

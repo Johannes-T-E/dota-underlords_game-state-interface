@@ -1,5 +1,8 @@
 import { useMemo } from 'react';
 import { SynergyIcon } from '@/components/ui';
+import { ScoreboardSettings } from '@/features/scoreboard/components/ScoreboardSettings/ScoreboardSettings';
+import { ToggleSwitch } from '@/features/settings/components/ToggleSwitch/ToggleSwitch';
+import type { ScoreboardColumnConfig } from '@/types';
 import synergyStyles from '@/components/ui/SynergyDisplay/data/synergy-styles.json';
 import synergyIconMap from '@/components/ui/SynergyDisplay/data/synergy-icon-map.json';
 import keywordMappings from '@/components/ui/SynergyDisplay/data/synergy-keyword-mappings.json';
@@ -8,6 +11,12 @@ import './SynergyToolbar.css';
 export interface SynergyToolbarProps {
   selectedSynergyKeyword: number | null;
   onSynergyClick: (keyword: number | null) => void;
+  columnConfig?: ScoreboardColumnConfig;
+  onColumnConfigChange?: (config: ScoreboardColumnConfig) => void;
+  showSynergyPips?: boolean;
+  onShowSynergyPipsChange?: (show: boolean) => void;
+  fitToViewport?: boolean;
+  onFitToViewportChange?: (fit: boolean) => void;
   className?: string;
 }
 
@@ -50,6 +59,12 @@ function getSynergyVisualData(synergyName: string) {
 export const SynergyToolbar = ({
   selectedSynergyKeyword,
   onSynergyClick,
+  columnConfig,
+  onColumnConfigChange,
+  showSynergyPips = false,
+  onShowSynergyPipsChange,
+  fitToViewport = false,
+  onFitToViewportChange,
   className = ''
 }: SynergyToolbarProps) => {
   // Get all active synergies from keyword mappings, sorted by keyword number
@@ -98,6 +113,26 @@ export const SynergyToolbar = ({
           );
         })}
       </div>
+      {(onColumnConfigChange || onFitToViewportChange) && (
+        <div className="synergy-toolbar__actions">
+          {columnConfig && onColumnConfigChange && (
+            <ScoreboardSettings
+              config={columnConfig}
+              onChange={onColumnConfigChange}
+              showSynergyPips={showSynergyPips}
+              onShowSynergyPipsChange={onShowSynergyPipsChange}
+            />
+          )}
+          {onFitToViewportChange && (
+            <ToggleSwitch
+              className="synergy-toolbar__fit-toggle"
+              checked={fitToViewport}
+              onChange={onFitToViewportChange}
+              label="Fit to screen"
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 };

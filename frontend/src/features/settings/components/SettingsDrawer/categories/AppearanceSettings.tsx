@@ -1,14 +1,14 @@
 import { useMemo, useState } from 'react';
-import { Text, HealthDisplay, Button } from '@/components/ui';
+import { HealthDisplay, Button } from '@/components/ui';
 import { ToggleSwitch } from '../../ToggleSwitch/ToggleSwitch';
 import { SliderInput } from '../../SliderInput/SliderInput';
 import { PresetButton } from '../../PresetButton/PresetButton';
-import { GradientBar } from '../../GradientBar/GradientBar';
-import { SettingsSection } from '../../SettingsSection/SettingsSection';
+import { SettingsTopicPanel } from '../../SettingsTopicPanel/SettingsTopicPanel';
 import { SettingsGroup } from '../../SettingsGroup/SettingsGroup';
 import { SettingsRow } from '../../SettingsRow/SettingsRow';
 import { GradientEditor } from '../../GradientEditor/GradientEditor';
 import { HeroPortrait } from '@/components/ui/HeroPortrait/HeroPortrait';
+import { UnitAnimationBoardPreview } from '../../UnitAnimationBoardPreview/UnitAnimationBoardPreview';
 import { useHealthSettings, useHeroPortraitSettings, useUnitAnimationSettings } from '@/hooks/useSettings';
 import { useHeroesDataContext } from '@/contexts/HeroesDataContext';
 import type { HealthColorConfig } from '@/components/ui/HealthDisplay/HealthDisplaySettings';
@@ -46,38 +46,14 @@ const GRADIENT_PRESETS: { [key: string]: HealthColorConfig } = {
   }
 };
 
-const TYPOGRAPHY_PRESETS = {
-  default: {
-    fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
-    fontSize: '32px',
-    fontWeight: 'bold',
-    fontStyle: 'normal',
-    textShadow: '0 0 3px #000'
-  },
-  minimalist: {
-    fontFamily: 'Arial, sans-serif',
-    fontSize: '24px',
-    fontWeight: '500',
-    fontStyle: 'normal',
-    textShadow: 'none'
-  },
-  cinematic: {
-    fontFamily: 'Georgia, serif',
-    fontSize: '36px',
-    fontWeight: 'bold',
-    fontStyle: 'italic',
-    textShadow: '0 4px 8px rgba(0,0,0,0.8)'
-  }
-};
-
 export const AppearanceSettings = () => {
   const { settings: healthSettings, updateSettings: updateHealthSettings, resetSettings: resetHealthSettings } = useHealthSettings();
   const { settings: heroSettings, updateSettings: updateHeroSettings, updateTierGlowConfig } = useHeroPortraitSettings();
   const { settings: animationSettings, updateSettings: updateAnimationSettings, resetSettings: resetAnimationSettings } = useUnitAnimationSettings();
   const { heroesData } = useHeroesDataContext();
   
-  const [gradientPreset, setGradientPreset] = useState<string>('custom');
-  const [typographyPreset, setTypographyPreset] = useState<string>('custom');
+  const [gradientPreset, setGradientPreset] = useState<string>('classic');
+  const [showCustomGradient, setShowCustomGradient] = useState(false);
 
   const previewHeroUnitIds = useMemo(() => {
     if (!heroesData?.heroes) {
@@ -106,19 +82,24 @@ export const AppearanceSettings = () => {
   const handleGradientPresetChange = (preset: string) => {
     setGradientPreset(preset);
     if (preset !== 'custom') {
+      setShowCustomGradient(false);
       updateHealthSettings({ colorConfig: GRADIENT_PRESETS[preset] });
+    } else {
+      setShowCustomGradient(true);
     }
   };
 
-  const handleTypographyPresetChange = (preset: string) => {
-    setTypographyPreset(preset);
-    if (preset !== 'custom') {
+  const handleColorGradientToggle = (enabled: boolean) => {
+    updateHealthSettings({ useColorTransition: enabled });
+    if (enabled && !healthSettings.colorConfig) {
       updateHealthSettings({
-        styling: {
-          ...healthSettings.styling,
-          ...TYPOGRAPHY_PRESETS[preset as keyof typeof TYPOGRAPHY_PRESETS]
-        }
+        useColorTransition: true,
+        colorConfig: GRADIENT_PRESETS.classic,
       });
+      setGradientPreset('classic');
+    }
+    if (!enabled) {
+      setShowCustomGradient(false);
     }
   };
 
@@ -158,44 +139,43 @@ export const AppearanceSettings = () => {
         </p>
       </div>
 
-      {/* Health Display Section */}
-      <SettingsSection 
-        title="Health Display" 
-        description="Customize how health values are shown throughout the app"
-        defaultOpen={true}
+      <SettingsTopicPanel
+        id="settings-health"
+        className="settings-topic-panel--preview-wide"
+        title="Health display"
+        description="How health values are shown throughout the app"
+        preview={
+          <>
+            <HealthDisplay health={100} settings={healthSettings} />
+            <HealthDisplay health={65} settings={healthSettings} />
+            <HealthDisplay health={30} settings={healthSettings} />
+          </>
+        }
       >
-        {/* Display Options */}
-        <SettingsGroup variant="card" title="Display Options">
-          <SettingsRow label="Show Heart Icon" description="Display a heart icon next to health values">
+        <SettingsGroup variant="transparent">
+          <SettingsRow label="Show heart icon" description="Display a heart icon next to health values">
             <ToggleSwitch
               checked={healthSettings.showIcon}
               onChange={(checked) => updateHealthSettings({ showIcon: checked })}
             />
           </SettingsRow>
-          <SettingsRow label="Show Health Number" description="Display the numeric health value">
+          <SettingsRow label="Show health number" description="Display the numeric health value">
             <ToggleSwitch
               checked={healthSettings.showValue}
               onChange={(checked) => updateHealthSettings({ showValue: checked })}
             />
           </SettingsRow>
-          <SettingsRow label="Color Gradient" description="Use color transitions based on health value">
+          <SettingsRow label="Use color gradient" description="Color by health amount">
             <ToggleSwitch
               checked={healthSettings.useColorTransition}
-              onChange={(checked) => updateHealthSettings({ useColorTransition: checked })}
+              onChange={handleColorGradientToggle}
             />
           </SettingsRow>
-          <div className="settings-inline-preview settings-inline-preview--health">
-            <span className="settings-inline-preview__label">Health preview:</span>
-            <HealthDisplay health={100} settings={healthSettings} />
-            <HealthDisplay health={65} settings={healthSettings} />
-            <HealthDisplay health={30} settings={healthSettings} />
-          </div>
         </SettingsGroup>
 
-        {/* Color & Gradient */}
         {healthSettings.useColorTransition && (
-          <SettingsGroup variant="card" title="Color Gradient">
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <SettingsGroup variant="transparent" title="Color style">
+            <div className="settings-preset-row">
               <PresetButton
                 label="Classic"
                 selected={gradientPreset === 'classic'}
@@ -216,73 +196,29 @@ export const AppearanceSettings = () => {
                 selected={gradientPreset === 'monochrome'}
                 onClick={() => handleGradientPresetChange('monochrome')}
               />
-              <PresetButton
-                label="Custom"
-                selected={gradientPreset === 'custom'}
-                onClick={() => setGradientPreset('custom')}
-              />
             </div>
-
-            {gradientPreset === 'custom' && healthSettings.colorConfig && (
-              <GradientEditor
-                config={healthSettings.colorConfig}
-                onChange={(config) => updateHealthSettings({ colorConfig: config })}
-              />
-            )}
-
-            {gradientPreset !== 'custom' && healthSettings.colorConfig && (
-              <GradientBar config={healthSettings.colorConfig} />
+            {!showCustomGradient ? (
+              <Button variant="ghost" size="small" onClick={() => setShowCustomGradient(true)}>
+                Customize colors…
+              </Button>
+            ) : (
+              <div className="settings-custom-gradient">
+                {healthSettings.colorConfig && (
+                  <GradientEditor
+                    config={healthSettings.colorConfig}
+                    onChange={(config) => updateHealthSettings({ colorConfig: config })}
+                  />
+                )}
+                <Button variant="ghost" size="small" onClick={() => setShowCustomGradient(false)}>
+                  Use presets only
+                </Button>
+              </div>
             )}
           </SettingsGroup>
         )}
 
-        {/* Typography */}
-        <SettingsGroup variant="card" title="Typography">
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            <PresetButton
-              label="Default"
-              selected={typographyPreset === 'default'}
-              onClick={() => handleTypographyPresetChange('default')}
-            />
-            <PresetButton
-              label="Minimalist"
-              selected={typographyPreset === 'minimalist'}
-              onClick={() => handleTypographyPresetChange('minimalist')}
-            />
-            <PresetButton
-              label="Cinematic"
-              selected={typographyPreset === 'cinematic'}
-              onClick={() => handleTypographyPresetChange('cinematic')}
-            />
-            <PresetButton
-              label="Custom"
-              selected={typographyPreset === 'custom'}
-              onClick={() => setTypographyPreset('custom')}
-            />
-          </div>
-
-          {typographyPreset === 'custom' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <SettingsRow label="Font Size" layout="vertical">
-                <SliderInput
-                  value={parseInt(healthSettings.styling?.fontSize || '32')}
-                  onChange={(value) => updateHealthSettings({
-                    styling: { ...healthSettings.styling, fontSize: `${value}px` }
-                  })}
-                  min={16}
-                  max={64}
-                  unit="px"
-                  leftLabel="Small"
-                  rightLabel="Large"
-                />
-              </SettingsRow>
-            </div>
-          )}
-        </SettingsGroup>
-
-        {/* Animation */}
-        <SettingsGroup variant="card" title="Animation">
-          <SettingsRow label="Animate Health Changes" description="Play animation when health value changes">
+        <SettingsGroup variant="transparent" title="Animation">
+          <SettingsRow label="Animate health changes" description="When health value changes">
             <ToggleSwitch
               checked={healthSettings.animateOnChange}
               onChange={(checked) => updateHealthSettings({ animateOnChange: checked })}
@@ -319,21 +255,28 @@ export const AppearanceSettings = () => {
           )}
         </SettingsGroup>
 
-        <Button variant="secondary" onClick={resetHealthSettings}>
-          Reset Health Display Settings
+        <Button variant="secondary" size="small" onClick={resetHealthSettings}>
+          Reset health display
         </Button>
-      </SettingsSection>
+      </SettingsTopicPanel>
 
-      {/* Hero Portraits Section */}
-      <SettingsSection 
-        title="Hero Portraits" 
+      <SettingsTopicPanel
+        id="settings-heroes"
+        className="settings-topic-panel--preview-wide"
+        title="Hero portraits"
         description="Visual enhancements for hero images"
-        defaultOpen={true}
+        preview={
+          <div className="settings-example-portrait-row">
+            {previewHeroUnitIds.map((unitId) => (
+              <HeroPortrait key={unitId} unitId={unitId} rank={1} heroesData={heroesData} />
+            ))}
+          </div>
+        }
       >
-        <SettingsGroup variant="card" title="Tier Glow Effects">
+        <SettingsGroup variant="transparent">
           <SettingsRow 
-            label="Enable Tier Glows" 
-            description="Show colored outlines based on hero tier (1-5)"
+            label="Enable tier glows" 
+            description="Colored outlines based on hero tier (1–5)"
           >
             <ToggleSwitch
               checked={heroSettings?.enableTierGlow || false}
@@ -399,33 +342,25 @@ export const AppearanceSettings = () => {
                   />
                 </SettingsRow>
               )}
-
-              <div className="settings-inline-preview settings-inline-preview--portrait">
-                <span className="settings-inline-preview__label">Tier glow preview:</span>
-                <div className="settings-example-portrait-row">
-                  {previewHeroUnitIds.map((unitId) => (
-                    <HeroPortrait key={unitId} unitId={unitId} rank={1} heroesData={heroesData} />
-                  ))}
-                </div>
-              </div>
             </>
           )}
         </SettingsGroup>
-      </SettingsSection>
+      </SettingsTopicPanel>
 
-      {/* Unit Animation Section */}
-      <SettingsSection 
-        title="Unit Animations" 
-        description="Control how units move and appear on the board"
-        defaultOpen={true}
+      <SettingsTopicPanel
+        id="settings-animations"
+        className="settings-topic-panel--preview-board"
+        title="Unit animations"
+        description="How units move and appear on the board"
+        sidePreview={<UnitAnimationBoardPreview heroesData={heroesData} />}
       >
-        <SettingsGroup variant="card" title="Movement Animation">
+        <SettingsGroup variant="transparent" title="Movement">
           <SettingsRow 
-            label="Enable Position Animation" 
+            label="Animate position changes" 
             description="Animate units when they move between positions"
           >
             <ToggleSwitch
-              checked={animationSettings?.enablePositionAnimation || true}
+              checked={animationSettings?.enablePositionAnimation ?? true}
               onChange={(checked) => updateAnimationSettings({ enablePositionAnimation: checked })}
             />
           </SettingsRow>
@@ -442,6 +377,7 @@ export const AppearanceSettings = () => {
                   unit="ms"
                   leftLabel="Fast"
                   rightLabel="Slow"
+                  commitOnRelease
                 />
               </SettingsRow>
 
@@ -450,30 +386,27 @@ export const AppearanceSettings = () => {
                 description="Display a visual trail behind moving units"
               >
                 <ToggleSwitch
-                  checked={animationSettings?.enableMovementTrail || true}
+                  checked={animationSettings?.enableMovementTrail ?? true}
                   onChange={(checked) => updateAnimationSettings({ enableMovementTrail: checked })}
                 />
               </SettingsRow>
 
               {animationSettings?.enableMovementTrail && (
                 <>
-                  <SettingsRow label="Trail Length" layout="vertical">
-                    <SliderInput
-                      value={animationSettings?.trailLength || 3}
-                      onChange={(value) => updateAnimationSettings({ trailLength: value })}
-                      min={1}
-                      max={5}
-                      step={1}
-                      leftLabel="Short"
-                      rightLabel="Long"
-                    />
-                  </SettingsRow>
-
-                  <SettingsRow label="Trail Color" layout="vertical">
+                  <SettingsRow
+                    label="Trail color"
+                    description={
+                      animationSettings?.useTierColor
+                        ? 'Disabled while tier color is enabled'
+                        : undefined
+                    }
+                    layout="vertical"
+                  >
                     <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                       <input
                         type="color"
                         value={animationSettings?.trailColor || '#ffffff'}
+                        disabled={animationSettings?.useTierColor}
                         onChange={(e) => updateAnimationSettings({ trailColor: e.target.value })}
                         style={{ width: '40px', height: '32px', border: 'none', borderRadius: '4px' }}
                       />
@@ -493,63 +426,42 @@ export const AppearanceSettings = () => {
                       unit="%"
                       leftLabel="Faint"
                       rightLabel="Bright"
+                      commitOnRelease
                     />
                   </SettingsRow>
 
-        <SettingsRow label="Trail Thickness" layout="vertical">
-          <SliderInput
-            value={animationSettings?.trailThickness || 2}
-            onChange={(value) => updateAnimationSettings({ trailThickness: value })}
-            min={1}
-            max={10}
-            step={1}
-            leftLabel="Thin"
-            rightLabel="Thick"
-          />
-        </SettingsRow>
+                  <SettingsRow label="Trail thickness" layout="vertical">
+                    <SliderInput
+                      value={animationSettings?.trailThickness ?? 2}
+                      onChange={(value) =>
+                        updateAnimationSettings({ trailThickness: Math.round(value) })
+                      }
+                      min={1}
+                      max={10}
+                      step={1}
+                      leftLabel="Thin"
+                      rightLabel="Thick"
+                      commitOnRelease
+                    />
+                  </SettingsRow>
 
-        <SettingsRow label="Use Tier Color" layout="horizontal">
-          <ToggleSwitch
-            checked={animationSettings?.useTierColor || false}
-            onChange={(checked) => updateAnimationSettings({ useTierColor: checked })}
-          />
-          <Text color="secondary">
-            Use hero tier color for trail instead of custom color
-          </Text>
-        </SettingsRow>
-      </>
-    )}
+                  <SettingsRow label="Use tier color">
+                    <ToggleSwitch
+                      checked={animationSettings?.useTierColor ?? false}
+                      onChange={(checked) => updateAnimationSettings({ useTierColor: checked })}
+                    />
+                  </SettingsRow>
+                </>
+              )}
             </>
           )}
 
-          <div className="settings-inline-preview settings-inline-preview--trail">
-            <span className="settings-inline-preview__label">Movement trail preview:</span>
-            <div className="settings-trail-preview">
-              <div className="settings-trail-preview__unit" />
-              {animationSettings?.enableMovementTrail && (
-                <div
-                  className="settings-trail-preview__trail"
-                  style={{
-                    background: animationSettings?.useTierColor
-                      ? 'var(--tier-color-3, var(--accent-color))'
-                      : animationSettings?.trailColor || '#ffffff',
-                    opacity: animationSettings?.trailOpacity || 0.6,
-                    height: `${Math.max(2, (animationSettings?.trailThickness || 2) * 2)}px`,
-                    width: `${Math.max(28, (animationSettings?.trailLength || 3) * 26)}px`
-                  }}
-                />
-              )}
-            </div>
-          </div>
-        </SettingsGroup>
-
-        <SettingsGroup variant="card" title="New Unit Effects">
-          <SettingsRow 
-            label="Fade In New Units" 
+          <SettingsRow
+            label="Fade in new units"
             description="Animate units when they first appear on the board"
           >
             <ToggleSwitch
-              checked={animationSettings?.enableNewUnitFade || true}
+              checked={animationSettings?.enableNewUnitFade ?? true}
               onChange={(checked) => updateAnimationSettings({ enableNewUnitFade: checked })}
             />
           </SettingsRow>
@@ -558,7 +470,7 @@ export const AppearanceSettings = () => {
         <Button variant="secondary" onClick={resetAnimationSettings}>
           Reset Animation Settings
         </Button>
-      </SettingsSection>
+      </SettingsTopicPanel>
     </div>
   );
 };

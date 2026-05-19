@@ -211,3 +211,46 @@ export function getSynergyVisualData(synergyName: string) {
   
   return { styleNumber, iconFile, synergyColor, brightColor };
 }
+
+/** Matches SynergyDisplay.css height: 80% */
+export const SYNERGY_DISPLAY_HEIGHT_RATIO = 0.8;
+/** Matches SynergyDisplay.tsx layout constants */
+export const SYNERGY_ICON_ASPECT_RATIO = 1;
+export const SYNERGY_PIP_ASPECT_RATIO = 26 / 128;
+export const SYNERGY_ICON_TO_PIPS_OVERLAP_RATIO = 0.12;
+export const SYNERGY_PIP_COLUMNS_RESERVED = 3;
+export const SYNERGY_CELL_GAP_PX = 4;
+
+/**
+ * Width of one synergy slot in the scoreboard row.
+ * Icon-only: square at full row height. With pips: matches SynergyDisplay width math.
+ */
+export function getSynergySlotWidth(
+  rowHeight: number,
+  showPips: boolean,
+  pipColumns: number = SYNERGY_PIP_COLUMNS_RESERVED
+): number {
+  if (!showPips) {
+    return rowHeight;
+  }
+
+  const displayHeight = rowHeight * SYNERGY_DISPLAY_HEIGHT_RATIO;
+  const iconWidth = displayHeight * SYNERGY_ICON_ASPECT_RATIO;
+  const pipWidth = displayHeight * SYNERGY_PIP_ASPECT_RATIO * pipColumns;
+  const overlapWidth = displayHeight * SYNERGY_ICON_TO_PIPS_OVERLAP_RATIO;
+  return iconWidth + pipWidth - overlapWidth;
+}
+
+/** Total width for the synergies column given max active synergy count. */
+export function getSynergiesColumnWidth(
+  rowHeight: number,
+  maxActiveSynergies: number,
+  showPips: boolean
+): number {
+  if (maxActiveSynergies === 0) {
+    return rowHeight;
+  }
+
+  const slotWidth = getSynergySlotWidth(rowHeight, showPips);
+  return maxActiveSynergies * slotWidth + (maxActiveSynergies - 1) * SYNERGY_CELL_GAP_PX;
+}

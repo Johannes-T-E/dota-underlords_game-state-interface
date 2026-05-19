@@ -196,7 +196,7 @@ export const BuildCreatorPage = () => {
   return (
       <MainContentTemplate centered={false} className="build-creator-page">
         <div className="build-creator-page__container">
-          <PageHeader title="Build Creator" titleIcon="🧩" icon={<IconChalkboardTeacher size={18} stroke={1.8} />} />
+          <PageHeader title="Build Creator" icon={<IconChalkboardTeacher size={18} stroke={1.8} />} />
 
           <div className="build-creator-page__content">
             {/* Left panel: Hero selection */}

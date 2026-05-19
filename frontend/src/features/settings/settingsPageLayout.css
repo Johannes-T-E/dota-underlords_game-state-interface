@@ -1,0 +1,6 @@
+:root {
+  --settings-sidebar-width: 200px;
+  --settings-form-max-width: 720px;
+  --settings-section-gap: 1.25rem;
+  --settings-inner-gap: 0.75rem;
+}

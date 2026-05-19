@@ -137,7 +137,7 @@ def extract_player_states_from_payload(gsi_payload, timestamp):
     return gsi_private_player_states, gsi_public_player_states
 
 
-def process_private_player_state(gsi_private_player_state, timestamp):
+def process_private_player_state(gsi_private_player_state, timestamp, persist_to_db=True):
     """
     Process private player state: buffer if no match, or update memory/DB if match active.
     
@@ -167,13 +167,14 @@ def process_private_player_state(gsi_private_player_state, timestamp):
     processed_private_state = process_and_store_gsi_private_player_state(gsi_private_player_state, timestamp)
     
     # Queue for DB write (private state) - use processed data
-    db_write_queue.put(('insert_snapshot', match_state.match_id, 'private_player', None, processed_private_state, timestamp))
-    print(f"[GSI] Queued private snapshot for match {match_state.match_id}, queue size: {db_write_queue.qsize()}")
+    if persist_to_db:
+        db_write_queue.put(('insert_snapshot', match_state.match_id, 'private_player', None, processed_private_state, timestamp))
+        print(f"[GSI] Queued private snapshot for match {match_state.match_id}, queue size: {db_write_queue.qsize()}")
     
     return True
 
 
-def process_public_player_state(gsi_public_player_state, timestamp):
+def process_public_player_state(gsi_public_player_state, timestamp, persist_to_db=True):
     """
     Process public player state - handles both buffering and active match.
     
@@ -231,10 +232,10 @@ def process_public_player_state(gsi_public_player_state, timestamp):
             print(f"[BUFFER] Starting match with players: {confirmed_players}")
             
             # Start new match
-            match_id = start_new_match(match_players_data, timestamp)
+            match_id = start_new_match(match_players_data, timestamp, persist_to_db=persist_to_db)
             
             # Process all buffered data for the confirmed players
-            process_buffered_data(match_id, timestamp)
+            process_buffered_data(match_id, timestamp, persist_to_db=persist_to_db)
             
             # Emit initial state
             emit_realtime_update()
@@ -260,7 +261,7 @@ def process_public_player_state(gsi_public_player_state, timestamp):
         # Detect game abandonment: health reset to 100 OR slot changed
         if (new_health == 100 and old_health < 100) or (new_slot != old_slot and new_slot > 0):
             print(f"[MATCH ABANDONED] Detected new game start (health: {old_health}→{new_health}, slot: {old_slot}→{new_slot})")
-            abandon_match(match_state.match_id, timestamp, reason="Client owner started new game")
+            abandon_match(match_state.match_id, timestamp, reason="Client owner started new game", persist_to_db=persist_to_db)
             # Don't process this update; it belongs to the new game
             return False
     
@@ -275,8 +276,9 @@ def process_public_player_state(gsi_public_player_state, timestamp):
     processed_public_state = process_and_store_gsi_public_player_state(account_id, gsi_public_player_state, timestamp)
     
     # Queue for DB write - use processed data
-    db_write_queue.put(('insert_snapshot', match_state.match_id, 'public_player', account_id, processed_public_state, timestamp))
-    print(f"[GSI] Queued public snapshot for player {account_id}, match {match_state.match_id}, queue size: {db_write_queue.qsize()}")
+    if persist_to_db:
+        db_write_queue.put(('insert_snapshot', match_state.match_id, 'public_player', account_id, processed_public_state, timestamp))
+        print(f"[GSI] Queued public snapshot for player {account_id}, match {match_state.match_id}, queue size: {db_write_queue.qsize()}")
     
     # Detect changes from previous state
     previous_state = change_detector.get_previous_state(match_state.match_id, account_id)
@@ -301,7 +303,8 @@ def process_public_player_state(gsi_public_player_state, timestamp):
                 'match_id': match_state.match_id,
                 'account_id': account_id,
                 'changes': detected_changes,
-                'timestamp': timestamp.isoformat()
+                'timestamp': timestamp.isoformat(),
+                'gsi_emulated': match_state.gsi_emulated,
             }, to=None)
     
     # Update previous state for next comparison
@@ -311,16 +314,18 @@ def process_public_player_state(gsi_public_player_state, timestamp):
     final_place = gsi_public_player_state.get('final_place', 0)
     if final_place > 0:
         # Queue update for match_players table
-        db_write_queue.put(('update_final_place', match_state.match_id, account_id, final_place))
+        if persist_to_db:
+            db_write_queue.put(('update_final_place', match_state.match_id, account_id, final_place))
         
-        if check_match_end(match_state.match_id, timestamp):
+        if check_match_end(match_state.match_id, timestamp, persist_to_db=persist_to_db):
             print(f"[MATCH END] Clearing game state")
             # Send final update to frontend before resetting
             emit_realtime_update()
             # Notify frontend that match ended
             socketio.emit('match_ended', {
                 'match_id': match_state.match_id,
-                'timestamp': timestamp.isoformat()
+                'timestamp': timestamp.isoformat(),
+                'gsi_emulated': match_state.gsi_emulated,
             }, to=None)
             # Clear change detector buffer for this match
             change_detector.clear_match(match_state.match_id)
@@ -330,7 +335,7 @@ def process_public_player_state(gsi_public_player_state, timestamp):
     return True
 
 
-def process_gsi_data(gsi_payload):
+def process_gsi_data(gsi_payload, persist_to_db=True):
     """Process incoming GSI data with parallel memory update and DB storage."""
     with data_lock:
         stats['total_updates'] += 1
@@ -345,12 +350,12 @@ def process_gsi_data(gsi_payload):
         
         # Process all private player states
         for gsi_private_player_state, state_timestamp in gsi_private_player_states:
-            if process_private_player_state(gsi_private_player_state, state_timestamp):
+            if process_private_player_state(gsi_private_player_state, state_timestamp, persist_to_db=persist_to_db):
                 any_updates = True
         
         # Process all public player states
         for gsi_public_player_state, state_timestamp in gsi_public_player_states:
-            if process_public_player_state(gsi_public_player_state, state_timestamp):
+            if process_public_player_state(gsi_public_player_state, state_timestamp, persist_to_db=persist_to_db):
                 any_updates = True
         
         # Emit WebSocket update if there were updates

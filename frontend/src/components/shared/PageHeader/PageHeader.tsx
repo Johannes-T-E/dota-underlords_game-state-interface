@@ -4,7 +4,6 @@ import './PageHeader.css';
 export interface PageHeaderProps {
   title: string;
   icon: ReactNode;
-  titleIcon: string;
   titleSuffix?: ReactNode;
   description?: string;
   centerContent?: ReactNode;
@@ -15,7 +14,6 @@ export interface PageHeaderProps {
 export const PageHeader = ({
   title,
   icon,
-  titleIcon,
   titleSuffix,
   description,
   centerContent,
@@ -23,8 +21,8 @@ export const PageHeader = ({
   className = '',
 }: PageHeaderProps) => {
   useEffect(() => {
-    document.title = `${titleIcon} ${title}`;
-  }, [title, titleIcon]);
+    document.title = title;
+  }, [title]);
 
   return (
     <header className={`page-header ${className}`.trim()}>

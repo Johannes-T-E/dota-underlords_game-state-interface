@@ -1,4 +1,5 @@
 import type { HeroesData } from './heroHelpers';
+import { isDraftPoolHero } from './heroHelpers';
 import type { PoolCount } from './poolCalculator';
 import { cardsPerTier } from './poolCalculator';
 import { getSynergyNameByKeyword } from '@/components/ui/SynergyDisplay/utils';
@@ -49,6 +50,9 @@ export function calculateSynergyPoolStats(
 
   // Calculate total pool for each synergy
   for (const [, heroData] of Object.entries(heroesData.heroes)) {
+    if (!isDraftPoolHero(heroData.id)) {
+      continue;
+    }
     const tier = heroData.draftTier;
     const keywords = heroData.keywords || [];
     const totalPool = cardsPerTier[String(tier) as keyof typeof cardsPerTier] || 0;
@@ -69,6 +73,9 @@ export function calculateSynergyPoolStats(
   // Step 2: Calculate used/remaining pool per synergy
   for (const [, heroData] of Object.entries(heroesData.heroes)) {
     const unitId = heroData.id;
+    if (!isDraftPoolHero(unitId)) {
+      continue;
+    }
     const keywords = heroData.keywords || [];
     const poolCount = poolCounts.get(unitId);
 

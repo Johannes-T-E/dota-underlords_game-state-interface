@@ -24,7 +24,13 @@
 
 .slider-input__track-wrapper {
   flex: 1;
+  min-width: 0;
   position: relative;
+  z-index: 1;
+}
+
+.settings-row--vertical .slider-input__container {
+  width: 100%;
 }
 
 .slider-input__slider {
@@ -35,6 +41,9 @@
   -webkit-appearance: none;
   appearance: none;
   cursor: pointer;
+  touch-action: pan-y;
+  position: relative;
+  z-index: 2;
 }
 
 .slider-input__slider::-webkit-slider-thumb {

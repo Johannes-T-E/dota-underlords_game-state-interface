@@ -8,6 +8,7 @@ export interface SettingsSectionProps {
   defaultOpen?: boolean;
   collapsible?: boolean;
   className?: string;
+  id?: string;
 }
 
 export const SettingsSection = ({
@@ -16,12 +17,13 @@ export const SettingsSection = ({
   children,
   defaultOpen = true,
   collapsible = true,
-  className = ''
+  className = '',
+  id
 }: SettingsSectionProps) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className={`settings-section ${className}`}>
+    <div className={`settings-section ${className}`} id={id}>
       <div 
         className={`settings-section__header ${collapsible ? 'settings-section__header--clickable' : ''}`}
         onClick={() => collapsible && setIsOpen(!isOpen)}

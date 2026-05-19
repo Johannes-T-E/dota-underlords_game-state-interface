@@ -3,6 +3,7 @@ import { MainContentTemplate } from '@/components/layout';
 import { EmptyState, PageHeader } from '@/components/shared';
 import { IconScoreboard } from '@tabler/icons-react';
 import { ScoreboardTable } from '@/features/scoreboard/components/ScoreboardTable/ScoreboardTable';
+import { SCOREBOARD_WIDGET_IDS } from '@/features/scoreboard/constants';
 import { useAppSelector } from '@/hooks/redux';
 import './ScoreboardPage.css';
 
@@ -41,7 +42,7 @@ export const ScoreboardPage = () => {
   return (
       <MainContentTemplate centered={false} className="scoreboard-page">
         <div className="scoreboard-page__container">
-          <PageHeader title="Scoreboard" titleIcon="📋" icon={<IconScoreboard size={18} stroke={1.8} />} />
+          <PageHeader title="Scoreboard" icon={<IconScoreboard size={18} stroke={1.8} />} />
           <div className="scoreboard-page__content">
           {!currentMatch ? (
             <EmptyState
@@ -52,7 +53,7 @@ export const ScoreboardPage = () => {
           ) : (
             <ScoreboardTable 
               players={players || []} 
-              widgetId="scoreboard-isolated"
+              widgetId={SCOREBOARD_WIDGET_IDS.isolated}
               selectedUnitIds={selectedUnitIds}
               onUnitClick={handleUnitClick}
               selectedSynergyKeyword={selectedSynergyKeyword}

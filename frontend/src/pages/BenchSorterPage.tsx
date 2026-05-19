@@ -76,7 +76,7 @@ export const BenchSorterPage = () => {
   return (
       <MainContentTemplate centered={false} className="bench-sorter-page">
         <div className="bench-sorter-page__container">
-          <PageHeader title="Bench Sorter" titleIcon="↔️" icon={<IconArrowsShuffle size={18} stroke={1.8} />} />
+          <PageHeader title="Bench Sorter" icon={<IconArrowsShuffle size={18} stroke={1.8} />} />
 
           {!currentMatch || !privatePlayer ? (
             <EmptyState

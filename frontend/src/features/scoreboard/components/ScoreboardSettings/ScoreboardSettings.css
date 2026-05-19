@@ -8,11 +8,11 @@
   right: 0;
   margin-top: 0.5rem;
   padding: 0.5rem;
-  background: var(--primary-color);
+  background: var(--secondary-color, #1d1c23);
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  z-index: 1000;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  z-index: 2000;
   min-width: 200px;
   display: flex;
   flex-direction: column;

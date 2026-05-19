@@ -1,11 +1,12 @@
 import { Button } from '@/components/ui';
 import { ToggleSwitch } from '../../ToggleSwitch/ToggleSwitch';
 import { IconRadio } from '../../IconRadio/IconRadio';
-import { SettingsSection } from '../../SettingsSection/SettingsSection';
+import { SettingsTopicPanel } from '../../SettingsTopicPanel/SettingsTopicPanel';
 import { SettingsGroup } from '../../SettingsGroup/SettingsGroup';
 import { SettingsRow } from '../../SettingsRow/SettingsRow';
 import SynergyDisplay from '@/components/ui/SynergyDisplay/SynergyDisplay';
 import { useScoreboardSettings } from '@/features/scoreboard/hooks/useScoreboardSettings';
+import { GLOBAL_SCOREBOARD_SETTINGS_ID } from '@/features/scoreboard/constants';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import { selectShowSynergyPips, updateShowSynergyPips } from '@/store/settingsSlice';
 import type { ScoreboardColumnConfig } from '@/types';
@@ -76,11 +77,43 @@ const LAYOUT_PRESETS: { [key: string]: Partial<ScoreboardColumnConfig> } = {
   }
 };
 
+const DEFAULT_COLUMN_ORDER = [
+  'place',
+  'playerName',
+  'level',
+  'gold',
+  'streak',
+  'health',
+  'record',
+  'networth',
+  'synergies',
+  'roster',
+  'underlord',
+  'contraptions',
+  'bench',
+];
+
+const COLUMN_PREVIEW_LABELS: Record<string, string> = {
+  place: '#',
+  player: 'Player',
+  playerName: 'Name',
+  level: 'Lvl',
+  gold: 'Gold',
+  streak: 'Streak',
+  health: 'HP',
+  record: 'W/L',
+  networth: 'NW',
+  roster: 'Roster',
+  underlord: 'UL',
+  contraptions: 'Trap',
+  bench: 'Bench',
+  synergies: 'Syn',
+};
+
 export const GameplaySettings = () => {
-  // Settings drawer affects all scoreboard widgets (using a special 'all' identifier)
-  // Individual widgets have their own settings via the widget header
-  // For now, we'll use a default widget ID - users should use widget-specific settings
-  const { settings, updateColumns, updateSort, resetSettings } = useScoreboardSettings('scoreboard-1');
+  const { settings, updateColumns, updateSort, resetSettings } = useScoreboardSettings(
+    GLOBAL_SCOREBOARD_SETTINGS_ID
+  );
   const dispatch = useAppDispatch();
   const showSynergyPips = useAppSelector(selectShowSynergyPips);
 
@@ -125,6 +158,12 @@ export const GameplaySettings = () => {
     updateColumns(recommended);
   };
 
+  const columnOrder = settings.columns.columnOrder ?? DEFAULT_COLUMN_ORDER;
+  const visiblePreviewColumns = columnOrder.filter((key) => {
+    const value = settings.columns[key as keyof ScoreboardColumnConfig];
+    return typeof value === 'boolean' && value;
+  });
+
   return (
     <div className="settings-category">
       <div className="settings-category__header">
@@ -134,14 +173,25 @@ export const GameplaySettings = () => {
         </p>
       </div>
 
-      {/* Scoreboard Display Section */}
-      <SettingsSection 
-        title="Scoreboard Display" 
-        description="Customize which columns are visible in the scoreboard"
-        defaultOpen={true}
+      <SettingsTopicPanel
+        id="settings-columns"
+        title="Scoreboard columns"
+        description="Which columns appear on every scoreboard"
+        preview={
+          <div className="settings-column-preview" aria-live="polite">
+            {visiblePreviewColumns.length > 0 ? (
+              visiblePreviewColumns.map((key) => (
+                <span key={key} className="settings-column-preview__col">
+                  {COLUMN_PREVIEW_LABELS[key] ?? key}
+                </span>
+              ))
+            ) : (
+              <span className="settings-column-preview__empty">No columns visible</span>
+            )}
+          </div>
+        }
       >
-        {/* Layout Presets */}
-        <SettingsGroup variant="card" title="Layout Presets">
+        <SettingsGroup variant="default" title="Layout presets">
           <div className="settings-row-wrap">
             <Button variant="secondary" size="small" onClick={() => handlePresetChange('compact')}>
               Compact
@@ -166,19 +216,7 @@ export const GameplaySettings = () => {
           </div>
         </SettingsGroup>
 
-        {/* Column Visibility Grid */}
-        <SettingsGroup variant="card" title="Column Visibility">
-          <div className="settings-inline-preview settings-inline-preview--synergy">
-            <span className="settings-inline-preview__label">Synergy preview:</span>
-            <SynergyDisplay
-              keyword={1}
-              levels={[{ unitcount: 2 }, { unitcount: 4 }, { unitcount: 6 }]}
-              activeUnits={4}
-              benchUnits={1}
-              showPips={showSynergyPips}
-              compactPipWidthByTierCount={showSynergyPips}
-            />
-          </div>
+        <SettingsGroup variant="default" title="Visible columns">
           <div className="settings-grid">
             {COLUMN_CONFIG.map((col) => {
               const isChecked = typeof settings.columns[col.key] === 'boolean' 
@@ -194,7 +232,7 @@ export const GameplaySettings = () => {
                     <div className="settings-option-tile__label">{col.label}</div>
                     {col.recommended && (
                       <div className="settings-option-tile__meta">
-                        RECOMMENDED
+                        Recommended
                       </div>
                     )}
                   </div>
@@ -208,58 +246,69 @@ export const GameplaySettings = () => {
           </div>
         </SettingsGroup>
 
-        {/* Sorting Options */}
-        <SettingsGroup variant="card" title="Sorting">
-          <div className="settings-stack">
-            <label className="settings-section-heading">Sort By:</label>
-            <div className="settings-stack settings-stack--compact">
-              <IconRadio
-                name="sortField"
-                value="health"
-                checked={settings.sortField === 'health'}
-                onChange={(value) => updateSort({ field: value as 'health' | 'record' | 'networth' })}
-                label="Health"
-                description="100 → 0"
-                icon=""
-              />
-              <IconRadio
-                name="sortField"
-                value="record"
-                checked={settings.sortField === 'record'}
-                onChange={(value) => updateSort({ field: value as 'health' | 'record' | 'networth' })}
-                label="Wins/Losses"
-                description="7W-2L"
-                icon=""
-              />
-              <IconRadio
-                name="sortField"
-                value="networth"
-                checked={settings.sortField === 'networth'}
-                onChange={(value) => updateSort({ field: value as 'health' | 'record' | 'networth' })}
-                label="Net Worth"
-                description="9999"
-                icon=""
-              />
-            </div>
+      </SettingsTopicPanel>
 
-            <div className="settings-section-offset">
-              <label className="settings-section-heading">Sort Direction:</label>
-              <div className="settings-section-offset">
-                <Button
-                  variant={settings.sortDirection === 'desc' ? 'primary' : 'secondary'}
-                  size="small"
-                  onClick={() => updateSort({ direction: settings.sortDirection === 'desc' ? 'asc' : 'desc' })}
-                >
-                  {settings.sortDirection === 'desc' ? '↓ High to Low' : '↑ Low to High'}
-                </Button>
-              </div>
-            </div>
+      <SettingsTopicPanel
+        id="settings-sorting"
+        title="Sorting & synergies"
+        description="Default sort order and synergy column display"
+        preview={
+          <SynergyDisplay
+            keyword={1}
+            levels={[{ unitcount: 2 }, { unitcount: 4 }, { unitcount: 6 }]}
+            activeUnits={4}
+            benchUnits={1}
+            showPips={showSynergyPips}
+            compactPipWidthByTierCount={showSynergyPips}
+          />
+        }
+      >
+        <SettingsGroup variant="default" title="Sort by">
+          <div className="settings-stack settings-stack--compact">
+            <IconRadio
+              name="sortField"
+              value="health"
+              checked={settings.sortField === 'health'}
+              onChange={(value) => updateSort({ field: value as 'health' | 'record' | 'networth' })}
+              label="Health"
+              description="100 → 0"
+              icon=""
+            />
+            <IconRadio
+              name="sortField"
+              value="record"
+              checked={settings.sortField === 'record'}
+              onChange={(value) => updateSort({ field: value as 'health' | 'record' | 'networth' })}
+              label="Wins / losses"
+              description="7W-2L"
+              icon=""
+            />
+            <IconRadio
+              name="sortField"
+              value="networth"
+              checked={settings.sortField === 'networth'}
+              onChange={(value) => updateSort({ field: value as 'health' | 'record' | 'networth' })}
+              label="Net worth"
+              description="9999"
+              icon=""
+            />
+          </div>
+          <div className="settings-section-offset">
+            <label className="settings-section-heading">Direction</label>
+            <Button
+              variant={settings.sortDirection === 'desc' ? 'primary' : 'secondary'}
+              size="small"
+              onClick={() => updateSort({ direction: settings.sortDirection === 'desc' ? 'asc' : 'desc' })}
+            >
+              {settings.sortDirection === 'desc' ? '↓ High to low' : '↑ Low to high'}
+            </Button>
           </div>
         </SettingsGroup>
-        <SettingsGroup variant="card" title="Synergy Display">
+
+        <SettingsGroup variant="transparent">
           <SettingsRow
-            label="Show Synergy Pips"
-            description="Enable pip segments in the synergy column."
+            label="Show synergy pips"
+            description="Pip segments in the synergy column"
           >
             <ToggleSwitch
               checked={showSynergyPips}
@@ -269,9 +318,9 @@ export const GameplaySettings = () => {
         </SettingsGroup>
 
         <Button variant="secondary" onClick={resetSettings}>
-          Reset Scoreboard Settings
+          Reset scoreboard settings
         </Button>
-      </SettingsSection>
+      </SettingsTopicPanel>
     </div>
   );
 };

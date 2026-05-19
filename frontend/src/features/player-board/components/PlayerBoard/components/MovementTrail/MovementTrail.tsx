@@ -1,7 +1,25 @@
 import { useEffect, useState, useRef } from 'react';
 import { getTierColor } from '@/utils/tierColors';
-import { calculatePosition, CELL_SIZE } from '@/features/player-board/utils/positionUtils';
+import { resolveUnitPixelPosition, CELL_SIZE } from '@/features/player-board/utils/positionUtils';
 import './MovementTrail.css';
+
+/** Parse #RGB / #RRGGBB to rgba(); falls back to white on invalid input. */
+const hexColorToRgba = (hex: string, opacity: number): string => {
+  let normalized = hex.trim().replace(/^#/, '');
+  if (normalized.length === 3) {
+    normalized = normalized
+      .split('')
+      .map((char) => char + char)
+      .join('');
+  }
+  if (normalized.length !== 6 || Number.isNaN(Number.parseInt(normalized, 16))) {
+    return `rgba(255, 255, 255, ${opacity})`;
+  }
+  const r = Number.parseInt(normalized.slice(0, 2), 16);
+  const g = Number.parseInt(normalized.slice(2, 4), 16);
+  const b = Number.parseInt(normalized.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+};
 
 export interface MovementTrailProps {
   fromPosition: { x: number; y: number };
@@ -14,7 +32,12 @@ export interface MovementTrailProps {
   trailOpacity?: number;
   trailThickness?: number;
   useTierColor?: boolean;
-  unitId?: number;
+  /** Hero tier (1–5) when useTierColor is enabled. */
+  unitTier?: number;
+  benchPosition?: 'top' | 'bottom';
+  showBench?: boolean;
+  /** When true, trail stays visible after the movement duration (settings preview). */
+  persist?: boolean;
   onComplete?: () => void;
 }
 
@@ -27,27 +50,25 @@ export const MovementTrail = ({
   trailOpacity = 0.6,
   trailThickness = 2,
   useTierColor = false,
-  unitId,
+  unitTier,
+  benchPosition = 'bottom',
+  showBench = true,
+  persist = false,
   onComplete
 }: MovementTrailProps) => {
   const [isVisible, setIsVisible] = useState(true);
   const [animationId] = useState(() => Math.random().toString(36).substr(2, 9));
   const innerTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Calculate the actual trail color
-  const actualTrailColor = useTierColor && unitId !== undefined ? getTierColor(unitId) : trailColor;
-  
-  // Convert hex color to RGBA
-  const hexToRgba = (hex: string, opacity: number): string => {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
-  };
-  
-  const trailColorWithOpacity = hexToRgba(actualTrailColor, trailOpacity);
+  const baseColor =
+    useTierColor && unitTier !== undefined ? getTierColor(unitTier) : trailColor;
+  const trailColorWithOpacity = hexColorToRgba(baseColor, trailOpacity);
 
   useEffect(() => {
+    if (persist) {
+      return;
+    }
+
     const timer = setTimeout(() => {
       setIsVisible(false);
       innerTimeoutRef.current = setTimeout(() => {
@@ -61,11 +82,11 @@ export const MovementTrail = ({
         clearTimeout(innerTimeoutRef.current);
       }
     };
-  }, [duration, onComplete]);
+  }, [duration, onComplete, persist]);
 
-  // Use shared position calculation
-  const fromPos = calculatePosition(fromPosition.x, fromPosition.y);
-  const toPos = calculatePosition(toPosition.x, toPosition.y);
+  const layoutOptions = { benchPosition, showBench };
+  const fromPos = resolveUnitPixelPosition(fromPosition.x, fromPosition.y, layoutOptions);
+  const toPos = resolveUnitPixelPosition(toPosition.x, toPosition.y, layoutOptions);
 
   // Calculate SVG positioning
   const svgLeft = Math.min(fromPos.x, toPos.x) - CELL_SIZE / 2;
@@ -89,9 +110,13 @@ export const MovementTrail = ({
 
   if (!isVisible) return null;
 
+  const segmentSize = Math.max(4, trailThickness + 2);
+  const segmentOffset = segmentSize / 2;
+  const dashLength = Math.max(4, trailThickness * 2);
+
   return (
-    <div 
-      className="movement-trail" 
+    <div
+      className={`movement-trail${persist ? ' movement-trail--persist' : ''}`}
       key={`trail-${animationId}`}
       style={{
         position: 'absolute',
@@ -114,28 +139,33 @@ export const MovementTrail = ({
       >
         <path
           d={pathData}
+          className="movement-trail__line"
           stroke={trailColorWithOpacity}
           strokeWidth={trailThickness}
           fill="none"
-          strokeDasharray="5,5"
-          className="movement-trail__line"
+          strokeDasharray={`${dashLength},${dashLength}`}
+          vectorEffect="non-scaling-stroke"
         />
       </svg>
 
       {segments.map((segment, index) => (
         <div
           key={`segment-${animationId}-${index}`}
-          className="movement-trail__segment"
+          className={`movement-trail__segment${persist ? ' movement-trail__segment--persist' : ''}`}
           style={{
             position: 'absolute',
-            left: segment.x - svgLeft - 3,
-            top: segment.y - svgTop - 3,
-            width: '6px',
-            height: '6px',
-            backgroundColor: trailColorWithOpacity,
+            left: segment.x - svgLeft - segmentOffset,
+            top: segment.y - svgTop - segmentOffset,
+            width: segmentSize,
+            height: segmentSize,
+            background: trailColorWithOpacity,
             borderRadius: '50%',
-            animationDelay: `${segment.delay}ms`,
-            animationDuration: `${duration}ms`
+            ...(persist
+              ? { opacity: trailOpacity }
+              : {
+                  animationDelay: `${segment.delay}ms`,
+                  animationDuration: `${duration}ms`,
+                }),
           }}
         />
       ))}

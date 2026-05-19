@@ -8,7 +8,7 @@ export const MatchManagement = () => {
   return (
       <MainContentTemplate centered={false} className="match-management-page">
         <div className="match-management-page__container">
-          <PageHeader title="Matches" titleIcon="🗂️" icon={<IconDatabase size={18} stroke={1.8} />} />
+          <PageHeader title="Matches" icon={<IconDatabase size={18} stroke={1.8} />} />
           <div className="match-management-page__content">
             <MatchesContainer />
           </div>
