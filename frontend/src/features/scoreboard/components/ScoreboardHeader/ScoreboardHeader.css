@@ -60,6 +60,14 @@
   flex-shrink: 0;
 }
 
+.scoreboard-header__col--player-rank {
+  width: var(--width-player-rank, 56px);
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .scoreboard-header__col--player-name {
   width: var(--width-player-name);
   flex-shrink: 0;

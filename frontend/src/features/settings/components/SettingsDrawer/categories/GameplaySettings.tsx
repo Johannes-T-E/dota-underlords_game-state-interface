@@ -7,34 +7,22 @@ import { SettingsRow } from '../../SettingsRow/SettingsRow';
 import SynergyDisplay from '@/components/ui/SynergyDisplay/SynergyDisplay';
 import { useScoreboardSettings } from '@/features/scoreboard/hooks/useScoreboardSettings';
 import { GLOBAL_SCOREBOARD_SETTINGS_ID } from '@/features/scoreboard/constants';
+import {
+  COLUMN_PREVIEW_LABELS,
+  DEFAULT_SCOREBOARD_COLUMN_ORDER,
+  GAMEPLAY_COLUMN_TOGGLES,
+} from '@/features/scoreboard/scoreboardColumns';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
-import { selectShowSynergyPips, updateShowSynergyPips } from '@/store/settingsSlice';
+import { selectShowSynergyPips, selectShowPlayerRankText, updateShowSynergyPips, updateShowPlayerRankText } from '@/store/settingsSlice';
 import type { ScoreboardColumnConfig } from '@/types';
 import './SettingsCategories.css';
 
-const COLUMN_CONFIG: Array<{
-  key: keyof ScoreboardColumnConfig;
-  label: string;
-  icon: string;
-  recommended?: boolean;
-}> = [
-  { key: 'place', label: 'Place', icon: '', recommended: true },
-  { key: 'playerName', label: 'Player Name', icon: '', recommended: true },
-  { key: 'level', label: 'Level', icon: '', recommended: true },
-  { key: 'gold', label: 'Gold', icon: '', recommended: true },
-  { key: 'streak', label: 'Streak', icon: '' },
-  { key: 'health', label: 'Health', icon: '', recommended: true },
-  { key: 'record', label: 'Win/Loss', icon: '', recommended: true },
-  { key: 'networth', label: 'Net Worth', icon: '' },
-  { key: 'roster', label: 'Roster', icon: '', recommended: true },
-  { key: 'underlord', label: 'Underlord', icon: '' },
-  { key: 'contraptions', label: 'Contraptions', icon: '' },
-  { key: 'bench', label: 'Bench', icon: '' }
-];
+const COLUMN_CONFIG = GAMEPLAY_COLUMN_TOGGLES;
 
 const LAYOUT_PRESETS: { [key: string]: Partial<ScoreboardColumnConfig> } = {
   compact: {
     place: true,
+    playerRank: false,
     playerName: true,
     level: true,
     health: true,
@@ -42,6 +30,7 @@ const LAYOUT_PRESETS: { [key: string]: Partial<ScoreboardColumnConfig> } = {
     gold: false,
     streak: false,
     networth: false,
+    synergies: false,
     roster: false,
     underlord: false,
     contraptions: false,
@@ -49,12 +38,14 @@ const LAYOUT_PRESETS: { [key: string]: Partial<ScoreboardColumnConfig> } = {
   },
   standard: {
     place: true,
+    playerRank: true,
     playerName: true,
     level: true,
     gold: true,
     health: true,
     record: true,
     networth: true,
+    synergies: true,
     roster: true,
     streak: false,
     underlord: false,
@@ -63,6 +54,7 @@ const LAYOUT_PRESETS: { [key: string]: Partial<ScoreboardColumnConfig> } = {
   },
   complete: {
     place: true,
+    playerRank: true,
     playerName: true,
     level: true,
     gold: true,
@@ -70,6 +62,7 @@ const LAYOUT_PRESETS: { [key: string]: Partial<ScoreboardColumnConfig> } = {
     health: true,
     record: true,
     networth: true,
+    synergies: true,
     roster: true,
     underlord: true,
     contraptions: true,
@@ -77,38 +70,7 @@ const LAYOUT_PRESETS: { [key: string]: Partial<ScoreboardColumnConfig> } = {
   }
 };
 
-const DEFAULT_COLUMN_ORDER = [
-  'place',
-  'playerName',
-  'level',
-  'gold',
-  'streak',
-  'health',
-  'record',
-  'networth',
-  'synergies',
-  'roster',
-  'underlord',
-  'contraptions',
-  'bench',
-];
-
-const COLUMN_PREVIEW_LABELS: Record<string, string> = {
-  place: '#',
-  player: 'Player',
-  playerName: 'Name',
-  level: 'Lvl',
-  gold: 'Gold',
-  streak: 'Streak',
-  health: 'HP',
-  record: 'W/L',
-  networth: 'NW',
-  roster: 'Roster',
-  underlord: 'UL',
-  contraptions: 'Trap',
-  bench: 'Bench',
-  synergies: 'Syn',
-};
+const DEFAULT_COLUMN_ORDER = [...DEFAULT_SCOREBOARD_COLUMN_ORDER];
 
 export const GameplaySettings = () => {
   const { settings, updateColumns, updateSort, resetSettings } = useScoreboardSettings(
@@ -116,6 +78,7 @@ export const GameplaySettings = () => {
   );
   const dispatch = useAppDispatch();
   const showSynergyPips = useAppSelector(selectShowSynergyPips);
+  const showPlayerRankText = useAppSelector(selectShowPlayerRankText);
 
   const handleColumnToggle = (key: keyof ScoreboardColumnConfig, value: boolean) => {
     updateColumns({ [key]: value });
@@ -130,30 +93,24 @@ export const GameplaySettings = () => {
 
   const handleShowAll = () => {
     const allEnabled: Partial<ScoreboardColumnConfig> = {};
-    COLUMN_CONFIG.forEach(col => {
-      if (col.key !== 'columnOrder') {
-        (allEnabled as any)[col.key] = true;
-      }
+    COLUMN_CONFIG.forEach((col) => {
+      (allEnabled as Partial<ScoreboardColumnConfig>)[col.key] = true;
     });
     updateColumns(allEnabled);
   };
 
   const handleHideAll = () => {
     const allDisabled: Partial<ScoreboardColumnConfig> = {};
-    COLUMN_CONFIG.forEach(col => {
-      if (col.key !== 'columnOrder') {
-        (allDisabled as any)[col.key] = false;
-      }
+    COLUMN_CONFIG.forEach((col) => {
+      (allDisabled as Partial<ScoreboardColumnConfig>)[col.key] = false;
     });
     updateColumns(allDisabled);
   };
 
   const handleResetToRecommended = () => {
     const recommended: Partial<ScoreboardColumnConfig> = {};
-    COLUMN_CONFIG.forEach(col => {
-      if (col.key !== 'columnOrder') {
-        (recommended as any)[col.key] = col.recommended || false;
-      }
+    COLUMN_CONFIG.forEach((col) => {
+      (recommended as Partial<ScoreboardColumnConfig>)[col.key] = col.recommended ?? false;
     });
     updateColumns(recommended);
   };
@@ -306,6 +263,15 @@ export const GameplaySettings = () => {
         </SettingsGroup>
 
         <SettingsGroup variant="transparent">
+          <SettingsRow
+            label="Show rank text"
+            description="Rank name beside medal pin in the Rank column"
+          >
+            <ToggleSwitch
+              checked={showPlayerRankText}
+              onChange={(checked) => dispatch(updateShowPlayerRankText(checked))}
+            />
+          </SettingsRow>
           <SettingsRow
             label="Show synergy pips"
             description="Pip segments in the synergy column"

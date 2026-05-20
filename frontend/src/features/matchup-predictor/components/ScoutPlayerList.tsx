@@ -14,6 +14,7 @@ interface ScoutPlayerListProps {
 const compactColumns: ScoreboardColumnConfig = {
   place: false,
   player: false,
+  playerRank: false,
   playerName: true,
   level: false,
   gold: false,

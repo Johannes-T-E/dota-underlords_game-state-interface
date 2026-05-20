@@ -1,5 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
+import { IconSettings } from '@tabler/icons-react';
 import { Button, ColumnToggle } from '@/components/ui';
+import {
+  DEFAULT_SCOREBOARD_COLUMN_ORDER,
+  SCOREBOARD_COLUMN_TOGGLES,
+} from '@/features/scoreboard/scoreboardColumns';
 import type { ScoreboardColumnConfig } from '@/types';
 import './ScoreboardSettings.css';
 
@@ -8,6 +13,8 @@ export interface ScoreboardSettingsProps {
   onChange: (config: ScoreboardColumnConfig) => void;
   showSynergyPips?: boolean;
   onShowSynergyPipsChange?: (show: boolean) => void;
+  showPlayerRankText?: boolean;
+  onShowPlayerRankTextChange?: (show: boolean) => void;
   className?: string;
 }
 
@@ -16,6 +23,8 @@ export const ScoreboardSettings = ({
   onChange,
   showSynergyPips = false,
   onShowSynergyPipsChange,
+  showPlayerRankText = false,
+  onShowPlayerRankTextChange,
   className = '' 
 }: ScoreboardSettingsProps) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,6 +34,7 @@ export const ScoreboardSettings = ({
   const safeConfig: ScoreboardColumnConfig = {
     place: config.place ?? true,
     player: config.player ?? false,
+    playerRank: config.playerRank ?? true,
     playerName: config.playerName ?? true,
     level: config.level ?? true,
     gold: config.gold ?? true,
@@ -64,6 +74,7 @@ export const ScoreboardSettings = ({
     const defaultConfig: ScoreboardColumnConfig = {
       place: true,
       player: false,
+      playerRank: true,
       playerName: true,
       level: true,
       gold: true,
@@ -76,7 +87,7 @@ export const ScoreboardSettings = ({
       contraptions: true,
       bench: true,
       synergies: true,
-      columnOrder: undefined
+      columnOrder: [...DEFAULT_SCOREBOARD_COLUMN_ORDER],
     };
     onChange(defaultConfig);
   };
@@ -86,10 +97,13 @@ export const ScoreboardSettings = ({
       <Button
         variant="ghost"
         size="small"
+        className="scoreboard-settings__trigger"
         onClick={() => setIsOpen(!isOpen)}
         title="Column settings"
+        aria-label="Column settings"
+        aria-expanded={isOpen}
       >
-        ⚙
+        <IconSettings size={18} stroke={1.8} aria-hidden />
       </Button>
 
       {isOpen && (
@@ -103,86 +117,34 @@ export const ScoreboardSettings = ({
             Reset to Default
           </Button>
           <hr style={{ margin: '0.5rem 0', borderColor: 'var(--border-color)' }} />
-          <ColumnToggle
-            label="Place"
-            enabled={safeConfig.place}
-            onChange={(enabled) => updateConfig('place', enabled)}
-          />
-          <ColumnToggle
-            label="Player (Compact)"
-            enabled={safeConfig.player}
-            onChange={(enabled) => updateConfig('player', enabled)}
-          />
-          <ColumnToggle
-            label="Player Name"
-            enabled={safeConfig.playerName}
-            onChange={(enabled) => updateConfig('playerName', enabled)}
-          />
-          <ColumnToggle
-            label="Level"
-            enabled={safeConfig.level}
-            onChange={(enabled) => updateConfig('level', enabled)}
-          />
-          <ColumnToggle
-            label="Gold"
-            enabled={safeConfig.gold}
-            onChange={(enabled) => updateConfig('gold', enabled)}
-          />
-          <ColumnToggle
-            label="Streak"
-            enabled={safeConfig.streak}
-            onChange={(enabled) => updateConfig('streak', enabled)}
-          />
-          <ColumnToggle
-            label="Health"
-            enabled={safeConfig.health}
-            onChange={(enabled) => updateConfig('health', enabled)}
-          />
-          <ColumnToggle
-            label="Record"
-            enabled={safeConfig.record}
-            onChange={(enabled) => updateConfig('record', enabled)}
-          />
-          <ColumnToggle
-            label="Net Worth"
-            enabled={safeConfig.networth}
-            onChange={(enabled) => updateConfig('networth', enabled)}
-          />
-          <ColumnToggle
-            label="Roster"
-            enabled={safeConfig.roster}
-            onChange={(enabled) => updateConfig('roster', enabled)}
-          />
-          <ColumnToggle
-            label="Underlord"
-            enabled={safeConfig.underlord}
-            onChange={(enabled) => updateConfig('underlord', enabled)}
-          />
-          <ColumnToggle
-            label="Contraptions"
-            enabled={safeConfig.contraptions}
-            onChange={(enabled) => updateConfig('contraptions', enabled)}
-          />
-          <ColumnToggle
-            label="Bench"
-            enabled={safeConfig.bench}
-            onChange={(enabled) => updateConfig('bench', enabled)}
-          />
-          <ColumnToggle
-            label="Synergies"
-            enabled={safeConfig.synergies}
-            onChange={(enabled) => updateConfig('synergies', enabled)}
-          />
-          {safeConfig.synergies && onShowSynergyPipsChange && (
+          {SCOREBOARD_COLUMN_TOGGLES.map(({ key, label }) => (
+            <ColumnToggle
+              key={key}
+              label={label}
+              enabled={safeConfig[key] ?? false}
+              onChange={(enabled) => updateConfig(key, enabled)}
+            />
+          ))}
+          {(safeConfig.playerRank && onShowPlayerRankTextChange) ||
+          (safeConfig.synergies && onShowSynergyPipsChange) ? (
             <>
               <hr style={{ margin: '0.5rem 0', borderColor: 'var(--border-color)' }} />
-              <ColumnToggle
-                label="Show Synergy Pips"
-                enabled={showSynergyPips}
-                onChange={onShowSynergyPipsChange}
-              />
+              {safeConfig.playerRank && onShowPlayerRankTextChange && (
+                <ColumnToggle
+                  label="Show Rank Text"
+                  enabled={showPlayerRankText}
+                  onChange={onShowPlayerRankTextChange}
+                />
+              )}
+              {safeConfig.synergies && onShowSynergyPipsChange && (
+                <ColumnToggle
+                  label="Show Synergy Pips"
+                  enabled={showSynergyPips}
+                  onChange={onShowSynergyPipsChange}
+                />
+              )}
             </>
-          )}
+          ) : null}
         </div>
       )}
     </div>

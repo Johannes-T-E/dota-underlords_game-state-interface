@@ -130,6 +130,9 @@ export type { DurationDisplayProps } from './DurationDisplay/DurationDisplay';
 export { PlayerNameDisplay } from './PlayerNameDisplay/PlayerNameDisplay';
 export type { PlayerNameDisplayProps } from './PlayerNameDisplay/PlayerNameDisplay';
 
+export { PlayerRankDisplay } from './PlayerRankDisplay/PlayerRankDisplay';
+export type { PlayerRankDisplayProps, PlayerRankDisplaySize } from './PlayerRankDisplay/PlayerRankDisplay';
+
 export { MatchCountChip } from './MatchCountChip/MatchCountChip';
 export type { MatchCountChipProps } from './MatchCountChip/MatchCountChip';
 

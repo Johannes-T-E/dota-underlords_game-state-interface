@@ -3,17 +3,18 @@ import {
   useState,
   useCallback,
   type CSSProperties,
-  type MouseEvent,
   type ReactNode,
 } from 'react';
 import type { PoolBarStat } from '@/utils/poolBarStats';
 import { HoverTooltip } from '@/components/ui/HoverTooltip/HoverTooltip';
+import { PoolBarAggregateFill } from './PoolBarAggregateFill';
 import { PoolBarPipFill } from './PoolBarPipFill';
 import { PoolBarSegmentFill } from './PoolBarSegmentFill';
 import {
   PoolBarTooltipContent,
   type PoolBarTooltipMetrics,
 } from './PoolBarTooltipContent';
+import { computePoolBarTooltipMetrics } from './poolBarTooltipMetrics';
 import './PoolBarChart.css';
 
 export const POOL_BAR_MAIN_LABEL_HEIGHT_PX = 60;
@@ -25,6 +26,9 @@ const TOOLTIP_BAR_ICON_GAP_PX = POOL_BAR_TOOLTIP_BAR_ICON_GAP_PX;
 /** Synergy-tooltip breakdown: ~4px per pool copy at typical measured bar heights */
 export const POOL_BAR_TOOLTIP_PX_PER_POOL_UNIT = 4;
 export const POOL_BAR_TOOLTIP_ICON_SIZE_PX = 40;
+/** Icon + gap + pool count line (matches tooltip column layout). */
+export const POOL_BAR_TOOLTIP_LABEL_HEIGHT_PX =
+  POOL_BAR_TOOLTIP_ICON_SIZE_PX + TOOLTIP_BAR_ICON_GAP_PX + 14;
 
 export interface PoolBarChartProps {
   items: PoolBarStat[];
@@ -34,28 +38,19 @@ export interface PoolBarChartProps {
   tooltipEnabled?: boolean;
   heroBreakdownByItemId?: Map<string | number, PoolBarStat[]>;
   renderTooltipLabel?: (item: PoolBarStat) => ReactNode;
-  /** Tooltip: pip height from hovered synergy bar; column width comes from CSS icon size */
+  /** Tooltip / mini chart: fixed pip height via pixelsPerPoolUnit; column width is 40px in CSS */
   pixelsPerPoolUnit?: number;
   labelHeightPx?: number;
   /** Per-column pip colors (index 0 = top); uses PoolBarSegmentFill instead of PoolBarPipFill */
   pipSegmentsByItemId?: Map<string | number, string[]>;
   onItemClick?: (item: PoolBarStat) => void;
-}
-
-function measureTooltipMetrics(
-  wrapperEl: HTMLElement,
-  item: PoolBarStat
-): PoolBarTooltipMetrics {
-  const bar = wrapperEl.querySelector('.pool-bar-chart__bar');
-  const barHeightPx =
-    bar instanceof HTMLElement ? bar.getBoundingClientRect().height : 0;
-  const pixelsPerPoolUnit =
-    item.totalPool > 0 ? barHeightPx / item.totalPool : 2;
-
-  return {
-    pixelsPerPoolUnit,
-    labelHeightPx: MAIN_LABEL_HEIGHT_PX,
-  };
+  /** Show remaining / total under column icons (synergy view hides this; counts go in tooltip header) */
+  showLabelText?: boolean;
+  /**
+   * `aggregate`: proportional fill + uniform stripes (dashboard tier/synergy totals).
+   * `per-copy`: one pip per pool copy (default; full-page hero pool stats).
+   */
+  barFillMode?: 'per-copy' | 'aggregate';
 }
 
 export const PoolBarChart = ({
@@ -70,6 +65,8 @@ export const PoolBarChart = ({
   labelHeightPx = MAIN_LABEL_HEIGHT_PX,
   pipSegmentsByItemId,
   onItemClick,
+  showLabelText = true,
+  barFillMode = 'per-copy',
 }: PoolBarChartProps) => {
   const maxTotalPool = useMemo(() => {
     if (items.length === 0) return 1;
@@ -86,15 +83,20 @@ export const PoolBarChart = ({
   const resolveTooltipLabel = renderTooltipLabel ?? renderLabel;
 
   const handleTooltipBarMouseEnter = useCallback(
-    (item: PoolBarStat, event: MouseEvent<HTMLDivElement>) => {
-      const metrics = measureTooltipMetrics(event.currentTarget, item);
+    (item: PoolBarStat) => {
+      const breakdown = heroBreakdownByItemId?.get(item.id);
+      const metricsMaxPool =
+        breakdown != null && breakdown.length > 0
+          ? Math.max(...breakdown.map((hero) => hero.totalPool))
+          : maxTotalPool;
+      const metrics = computePoolBarTooltipMetrics(metricsMaxPool);
       setTooltipMetricsByItemId((prev) => {
         const next = new Map(prev);
         next.set(item.id, metrics);
         return next;
       });
     },
-    []
+    [heroBreakdownByItemId, maxTotalPool]
   );
 
   const chartStyle = useMemo((): CSSProperties | undefined => {
@@ -118,6 +120,9 @@ export const PoolBarChart = ({
     'pool-bar-chart',
     className,
     useFixedBarMetrics ? 'pool-bar-chart--fixed-metrics' : '',
+    !showLabelText ? 'pool-bar-chart--icon-only-label' : '',
+    showLabelText ? 'pool-bar-chart--with-label-text' : '',
+    barFillMode === 'aggregate' ? 'pool-bar-chart--aggregate-fill' : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -152,9 +157,7 @@ export const PoolBarChart = ({
               key={item.id}
               className={`pool-bar-chart__bar-wrapper${onItemClick ? ' pool-bar-chart__bar-wrapper--clickable' : ''}`}
               onMouseEnter={
-                hasTooltip
-                  ? (event) => handleTooltipBarMouseEnter(item, event)
-                  : undefined
+                hasTooltip ? () => handleTooltipBarMouseEnter(item) : undefined
               }
               onClick={onItemClick ? () => onItemClick(item) : undefined}
               onKeyDown={
@@ -185,6 +188,12 @@ export const PoolBarChart = ({
                 >
                   {pipSegments != null && pipSegments.length > 0 ? (
                     <PoolBarSegmentFill segments={pipSegments} />
+                  ) : barFillMode === 'aggregate' ? (
+                    <PoolBarAggregateFill
+                      totalPool={item.totalPool}
+                      remainingPool={item.remainingPool}
+                      fillColor={item.color}
+                    />
                   ) : (
                     <PoolBarPipFill
                       totalPool={item.totalPool}
@@ -196,9 +205,11 @@ export const PoolBarChart = ({
               </div>
               <div className="pool-bar-chart__label">
                 <div className="pool-bar-chart__label-icon">{renderLabel(item)}</div>
-                <div className="pool-bar-chart__label-text">
-                  {item.remainingPool} / {item.totalPool}
-                </div>
+                {showLabelText && (
+                  <div className="pool-bar-chart__label-text">
+                    {item.remainingPool} / {item.totalPool}
+                  </div>
+                )}
               </div>
             </div>
           );
@@ -217,6 +228,8 @@ export const PoolBarChart = ({
                   <PoolBarTooltipContent
                     title={item.synergyName ?? item.label}
                     titleIcon={renderLabel(item)}
+                    remainingPool={item.remainingPool}
+                    totalPool={item.totalPool}
                     borderColor={item.color}
                     items={breakdown}
                     renderLabel={resolveTooltipLabel}

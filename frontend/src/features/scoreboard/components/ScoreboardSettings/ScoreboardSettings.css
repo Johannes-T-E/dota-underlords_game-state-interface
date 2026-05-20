@@ -1,5 +1,25 @@
 .scoreboard-settings {
   position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Match synergy toolbar fit toggle height (24px slider) */
+.scoreboard-settings__trigger.button {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  padding: 0;
+  font-weight: normal;
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--text-secondary, #b9bbbe);
+  flex-shrink: 0;
+}
+
+.scoreboard-settings__trigger:hover:not(:disabled) {
+  color: var(--accent-color);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .scoreboard-settings__dropdown {

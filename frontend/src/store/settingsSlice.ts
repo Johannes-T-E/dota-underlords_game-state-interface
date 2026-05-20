@@ -3,6 +3,10 @@ import type { HealthDisplaySettings } from '@/components/ui/HealthDisplay/Health
 import type { ScoreboardColumnConfig } from '@/types';
 import { DEFAULT_HEALTH_DISPLAY_SETTINGS } from '@/components/ui/HealthDisplay/HealthDisplaySettings';
 import { GLOBAL_SCOREBOARD_SETTINGS_ID } from '@/features/scoreboard/constants';
+import {
+  DEFAULT_SCOREBOARD_COLUMN_ORDER,
+  normalizeColumnOrder,
+} from '@/features/scoreboard/scoreboardColumns';
 
 const SETTINGS_VERSION = 2;
 
@@ -48,6 +52,8 @@ export interface GeneralSettings {
   heroPortrait: HeroPortraitSettings;
   unitAnimation: UnitAnimationSettings;
   showSynergyPips: boolean;
+  /** Show rank name text beside medal pin on scoreboard (icon-only when false). */
+  showPlayerRankText: boolean;
   /** Scale scoreboard rows/columns to fit the viewport without scrolling. */
   scoreboardFitToViewport: boolean;
   /** Multiplier for bench automation delays (1 = default; higher = slower). */
@@ -65,6 +71,7 @@ const defaultScoreboardSettings: ScoreboardSettings = {
   columns: {
     place: true,
     player: false,
+    playerRank: true,
     playerName: true,
     level: true,
     gold: true,
@@ -77,7 +84,7 @@ const defaultScoreboardSettings: ScoreboardSettings = {
     contraptions: true,
     bench: true,
     synergies: true,
-    columnOrder: ['place', 'playerName', 'level', 'gold', 'streak', 'health', 'record', 'networth', 'synergies', 'roster', 'underlord', 'contraptions', 'bench']
+    columnOrder: [...DEFAULT_SCOREBOARD_COLUMN_ORDER]
   },
   sortField: 'health',
   sortDirection: 'desc'
@@ -115,6 +122,7 @@ const initialState: SettingsState = {
       heroPortrait: defaultHeroPortraitSettings,
       unitAnimation: defaultUnitAnimationSettings,
       showSynergyPips: false,
+      showPlayerRankText: false,
       scoreboardFitToViewport: false,
       benchOrganizeTimingScale: 1
     }
@@ -139,11 +147,16 @@ const mergeScoreboardSettings = (
   const widget =
     widgetId !== GLOBAL_SCOREBOARD_SETTINGS_ID ? scoreboards[widgetId] : undefined;
 
+  const mergedColumns = {
+    ...defaultScoreboardSettings.columns,
+    ...global?.columns,
+    ...widget?.columns,
+  };
+
   return {
     columns: {
-      ...defaultScoreboardSettings.columns,
-      ...global?.columns,
-      ...widget?.columns,
+      ...mergedColumns,
+      columnOrder: normalizeColumnOrder(mergedColumns.columnOrder),
     },
     sortField: widget?.sortField ?? global?.sortField ?? defaultScoreboardSettings.sortField,
     sortDirection:
@@ -173,6 +186,7 @@ const validateSettings = (settings: unknown): SettingsState => {
       heroPortrait: s.general?.heroPortrait ?? defaultHeroPortraitSettings,
       unitAnimation: s.general?.unitAnimation ?? defaultUnitAnimationSettings,
       showSynergyPips: s.general?.showSynergyPips ?? false,
+      showPlayerRankText: s.general?.showPlayerRankText ?? false,
       scoreboardFitToViewport: s.general?.scoreboardFitToViewport ?? false,
       benchOrganizeTimingScale: clampBenchOrganizeTimingScale(s.general?.benchOrganizeTimingScale)
     }
@@ -286,6 +300,10 @@ const settingsSlice = createSlice({
       state.general.showSynergyPips = action.payload;
     },
 
+    updateShowPlayerRankText: (state, action: PayloadAction<boolean>) => {
+      state.general.showPlayerRankText = action.payload;
+    },
+
     updateScoreboardFitToViewport: (state, action: PayloadAction<boolean>) => {
       state.general.scoreboardFitToViewport = action.payload;
     },
@@ -297,6 +315,7 @@ const settingsSlice = createSlice({
         heroPortrait: defaultHeroPortraitSettings,
         unitAnimation: defaultUnitAnimationSettings,
         showSynergyPips: false,
+        showPlayerRankText: false,
         scoreboardFitToViewport: false,
         benchOrganizeTimingScale: 1
       };
@@ -339,6 +358,7 @@ export const {
   updateUnitAnimationSettings,
   resetUnitAnimationSettings,
   updateShowSynergyPips,
+  updateShowPlayerRankText,
   updateScoreboardFitToViewport,
   resetAllSettings,
   loadSettings,
@@ -374,6 +394,8 @@ export const selectGeneralSettings = (state: { settings: SettingsState }) => sta
 export const selectHeroPortraitSettings = (state: { settings: SettingsState }) => state.settings.general.heroPortrait;
 export const selectUnitAnimationSettings = (state: { settings: SettingsState }) => state.settings.general.unitAnimation;
 export const selectShowSynergyPips = (state: { settings: SettingsState }) => state.settings.general.showSynergyPips;
+export const selectShowPlayerRankText = (state: { settings: SettingsState }) =>
+  state.settings.general.showPlayerRankText ?? false;
 export const selectScoreboardFitToViewport = (state: { settings: SettingsState }) =>
   state.settings.general.scoreboardFitToViewport ?? false;
 export const selectBenchOrganizeTimingScale = (state: { settings: SettingsState }) =>

@@ -26,7 +26,8 @@
   height: 100%;
   min-height: 0;
   min-width: 0;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
   box-sizing: border-box;
 }
 
@@ -63,7 +64,7 @@
   justify-content: center;
   position: relative;
   min-height: 0;
-  padding-bottom: 60px;
+  padding-bottom: 0;
 }
 
 .pool-bar-chart__bar {
@@ -127,6 +128,35 @@
   line-height: 1.2;
 }
 
+/* Main chart: labels in flex flow at the bottom (avoids clipping wide synergy icons) */
+.pool-bar-chart:not(.pool-bar-chart--fixed-metrics) .pool-bar-chart__container > .hover-tooltip-container,
+.pool-bar-chart:not(.pool-bar-chart--fixed-metrics) .pool-bar-chart__bar-wrapper {
+  justify-content: flex-end;
+}
+
+.pool-bar-chart:not(.pool-bar-chart--fixed-metrics) .pool-bar-chart__bar-container {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+}
+
+.pool-bar-chart:not(.pool-bar-chart--fixed-metrics) .pool-bar-chart__label {
+  position: static;
+  flex: 0 0 auto;
+  flex-shrink: 0;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+}
+
+.pool-bar-chart:not(.pool-bar-chart--fixed-metrics) .pool-bar-chart__label-icon {
+  width: 100%;
+  height: auto;
+  max-width: none;
+  max-height: none;
+  aspect-ratio: 1;
+}
+
 .pool-bar-chart__tier-badge {
   display: flex;
   align-items: center;
@@ -182,28 +212,44 @@
 }
 
 .pool-bar-tooltip__title-text {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
   font-size: 13px;
   font-weight: 600;
   line-height: 1.3;
   color: var(--text-primary, #ffffff);
+}
+
+.pool-bar-tooltip__title-name {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.pool-bar-tooltip__title-pool {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary, #b9bbbe);
+  white-space: nowrap;
+}
+
+.pool-bar-chart--icon-only-label:not(.pool-bar-chart--fixed-metrics) .pool-bar-chart__label {
+  gap: 0;
 }
 
 .pool-bar-chart--tooltip {
   --pool-bar-tooltip-icon-size: 40px;
 }
 
-/* Owned heroes panel: same pip size as synergy tooltip breakdown */
-.pool-bar-chart--owned-heroes.pool-bar-chart--fixed-metrics {
+.pool-bar-chart--tooltip.pool-bar-chart--fixed-metrics {
   height: auto;
   min-height: 0;
-}
-
-.pool-bar-chart--owned-heroes.pool-bar-chart--fixed-metrics .pool-bar-chart__container {
-  align-items: flex-end;
-  overflow: visible;
+  width: max-content;
+  flex-shrink: 0;
 }
 
 .pool-bar-tooltip .pool-bar-chart--tooltip {
@@ -287,14 +333,6 @@
   .pool-bar-chart__container {
     gap: 4px;
     padding: 8px;
-  }
-
-  .pool-bar-chart__bar-container {
-    padding-bottom: 48px;
-  }
-
-  .pool-bar-chart__label {
-    height: 48px;
   }
 
   .pool-bar-chart__label-text {

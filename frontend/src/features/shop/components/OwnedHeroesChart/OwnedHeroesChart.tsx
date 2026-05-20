@@ -1,10 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { HeroPortrait } from '@/components/ui';
-import {
-  PoolBarChart,
-  POOL_BAR_MAIN_LABEL_HEIGHT_PX,
-  POOL_BAR_TOOLTIP_PX_PER_POOL_UNIT,
-} from '@/components/charts/PoolBarChart';
+import { PoolBarTooltipChart } from '@/components/charts/PoolBarChart/PoolBarTooltipChart';
+import { computePoolBarTooltipMetrics } from '@/components/charts/PoolBarChart/poolBarTooltipMetrics';
 import type { PoolBarStat } from '@/utils/poolBarStats';
 import type { HeroesData } from '@/utils/heroHelpers';
 import {
@@ -30,7 +27,7 @@ export interface OwnedHeroBarData {
 interface OwnedHeroesChartProps {
   heroesData: HeroesData | null;
   ownedHeroBars: OwnedHeroBarData[];
-  /** @deprecated No longer used; pip height matches hero pool tooltip (4px per unit) */
+  /** @deprecated No longer used */
   maxOwnedTotalPool?: number;
   onUnitClick?: (unitId: number) => void;
 }
@@ -43,6 +40,16 @@ export const OwnedHeroesChart = ({
   const items = useMemo(
     () => ownedHeroBars.map((hero) => ownedHeroToBarStat(hero, heroesData)),
     [ownedHeroBars, heroesData]
+  );
+
+  const maxTotalPool = useMemo(() => {
+    if (items.length === 0) return 1;
+    return Math.max(...items.map((item) => item.totalPool));
+  }, [items]);
+
+  const metrics = useMemo(
+    () => computePoolBarTooltipMetrics(maxTotalPool),
+    [maxTotalPool]
   );
 
   const pipSegmentsByItemId = useMemo(() => {
@@ -74,12 +81,10 @@ export const OwnedHeroesChart = ({
   return (
     <div className="owned-heroes-chart">
       <div className="owned-heroes-chart__scroll app-scrollbar">
-        <PoolBarChart
-          className="pool-bar-chart--tooltip pool-bar-chart--owned-heroes"
+        <PoolBarTooltipChart
           items={items}
+          metrics={metrics}
           renderLabel={renderLabel}
-          pixelsPerPoolUnit={POOL_BAR_TOOLTIP_PX_PER_POOL_UNIT}
-          labelHeightPx={POOL_BAR_MAIN_LABEL_HEIGHT_PX}
           pipSegmentsByItemId={pipSegmentsByItemId}
           onItemClick={onUnitClick ? handleItemClick : undefined}
           emptyMessage="No owned heroes yet"

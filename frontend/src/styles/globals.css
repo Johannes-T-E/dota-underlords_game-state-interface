@@ -21,6 +21,8 @@
     
     /* Column widths matching the game */
     --width-place: 60px;
+    --width-player-rank: 56px;
+    --width-player-rank-with-text: 140px;
     --width-player: 200px;
     --width-player-name: 200px;
     --width-level: 80px;

@@ -1,6 +1,7 @@
 import type { CSSProperties, ReactNode } from 'react';
 import type { PoolBarStat } from '@/utils/poolBarStats';
-import { PoolBarChart } from './PoolBarChart';
+import { PoolBarTooltipChart } from './PoolBarTooltipChart';
+import { computePoolBarTooltipMetrics } from './poolBarTooltipMetrics';
 import './PoolBarChart.css';
 
 export interface PoolBarTooltipMetrics {
@@ -11,6 +12,8 @@ export interface PoolBarTooltipMetrics {
 export interface PoolBarTooltipContentProps {
   title: string;
   titleIcon?: ReactNode;
+  remainingPool?: number;
+  totalPool?: number;
   borderColor: string;
   items: PoolBarStat[];
   renderLabel: (item: PoolBarStat) => ReactNode;
@@ -20,13 +23,18 @@ export interface PoolBarTooltipContentProps {
 export const PoolBarTooltipContent = ({
   title,
   titleIcon,
+  remainingPool,
+  totalPool,
   borderColor,
   items,
   renderLabel,
   metrics,
 }: PoolBarTooltipContentProps) => {
-  const hasMetrics =
-    metrics != null && metrics.pixelsPerPoolUnit > 0;
+  const maxTotalPool = Math.max(1, ...items.map((item) => item.totalPool));
+  const resolvedMetrics =
+    metrics != null && metrics.pixelsPerPoolUnit > 0
+      ? metrics
+      : computePoolBarTooltipMetrics(maxTotalPool);
 
   const tooltipStyle = {
     '--pool-bar-tooltip-border-color': borderColor,
@@ -39,15 +47,20 @@ export const PoolBarTooltipContent = ({
         {titleIcon != null && (
           <span className="pool-bar-tooltip__title-icon">{titleIcon}</span>
         )}
-        <span className="pool-bar-tooltip__title-text">{title}</span>
+        <span className="pool-bar-tooltip__title-text">
+          <span className="pool-bar-tooltip__title-name">{title}</span>
+          {totalPool != null && totalPool > 0 && (
+            <span className="pool-bar-tooltip__title-pool">
+              {remainingPool ?? 0} / {totalPool}
+            </span>
+          )}
+        </span>
       </div>
-      <PoolBarChart
-        className="pool-bar-chart--tooltip"
+      <PoolBarTooltipChart
         items={items}
         renderLabel={renderLabel}
         emptyMessage="No heroes in synergy"
-        pixelsPerPoolUnit={hasMetrics ? metrics.pixelsPerPoolUnit : undefined}
-        labelHeightPx={hasMetrics ? metrics.labelHeightPx : undefined}
+        metrics={resolvedMetrics}
       />
     </div>
   );

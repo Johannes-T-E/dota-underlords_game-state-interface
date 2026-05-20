@@ -17,7 +17,7 @@
 .shop-display__panels--row {
   flex-wrap: nowrap;
   align-items: stretch;
-  gap: 16px;
+  gap: 12px;
 }
 
 .shop-display__panels--row .shop-display__panel--shop {
@@ -27,20 +27,34 @@
 
 .shop-display__panels--row .shop-display__panel--owned {
   flex: 1 1 0;
-  min-width: 0;
+  min-width: 240px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  min-height: 280px;
+  min-height: 0;
 }
 
 .shop-display__panels--row .shop-display__panel--owned .owned-heroes-chart {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.shop-display__panels--row .shop-display__panel--pool-stats {
+  flex: 1 1 0;
+  min-width: 280px;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.shop-display__panels--row .shop-display__panel--pool-stats .hero-pool-stats-panel {
   flex: 1;
   min-height: 0;
 }
 
 .shop-display__panel-title {
-  margin: 0 0 8px;
+  margin: 0 0 4px;
   font-size: 0.9rem;
   font-weight: 700;
   text-transform: uppercase;

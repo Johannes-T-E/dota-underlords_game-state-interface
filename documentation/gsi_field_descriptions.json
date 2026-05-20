@@ -227,9 +227,14 @@
     "examples": [0, 1, 2, 3, 4]
   },
   "block.data.public_player_state.rank_tier": {
-    "description": "MMR tier. Only in ranked matches.",
+    "description": "MMR tier. Only in ranked matches. Encoded as (majorRank-1)*10+(subTier-1): major 1-9 (Upstart..Lord of White Spire), sub 1-5 (Roman I-V). Examples: 4=Upstart V, 70=Big Boss I, 80=Lord of White Spire.",
     "type": "integer",
-    "examples": [70]
+    "examples": [4, 70, 71, 72, 80]
+  },
+  "block.data.public_player_state.global_leaderboard_rank": {
+    "description": "Global leaderboard position for Lord of White Spire players. 0 if inactive or unranked on leaderboard.",
+    "type": "integer",
+    "examples": [0, 267, 806]
   },
   "block.data.public_player_state.disconnected_time": {
     "description": "Disconnect duration in seconds (0.0 = connected).",

@@ -1,0 +1,32 @@
+.player-rank-display {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+.player-rank-display__icon {
+  width: 28px;
+  height: auto;
+  object-fit: contain;
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.player-rank-display--compact .player-rank-display__icon {
+  width: 24px;
+}
+
+.player-rank-display__label {
+  font-size: 0.75rem;
+  line-height: 1.2;
+  color: var(--text-secondary, rgba(255, 255, 255, 0.75));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player-rank-display--compact .player-rank-display__label {
+  font-size: 0.7rem;
+}

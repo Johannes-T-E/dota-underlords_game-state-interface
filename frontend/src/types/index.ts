@@ -82,6 +82,7 @@ export interface PlayerState {
   brawny_kills_float: number;
   city_prestige_level: number;
   rank_tier?: number;
+  global_leaderboard_rank?: number | null;
   platform: number;
   
   // Board buddy
@@ -314,6 +315,7 @@ export type ConnectionStatus = 'connecting' | 'connected' | 'disconnected' | 'er
 export interface ScoreboardColumnConfig {
   place: boolean;
   player: boolean;          // KEEP: Combined name + level + gold (compact mode)
+  playerRank: boolean;      // Ranked medal (icon ± text)
   playerName: boolean;      // NEW: Just the player name
   level: boolean;           // NEW: Level/XP indicator
   gold: boolean;            // NEW: Gold amount

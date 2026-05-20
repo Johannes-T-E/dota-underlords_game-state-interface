@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { getPipBands } from './pipLayout';
 
 const PIP_DIVIDER_PX = 1;
 const DIVIDER_COLOR = 'rgba(0, 0, 0, 0.55)';
@@ -42,22 +43,17 @@ export const PoolBarPipFill = ({
       ctx.clearRect(0, 0, width, height);
 
       const usedPool = Math.max(0, totalPool - remainingPool);
-      const pipHeight = height / totalPool;
+      const bands = getPipBands(totalPool, height, PIP_DIVIDER_PX);
 
-      for (let i = 0; i < totalPool; i++) {
-        const yTop = i * pipHeight;
-        const yBottom = (i + 1) * pipHeight;
-        const hasDivider = i < totalPool - 1;
-        const bodyH = yBottom - yTop - (hasDivider ? PIP_DIVIDER_PX : 0);
-
+      bands.forEach(({ yTop, bodyH, dividerH }, i) => {
         ctx.fillStyle = i < usedPool ? EMPTY_COLOR : fillColor;
         ctx.fillRect(0, yTop, width, bodyH);
 
-        if (hasDivider) {
+        if (dividerH > 0) {
           ctx.fillStyle = DIVIDER_COLOR;
-          ctx.fillRect(0, yBottom - PIP_DIVIDER_PX, width, PIP_DIVIDER_PX);
+          ctx.fillRect(0, yTop + bodyH, width, dividerH);
         }
-      }
+      });
     };
 
     draw();

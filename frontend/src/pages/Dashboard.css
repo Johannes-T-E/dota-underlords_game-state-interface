@@ -11,13 +11,24 @@
   min-height: 0;
 }
 
+.dashboard-page__container > .dashboard {
+  flex: 1;
+  min-height: 0;
+}
+
 .dashboard {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 12px;
   width: 100%;
   max-width: 100%;
   padding: 0;
+}
+
+.dashboard__section--scoreboard {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .dashboard__section {
@@ -30,7 +41,9 @@
 }
 
 .dashboard__section--shop {
+  flex: 0 0 auto;
   overflow: hidden;
+  gap: 8px;
 }
 
 .dashboard__section--shop .shop-display__panels--row {
@@ -38,7 +51,7 @@
 }
 
 .dashboard__section--shop .shop-display {
-  margin-left: 12px;
+  margin-left: 0;
 }
 
 .dashboard__section--player-boards {
@@ -105,7 +118,7 @@
 
 @media (max-width: 768px) {
   .dashboard {
-    gap: 24px;
+    gap: 12px;
   }
 
   .dashboard__player-boards-grid {

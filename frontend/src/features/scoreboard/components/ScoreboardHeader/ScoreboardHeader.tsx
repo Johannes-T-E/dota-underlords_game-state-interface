@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { SortableHeader } from '@/components/ui';
+import { DEFAULT_SCOREBOARD_COLUMN_ORDER } from '@/features/scoreboard/scoreboardColumns';
 import type { ScoreboardColumnConfig } from '@/types';
 import './ScoreboardHeader.css';
 
@@ -10,6 +11,7 @@ export type SortDirection = 'asc' | 'desc';
 const COLUMN_METADATA = {
   place: { label: '#', sortable: false },
   player: { label: 'Player', sortable: false },
+  playerRank: { label: 'Rank', sortable: false },
   playerName: { label: 'Player', sortable: false },
   level: { label: 'Level', sortable: false },
   gold: { label: 'Gold', sortable: false },
@@ -49,6 +51,7 @@ export const ScoreboardHeader = ({
   const defaultVisible: ScoreboardColumnConfig = {
     place: true,
     player: false,
+    playerRank: true,
     playerName: true,
     level: true,
     gold: true,
@@ -66,8 +69,7 @@ export const ScoreboardHeader = ({
   const config = visibleColumns || defaultVisible;
   
   // Use provided columnOrder or default order
-  const DEFAULT_COLUMN_ORDER = ['place', 'playerName', 'level', 'gold', 'streak', 'health', 'record', 'networth', 'synergies', 'roster', 'underlord', 'contraptions', 'bench'];
-  const currentOrder = columnOrder || DEFAULT_COLUMN_ORDER;
+  const currentOrder = columnOrder ?? [...DEFAULT_SCOREBOARD_COLUMN_ORDER];
   
   // Filter visible columns in the specified order
   const visibleOrderedColumns = currentOrder.filter(columnKey => 

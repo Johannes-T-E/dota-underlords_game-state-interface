@@ -43,6 +43,7 @@ class UnderlordsDatabaseManager:
         ('underlord', 'underlord', False),
         ('board_unit_limit', 'board_unit_limit', False),
         ('rank_tier', 'rank_tier', False),
+        ('global_leaderboard_rank', 'global_leaderboard_rank', False),
         ('final_place', 'final_place', False),
         ('platform', 'platform', False),
         ('vs_opponent_wins', 'vs_opponent_wins', False),
@@ -104,6 +105,7 @@ class UnderlordsDatabaseManager:
         self.create_tables()
         self.migrate_add_round_columns()
         self.migrate_rename_items_column()
+        self.migrate_add_global_leaderboard_rank_column()
     
     def create_tables(self) -> None:
         """Create all necessary tables."""
@@ -184,6 +186,7 @@ class UnderlordsDatabaseManager:
                 
                 -- Additional stats
                 rank_tier INTEGER,
+                global_leaderboard_rank INTEGER,
                 final_place INTEGER,
                 platform INTEGER,
                 
@@ -331,6 +334,23 @@ class UnderlordsDatabaseManager:
             except sqlite3.OperationalError as e:
                 print(f"[MIGRATION] Could not rename items_json column: {e}")
         
+        self.conn.commit()
+
+    def migrate_add_global_leaderboard_rank_column(self) -> None:
+        """Add global_leaderboard_rank column for Lord of White Spire leaderboard position."""
+        cursor = self.conn.cursor()
+        cursor.execute("PRAGMA table_info(public_player_snapshots)")
+        columns = [row[1] for row in cursor.fetchall()]
+
+        if 'global_leaderboard_rank' not in columns:
+            try:
+                cursor.execute(
+                    "ALTER TABLE public_player_snapshots ADD COLUMN global_leaderboard_rank INTEGER"
+                )
+                print("[MIGRATION] Added global_leaderboard_rank column to public_player_snapshots")
+            except sqlite3.OperationalError as e:
+                print(f"[MIGRATION] Could not add global_leaderboard_rank: {e}")
+
         self.conn.commit()
     
     def create_match(self, match_id: str, players_data: List[Dict], timestamp: datetime) -> str:

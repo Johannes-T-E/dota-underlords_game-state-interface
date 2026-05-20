@@ -8,8 +8,10 @@ import { useScoreboardSettings } from '@/features/scoreboard/hooks/useScoreboard
 import { useScoreboardFitScale } from '@/features/scoreboard/hooks/useScoreboardFitScale';
 import {
   selectShowSynergyPips,
+  selectShowPlayerRankText,
   selectScoreboardFitToViewport,
   updateShowSynergyPips,
+  updateShowPlayerRankText,
   updateScoreboardFitToViewport,
 } from '@/store/settingsSlice';
 import { getSynergiesColumnWidth, isSynergyActive } from '@/components/ui/SynergyDisplay/utils';
@@ -44,10 +46,15 @@ export const ScoreboardTable = ({
   // Get global synergy pips setting
   const dispatch = useDispatch();
   const showSynergyPips = useSelector(selectShowSynergyPips);
+  const showPlayerRankText = useSelector(selectShowPlayerRankText);
   const fitToViewport = useSelector(selectScoreboardFitToViewport);
 
   const handleShowSynergyPipsChange = (show: boolean) => {
     dispatch(updateShowSynergyPips(show));
+  };
+
+  const handleShowPlayerRankTextChange = (show: boolean) => {
+    dispatch(updateShowPlayerRankText(show));
   };
 
   const handleFitToViewportChange = (fit: boolean) => {
@@ -164,6 +171,9 @@ export const ScoreboardTable = ({
   // CSS custom property for dynamic synergies column width
   const tableStyle = {
     '--width-synergies-dynamic': `${synergiesColumnWidth}px`,
+    '--width-player-rank': showPlayerRankText
+      ? 'var(--width-player-rank-with-text)'
+      : 'var(--width-player-rank)',
   } as React.CSSProperties;
 
   return (
@@ -179,6 +189,8 @@ export const ScoreboardTable = ({
         onColumnConfigChange={updateColumns}
         showSynergyPips={showSynergyPips}
         onShowSynergyPipsChange={handleShowSynergyPipsChange}
+        showPlayerRankText={showPlayerRankText}
+        onShowPlayerRankTextChange={handleShowPlayerRankTextChange}
         fitToViewport={fitToViewport}
         onFitToViewportChange={handleFitToViewportChange}
       />
@@ -217,6 +229,7 @@ export const ScoreboardTable = ({
                 selectedSynergyKeyword={selectedSynergyKeyword}
                 onSynergyClick={onSynergyClick}
                 showSynergyPips={showSynergyPips}
+                showPlayerRankText={showPlayerRankText}
               />
             );
           })}

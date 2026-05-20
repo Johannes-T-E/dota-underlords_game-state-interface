@@ -9,6 +9,7 @@ import synergyIconMap from '@/components/ui/SynergyDisplay/data/synergy-icon-map
 import type { PrivatePlayerState, PlayerState, Unit } from '@/types';
 import type { HeroesData } from '@/utils/heroHelpers';
 import { calculatePoolCounts } from '@/utils/poolCalculator';
+import { HeroPoolStatsPanel } from '@/features/hero-pool-stats/components/HeroPoolStatsPanel';
 import { OwnedHeroesChart, type OwnedHeroBarData } from '../OwnedHeroesChart/OwnedHeroesChart';
 import { ShopPanelScaler } from '../ShopPanelScaler/ShopPanelScaler';
 import './ShopDisplay.css';
@@ -418,6 +419,18 @@ export const ShopDisplay = ({
             onUnitClick={onUnitClick}
           />
         </div>
+
+        {panelsLayout === 'row' && (
+          <div className="shop-display__panel shop-display__panel--pool-stats">
+            <h3 className="shop-display__panel-title">Hero Pool Stats</h3>
+            <HeroPoolStatsPanel
+              players={players}
+              heroesData={heroesData}
+              showViewToggle
+              aggregateBarFill
+            />
+          </div>
+        )}
       </div>
     </div>
   );

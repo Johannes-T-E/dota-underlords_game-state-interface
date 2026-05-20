@@ -1,10 +1,9 @@
 .owned-heroes-chart {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  flex: 0 1 auto;
   min-height: 0;
   width: 100%;
-  justify-content: flex-end;
 }
 
 .owned-heroes-chart__empty {
@@ -20,16 +19,10 @@
   overflow-y: hidden;
 }
 
-.owned-heroes-chart__scroll .pool-bar-chart--owned-heroes {
-  height: auto;
-  width: max-content;
-  min-width: 100%;
+.owned-heroes-chart__scroll .pool-bar-chart--tooltip {
+  flex-shrink: 0;
 }
 
-.owned-heroes-chart__scroll .pool-bar-chart--owned-heroes .pool-bar-chart__container {
+.owned-heroes-chart__scroll .pool-bar-chart--tooltip .pool-bar-chart__container {
   flex-wrap: nowrap;
-  justify-content: flex-start;
-  align-items: flex-end;
-  width: max-content;
-  min-width: 100%;
 }

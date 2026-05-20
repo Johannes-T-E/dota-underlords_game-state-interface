@@ -15,6 +15,8 @@ export interface SynergyToolbarProps {
   onColumnConfigChange?: (config: ScoreboardColumnConfig) => void;
   showSynergyPips?: boolean;
   onShowSynergyPipsChange?: (show: boolean) => void;
+  showPlayerRankText?: boolean;
+  onShowPlayerRankTextChange?: (show: boolean) => void;
   fitToViewport?: boolean;
   onFitToViewportChange?: (fit: boolean) => void;
   className?: string;
@@ -63,6 +65,8 @@ export const SynergyToolbar = ({
   onColumnConfigChange,
   showSynergyPips = false,
   onShowSynergyPipsChange,
+  showPlayerRankText = false,
+  onShowPlayerRankTextChange,
   fitToViewport = false,
   onFitToViewportChange,
   className = ''
@@ -121,6 +125,8 @@ export const SynergyToolbar = ({
               onChange={onColumnConfigChange}
               showSynergyPips={showSynergyPips}
               onShowSynergyPipsChange={onShowSynergyPipsChange}
+              showPlayerRankText={showPlayerRankText}
+              onShowPlayerRankTextChange={onShowPlayerRankTextChange}
             />
           )}
           {onFitToViewportChange && (

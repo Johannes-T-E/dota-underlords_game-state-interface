@@ -38,6 +38,7 @@ export const PlacementBoard = ({
   const visibleColumns: ScoreboardColumnConfig = {
     place: true,
     player: false,
+    playerRank: true,
     playerName: true,
     level: true,
     gold: true,
@@ -51,7 +52,7 @@ export const PlacementBoard = ({
     bench: true,
     synergies: true
   };
-  const columnOrder = ['place', 'playerName', 'level', 'gold', 'streak', 'health', 'record', 'networth', 'synergies', 'roster', 'bench'];
+  const columnOrder = ['place', 'playerRank', 'playerName', 'level', 'gold', 'streak', 'health', 'record', 'networth', 'synergies', 'roster', 'bench'];
 
   const fallbackByAccount = useMemo(
     () => new Map(players.map((p) => [p.account_id, p])),

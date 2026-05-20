@@ -375,6 +375,7 @@ def process_and_store_gsi_public_player_state(account_id: int, gsi_public_player
         # Player data
         'city_prestige_level': gsi_public_player_state.get('city_prestige_level'),
         'rank_tier': gsi_public_player_state.get('rank_tier'),
+        'global_leaderboard_rank': gsi_public_player_state.get('global_leaderboard_rank'),
         'platform': gsi_public_player_state.get('platform'),
         
         # Board buddy

@@ -9,9 +9,11 @@ import {
   HealthDisplay,
   NetWorthDisplay,
   GoldDisplay,
-  SynergiesCell
+  SynergiesCell,
+  PlayerRankDisplay,
 } from '@/components/ui';
 import { getSynergyNameByKeyword } from '@/components/ui/SynergyDisplay/utils';
+import { DEFAULT_SCOREBOARD_COLUMN_ORDER } from '@/features/scoreboard/scoreboardColumns';
 import { useItemsData } from '@/hooks/useItemsData';
 import type { PlayerState, ScoreboardColumnConfig, Unit } from '@/types';
 import { HeroPoolTooltip } from '@/components/charts/HeroPoolTooltip';
@@ -32,6 +34,7 @@ export interface ScoreboardPlayerRowProps {
   selectedSynergyKeyword?: number | null;
   onSynergyClick?: (keyword: number | null) => void;
   showSynergyPips?: boolean;
+  showPlayerRankText?: boolean;
   poolCounts?: Map<number, PoolCount>;
 }
 
@@ -80,12 +83,14 @@ export const ScoreboardPlayerRow = memo(({
   selectedSynergyKeyword = null,
   onSynergyClick,
   showSynergyPips = false,
+  showPlayerRankText = false,
   poolCounts,
 }: ScoreboardPlayerRowProps) => {
   const { itemsData } = useItemsData();
   const defaultVisible: ScoreboardColumnConfig = {
     place: true,
     player: false,
+    playerRank: true,
     playerName: true,
     level: true,
     gold: true,
@@ -103,8 +108,7 @@ export const ScoreboardPlayerRow = memo(({
   const config = visibleColumns || defaultVisible;
   
   // Use provided columnOrder or default order
-  const DEFAULT_COLUMN_ORDER = ['place', 'playerName', 'level', 'gold', 'streak', 'health', 'record', 'networth', 'synergies', 'roster', 'underlord', 'contraptions', 'bench'];
-  const currentOrder = columnOrder || DEFAULT_COLUMN_ORDER;
+  const currentOrder = columnOrder ?? [...DEFAULT_SCOREBOARD_COLUMN_ORDER];
   
   // Filter visible columns in the specified order - memoize to prevent recalculation
   const visibleOrderedColumns = useMemo(() => {
@@ -197,6 +201,18 @@ export const ScoreboardPlayerRow = memo(({
           </div>
         );
       
+      case 'playerRank':
+        return (
+          <div key={columnKey} className="scoreboard-player-row__player-rank">
+            <PlayerRankDisplay
+              rankTier={player.rank_tier}
+              globalLeaderboardRank={player.global_leaderboard_rank}
+              showText={showPlayerRankText}
+              size="compact"
+            />
+          </div>
+        );
+
       case 'playerName':
         return (
           <div key={columnKey} className="scoreboard-player-row__player-name">
@@ -414,6 +430,7 @@ export const ScoreboardPlayerRow = memo(({
     synergyColors,
     onSynergyClick,
     showSynergyPips,
+    showPlayerRankText,
     rosterUnits,
     benchUnits,
     underlordUnits,
