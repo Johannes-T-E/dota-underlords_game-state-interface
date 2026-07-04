@@ -225,7 +225,7 @@ def _dpi_context_for_window(hwnd: int) -> Dict:
 PRE_PICKUP_DELAY_SEC = 0.005
 AFTER_MOUSEDOWN_DELAY_SEC = 0.01
 BEFORE_MOUSEUP_DELAY_SEC = 0.01
-POST_DRAG_DELAY_SEC = 0.012
+POST_DRAG_DELAY_SEC = 0.04
 
 # Default stepped cursor path for drag_screen_to_screen (short bench moves still register in-client).
 DEFAULT_DRAG_MOVE_STEPS = 2
@@ -234,8 +234,90 @@ DEFAULT_DRAG_MOVE_STEP_SLEEP_SEC = 0.015
 # After focusing the game, brief settle before first injected input (Alt-tab / DPI refresh).
 SETTLE_AFTER_FOCUS_SEC = 0.14
 
-# Between consecutive automated drags so a unit finishes moving (bench organize + benchmarks).
-INTER_DRAG_SETTLE_SEC = 0.04
+# Between consecutive drags.
+INTER_DRAG_SETTLE_SEC = 0.18
+
+
+@dataclass(frozen=True)
+class BenchTimingConfig:
+    """Runtime bench automation delays (seconds)."""
+
+    drag_scale: float = 1.0
+    settle_after_focus_sec: float = SETTLE_AFTER_FOCUS_SEC
+    post_drag_delay_sec: float = POST_DRAG_DELAY_SEC
+    between_moves_sec: float = INTER_DRAG_SETTLE_SEC
+    pre_pickup_delay_sec: float = PRE_PICKUP_DELAY_SEC
+    after_mousedown_delay_sec: float = AFTER_MOUSEDOWN_DELAY_SEC
+    before_mouseup_delay_sec: float = BEFORE_MOUSEUP_DELAY_SEC
+    drag_step_sleep_sec: float = DEFAULT_DRAG_MOVE_STEP_SLEEP_SEC
+
+    @classmethod
+    def defaults(cls, drag_scale: float = 1.0) -> "BenchTimingConfig":
+        return cls(drag_scale=_clamp_bench_timing_scale(drag_scale))
+
+
+def _clamp_timing_sec(value: object, min_sec: float, max_sec: float, fallback: float) -> float:
+    try:
+        v = float(value)  # type: ignore[arg-type]
+    except (TypeError, ValueError):
+        return fallback
+    if v != v:
+        return fallback
+    return max(min_sec, min(max_sec, v))
+
+
+def _parse_bench_timings(
+    raw: object | None,
+    *,
+    legacy_timing_scale: float = 1.0,
+) -> BenchTimingConfig:
+    defaults = BenchTimingConfig.defaults(legacy_timing_scale)
+    if not isinstance(raw, dict):
+        return defaults
+
+    def pick(camel: str, snake: str, min_sec: float, max_sec: float, fallback: float) -> float:
+        value = raw.get(camel, raw.get(snake, fallback))
+        return _clamp_timing_sec(value, min_sec, max_sec, fallback)
+
+    return BenchTimingConfig(
+        drag_scale=_clamp_bench_timing_scale(raw.get("dragScale", raw.get("drag_scale", defaults.drag_scale))),
+        settle_after_focus_sec=pick(
+            "settleAfterFocusSec", "settle_after_focus_sec", 0.05, 0.5, defaults.settle_after_focus_sec
+        ),
+        post_drag_delay_sec=pick("postDragDelaySec", "post_drag_delay_sec", 0.01, 0.15, defaults.post_drag_delay_sec),
+        between_moves_sec=pick(
+            "betweenMovesSec",
+            "between_moves_sec",
+            0.05,
+            1.0,
+            _clamp_timing_sec(
+                raw.get("minSettleBetweenMovesSec", raw.get("interDragFallbackSec", defaults.between_moves_sec)),
+                0.05,
+                1.0,
+                defaults.between_moves_sec,
+            ),
+        ),
+        pre_pickup_delay_sec=pick(
+            "prePickupDelaySec", "pre_pickup_delay_sec", 0.001, 0.03, defaults.pre_pickup_delay_sec
+        ),
+        after_mousedown_delay_sec=pick(
+            "afterMousedownDelaySec",
+            "after_mousedown_delay_sec",
+            0.005,
+            0.05,
+            defaults.after_mousedown_delay_sec,
+        ),
+        before_mouseup_delay_sec=pick(
+            "beforeMouseupDelaySec",
+            "before_mouseup_delay_sec",
+            0.005,
+            0.05,
+            defaults.before_mouseup_delay_sec,
+        ),
+        drag_step_sleep_sec=pick(
+            "dragStepSleepSec", "drag_step_sleep_sec", 0.005, 0.05, defaults.drag_step_sleep_sec
+        ),
+    )
 
 
 class BenchOrganizerError(Exception):
@@ -434,6 +516,7 @@ def drag_screen_to_screen(
     move_steps: int = DEFAULT_DRAG_MOVE_STEPS,
     move_step_sleep_sec: float = DEFAULT_DRAG_MOVE_STEP_SLEEP_SEC,
     between_actions_sec: float = 0.0,
+    timing: Optional[BenchTimingConfig] = None,
     timing_scale: float = 1.0,
     verbose: bool = False,
     log_prefix: str = "    [input]",
@@ -464,7 +547,9 @@ def drag_screen_to_screen(
             print(f"{log_prefix} {msg}", flush=True)
 
     ba = max(0.0, float(between_actions_sec))
-    ts = max(0.01, float(timing_scale))
+    tc = timing or BenchTimingConfig.defaults(timing_scale)
+    ts = max(0.01, tc.drag_scale)
+    step_sleep = move_step_sleep_sec if move_step_sleep_sec != DEFAULT_DRAG_MOVE_STEP_SLEEP_SEC else tc.drag_step_sleep_sec
 
     def pause(sec: float) -> None:
         time.sleep((sec + ba) * ts)
@@ -483,12 +568,12 @@ def drag_screen_to_screen(
     # 1) Cursor on unit / source cell (no button pressed yet).
     v(f"move cursor to pickup ({pickup_x}, {pickup_y}) [screen px, no button]")
     _set_cursor(pickup_x, pickup_y)
-    pause(PRE_PICKUP_DELAY_SEC + extra_pre_pickup_sec)
+    pause(tc.pre_pickup_delay_sec + extra_pre_pickup_sec)
 
     # 2) Press and hold left button on the unit.
     v("LEFT BUTTON DOWN — hold on unit")
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
-    hold = AFTER_MOUSEDOWN_DELAY_SEC + extra_after_mousedown_sec
+    hold = tc.after_mousedown_delay_sec + extra_after_mousedown_sec
     v(f"pause {hold + ba:.3f}s (button held, no move — let game register grab)")
     pause(hold)
 
@@ -506,14 +591,14 @@ def drag_screen_to_screen(
             ix, iy = _clamp_to_client_rect(ix, iy, client_rect_screen, margin=margin)
             v(f"  step {step}/{steps} cursor ({ix}, {iy})")
             _set_cursor(ix, iy)
-            pause(move_step_sleep_sec)
+            pause(step_sleep)
 
-    pause(BEFORE_MOUSEUP_DELAY_SEC)
+    pause(tc.before_mouseup_delay_sec)
 
     # 4) Release left button at drop location.
     v(f"LEFT BUTTON UP — release at ({drop_x}, {drop_y})")
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
-    pause(POST_DRAG_DELAY_SEC)
+    pause(tc.post_drag_delay_sec)
 
 
 def _drag_slot_to_slot(
@@ -522,7 +607,7 @@ def _drag_slot_to_slot(
     dst: int,
     client_rect_screen: Tuple[int, int, int, int],
     geometry: ScaledBenchGeometry,
-    timing_scale: float = 1.0,
+    timing: BenchTimingConfig,
 ) -> None:
     """Click-drag between two bench slot centers (screen space)."""
     sx, sy = points[src]
@@ -534,7 +619,7 @@ def _drag_slot_to_slot(
         (dx, dy),
         pickup_y_offset=geometry.pickup_y_offset_px,
         drop_y_offset=geometry.drop_y_offset_px,
-        timing_scale=timing_scale,
+        timing=timing,
     )
 
 
@@ -685,6 +770,7 @@ def organize_bench(
     dry_run: bool = False,
     desired_entindex_order: Optional[List[int]] = None,
     timing_scale: float = 1.0,
+    bench_timings: Optional[Dict] = None,
 ) -> Dict:
     """
     Organize bench units by rule-based ordering.
@@ -695,6 +781,7 @@ def organize_bench(
         raise BenchOrganizerError(dep_error)
 
     ts = _clamp_bench_timing_scale(timing_scale)
+    timing = _parse_bench_timings(bench_timings, legacy_timing_scale=ts)
 
     _ensure_process_dpi_aware()
 
@@ -723,13 +810,13 @@ def organize_bench(
         original_cursor = win32api.GetCursorPos()
 
         _focus_window(hwnd)
-        if SETTLE_AFTER_FOCUS_SEC > 0:
-            time.sleep(SETTLE_AFTER_FOCUS_SEC * ts)
+        if timing.settle_after_focus_sec > 0:
+            time.sleep(timing.settle_after_focus_sec)
         try:
-            for i, (src, dst, _unit) in enumerate(move_plan):
-                _drag_slot_to_slot(points, src, dst, rect, geometry, timing_scale=ts)
-                if i < len(move_plan) - 1 and INTER_DRAG_SETTLE_SEC > 0:
-                    time.sleep(INTER_DRAG_SETTLE_SEC * ts)
+            for i, (src, dst, _moving_unit) in enumerate(move_plan):
+                _drag_slot_to_slot(points, src, dst, rect, geometry, timing=timing)
+                if i < len(move_plan) - 1 and timing.between_moves_sec > 0:
+                    time.sleep(timing.between_moves_sec)
         finally:
             # Restore mouse cursor to where user last had it.
             win32api.SetCursorPos(original_cursor)
@@ -739,7 +826,17 @@ def organize_bench(
         "moves_executed": len(move_plan),
         "diagnostics": {
             "dry_run": dry_run,
-            "timing_scale": ts,
+            "timing_scale": timing.drag_scale,
+            "bench_timings": {
+                "dragScale": timing.drag_scale,
+                "settleAfterFocusSec": timing.settle_after_focus_sec,
+                "postDragDelaySec": timing.post_drag_delay_sec,
+                "betweenMovesSec": timing.between_moves_sec,
+                "prePickupDelaySec": timing.pre_pickup_delay_sec,
+                "afterMousedownDelaySec": timing.after_mousedown_delay_sec,
+                "beforeMouseupDelaySec": timing.before_mouseup_delay_sec,
+                "dragStepSleepSec": timing.drag_step_sleep_sec,
+            },
             "window_handle": hwnd,
             "window_rect": {
                 "left": rect[0],

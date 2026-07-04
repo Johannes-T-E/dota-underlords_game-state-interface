@@ -1,14 +1,36 @@
+.bench-sorter-page {
+  height: 100%;
+  overflow: hidden;
+  min-height: 0;
+  width: 100%;
+}
+
 .bench-sorter-page__container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.bench-sorter-page__empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.bench-sorter-page__content {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 16px;
   padding: 16px;
-}
-
-.bench-sorter-page__content {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .bench-sorter-page__control-buttons {
@@ -83,6 +105,11 @@
   font-size: 13px;
 }
 
+.bench-sorter-page__actions-outer {
+  display: flex;
+  justify-content: flex-start;
+}
+
 .bench-sorter-page__actions {
   display: flex;
   gap: 8px;
@@ -93,4 +120,3 @@
     grid-template-columns: 1fr;
   }
 }
-

@@ -8,9 +8,10 @@ import { useGeneralSettings } from '@/hooks/useSettings';
 import { useHeroesDataContext } from '@/contexts/HeroesDataContext';
 import { SettingsSection } from '@/features/settings/components/SettingsSection/SettingsSection';
 import { SettingsGroup } from '@/features/settings/components/SettingsGroup/SettingsGroup';
-import { SliderInput } from '@/features/settings/components/SliderInput/SliderInput';
 import type { Unit } from '@/types';
-import { extractBenchUnits, buildTargetBench, type BenchRankDirection } from '@/utils/benchSort';
+import { DEFAULT_BENCH_ORGANIZE_TIMINGS } from '@/utils/benchOrganizeTimings';
+import { extractBenchUnits, buildTargetBench, organizeBench } from '@/utils/benchSort';
+import { BenchSorterTimingControls } from './BenchSorterTimingControls';
 import './BenchSorterPage.css';
 
 const BENCH_SLOT_COUNT = 8;
@@ -19,8 +20,10 @@ export const BenchSorterPage = () => {
   const { currentMatch, players, privatePlayerAccountId } = useAppSelector((state) => state.match);
   const { heroesData } = useHeroesDataContext();
   const { settings: generalSettings, updateSettings: updateGeneral } = useGeneralSettings();
-  const [rankDirection, setRankDirection] = useState<BenchRankDirection>('left');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const rankDirection = generalSettings.benchRankDirection;
+  const benchTimings = generalSettings.benchOrganizeTimings;
 
   const privatePlayer = useMemo(
     () => players.find((player) => player.account_id === privatePlayerAccountId) ?? null,
@@ -50,21 +53,15 @@ export const BenchSorterPage = () => {
   const executeSort = async (dryRun: boolean) => {
     setIsSubmitting(true);
     try {
-      const response = await fetch('/api/organize_bench', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          dry_run: dryRun,
-          desired_entindex_order: targetBench.map((unit) => unit.entindex),
-          timing_scale: generalSettings.benchOrganizeTimingScale,
-        }),
+      const result = await organizeBench({
+        targetBench,
+        timings: benchTimings,
+        dryRun,
       });
-      const payload = await response.json();
-      if (!response.ok || payload?.status !== 'success') {
-        throw new Error(payload?.message || payload?.error || 'Sort request failed');
-      }
-      const moves = payload?.moves_executed ?? 0;
-      console.log(dryRun ? '[Bench] Dry-run complete.' : '[Bench] Sort executed.', { moves, diagnostics: payload?.diagnostics });
+      console.log(dryRun ? '[Bench] Preview complete.' : '[Bench] Sort executed.', {
+        moves: result.moves_executed,
+        diagnostics: result.diagnostics,
+      });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Sort request failed';
       console.error('[Bench]', message, error);
@@ -79,16 +76,18 @@ export const BenchSorterPage = () => {
           <PageHeader title="Bench Sorter" icon={<IconArrowsShuffle size={18} stroke={1.8} />} />
 
           {!currentMatch || !privatePlayer ? (
-            <EmptyState
-              title="No Active Match"
-              message="Waiting for your private player state to become available."
-              showSpinner
-            />
+            <div className="bench-sorter-page__empty">
+              <EmptyState
+                title="No Active Match"
+                message="Waiting for your private player state to become available."
+                showSpinner
+              />
+            </div>
           ) : (
             <div className="bench-sorter-page__content">
               <SettingsSection
                 title="Sort Controls"
-                description="Frontend computes desired bench order and backend executes it."
+                description="Choose how units are grouped and ordered on the bench."
                 collapsible={false}
               >
                 <SettingsGroup variant="card">
@@ -97,48 +96,51 @@ export const BenchSorterPage = () => {
                     <Button
                       variant={rankDirection === 'left' ? 'primary' : 'secondary'}
                       size="small"
-                      onClick={() => setRankDirection('left')}
+                      onClick={() => updateGeneral({ benchRankDirection: 'left' })}
                     >
                       Higher rank left
                     </Button>
                     <Button
                       variant={rankDirection === 'right' ? 'primary' : 'secondary'}
                       size="small"
-                      onClick={() => setRankDirection('right')}
+                      onClick={() => updateGeneral({ benchRankDirection: 'right' })}
                     >
                       Higher rank right
                     </Button>
                   </div>
-                  <SliderInput
-                    label="Sort automation speed"
-                    value={generalSettings.benchOrganizeTimingScale}
-                    onChange={(v) =>
-                      updateGeneral({
-                        benchOrganizeTimingScale: Math.min(4, Math.max(0.25, Math.round(v * 100) / 100)),
-                      })
-                    }
-                    min={0.25}
-                    max={4}
-                    step={0.05}
-                    leftLabel="Faster"
-                    rightLabel="Slower"
-                    unit="×"
-                    showValue
-                    className="bench-sorter-page__timing-slider"
-                  />
-                  <Text variant="label" color="secondary" className="bench-sorter-page__timing-hint">
-                    Multiplies delay between each automated drag in the game client. Increase if sorting misses slots.
-                  </Text>
-                  <div className="bench-sorter-page__actions">
-                    <Button variant="secondary" size="medium" onClick={() => executeSort(true)} disabled={isSubmitting}>
-                      {isSubmitting ? 'Working...' : 'Dry-run backend'}
-                    </Button>
-                    <Button variant="primary" size="medium" onClick={() => executeSort(false)} disabled={isSubmitting}>
-                      {isSubmitting ? 'Sorting...' : 'Execute sort'}
-                    </Button>
-                  </div>
                 </SettingsGroup>
               </SettingsSection>
+
+              <SettingsSection
+                title="Timing"
+                description="Adjust how quickly units are moved. Saved automatically."
+                collapsible={false}
+              >
+                <BenchSorterTimingControls
+                  timings={benchTimings}
+                  onChange={(patch) =>
+                    updateGeneral({
+                      benchOrganizeTimings: { ...benchTimings, ...patch },
+                    })
+                  }
+                  onReset={() =>
+                    updateGeneral({
+                      benchOrganizeTimings: { ...DEFAULT_BENCH_ORGANIZE_TIMINGS },
+                    })
+                  }
+                />
+              </SettingsSection>
+
+              <div className="bench-sorter-page__actions-outer">
+                <div className="bench-sorter-page__actions">
+                  <Button variant="secondary" size="medium" onClick={() => executeSort(true)} disabled={isSubmitting}>
+                    {isSubmitting ? 'Working...' : 'Preview moves'}
+                  </Button>
+                  <Button variant="primary" size="medium" onClick={() => executeSort(false)} disabled={isSubmitting}>
+                    {isSubmitting ? 'Sorting...' : 'Execute sort'}
+                  </Button>
+                </div>
+              </div>
 
               <div className="bench-sorter-page__bench-grid">
                 <SettingsSection title="Current Bench" collapsible={false} className="bench-sorter-page__panel-section">
@@ -186,4 +188,3 @@ export const BenchSorterPage = () => {
       </MainContentTemplate>
   );
 };
-

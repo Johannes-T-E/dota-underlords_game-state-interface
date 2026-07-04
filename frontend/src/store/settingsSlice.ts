@@ -7,14 +7,19 @@ import {
   DEFAULT_SCOREBOARD_COLUMN_ORDER,
   normalizeColumnOrder,
 } from '@/features/scoreboard/scoreboardColumns';
+import type { BenchRankDirection } from '@/utils/benchSort';
+import {
+  type BenchOrganizeTimings,
+  DEFAULT_BENCH_ORGANIZE_TIMINGS,
+  clampBenchOrganizeTimings,
+} from '@/utils/benchOrganizeTimings';
+
+export type { BenchOrganizeTimings };
 
 const SETTINGS_VERSION = 2;
 
-const clampBenchOrganizeTimingScale = (value: unknown): number => {
-  if (typeof value !== 'number' || !Number.isFinite(value)) {
-    return 1;
-  }
-  return Math.min(4, Math.max(0.25, value));
+const normalizeBenchRankDirection = (value: unknown): BenchRankDirection => {
+  return value === 'right' ? 'right' : 'left';
 };
 
 export interface ScoreboardSettings {
@@ -56,8 +61,9 @@ export interface GeneralSettings {
   showPlayerRankText: boolean;
   /** Scale scoreboard rows/columns to fit the viewport without scrolling. */
   scoreboardFitToViewport: boolean;
-  /** Multiplier for bench automation delays (1 = default; higher = slower). */
-  benchOrganizeTimingScale: number;
+  benchOrganizeTimings: BenchOrganizeTimings;
+  /** Within same-hero clusters: higher rank toward left or right slot. */
+  benchRankDirection: BenchRankDirection;
 }
 
 export interface SettingsState {
@@ -124,7 +130,8 @@ const initialState: SettingsState = {
       showSynergyPips: false,
       showPlayerRankText: false,
       scoreboardFitToViewport: false,
-      benchOrganizeTimingScale: 1
+      benchOrganizeTimings: { ...DEFAULT_BENCH_ORGANIZE_TIMINGS },
+      benchRankDirection: 'left'
     }
 };
 
@@ -188,7 +195,11 @@ const validateSettings = (settings: unknown): SettingsState => {
       showSynergyPips: s.general?.showSynergyPips ?? false,
       showPlayerRankText: s.general?.showPlayerRankText ?? false,
       scoreboardFitToViewport: s.general?.scoreboardFitToViewport ?? false,
-      benchOrganizeTimingScale: clampBenchOrganizeTimingScale(s.general?.benchOrganizeTimingScale)
+      benchOrganizeTimings: clampBenchOrganizeTimings(
+        s.general?.benchOrganizeTimings,
+        (s.general as { benchOrganizeTimingScale?: number } | undefined)?.benchOrganizeTimingScale
+      ),
+      benchRankDirection: normalizeBenchRankDirection(s.general?.benchRankDirection)
     }
   };
 };
@@ -317,7 +328,8 @@ const settingsSlice = createSlice({
         showSynergyPips: false,
         showPlayerRankText: false,
         scoreboardFitToViewport: false,
-        benchOrganizeTimingScale: 1
+        benchOrganizeTimings: { ...DEFAULT_BENCH_ORGANIZE_TIMINGS },
+        benchRankDirection: 'left'
       };
       state.version = SETTINGS_VERSION;
     },
@@ -398,5 +410,9 @@ export const selectShowPlayerRankText = (state: { settings: SettingsState }) =>
   state.settings.general.showPlayerRankText ?? false;
 export const selectScoreboardFitToViewport = (state: { settings: SettingsState }) =>
   state.settings.general.scoreboardFitToViewport ?? false;
+export const selectBenchOrganizeTimings = (state: { settings: SettingsState }) =>
+  state.settings.general.benchOrganizeTimings ?? DEFAULT_BENCH_ORGANIZE_TIMINGS;
 export const selectBenchOrganizeTimingScale = (state: { settings: SettingsState }) =>
-  state.settings.general.benchOrganizeTimingScale ?? 1;
+  selectBenchOrganizeTimings(state).dragScale;
+export const selectBenchRankDirection = (state: { settings: SettingsState }) =>
+  state.settings.general.benchRankDirection ?? 'left';

@@ -18,8 +18,8 @@ import {
 } from '@tabler/icons-react';
 import { Text, StatusIndicator } from '@/components/ui';
 import { useAppSelector } from '@/hooks/redux';
-import { extractBenchUnits, buildTargetBench } from '@/utils/benchSort';
-import { selectBenchOrganizeTimingScale } from '@/store/settingsSlice';
+import { extractBenchUnits, buildTargetBench, organizeBench } from '@/utils/benchSort';
+import { selectBenchOrganizeTimings, selectBenchRankDirection } from '@/store/settingsSlice';
 import './NavigationBar.css';
 
 export interface NavigationBarProps {
@@ -34,7 +34,8 @@ export const NavigationBar = ({ className = '' }: NavigationBarProps) => {
     players: state.match.players,
     privatePlayerAccountId: state.match.privatePlayerAccountId,
   }));
-  const benchOrganizeTimingScale = useAppSelector(selectBenchOrganizeTimingScale);
+  const benchTimings = useAppSelector(selectBenchOrganizeTimings);
+  const benchRankDirection = useAppSelector(selectBenchRankDirection);
   const [isHovered, setIsHovered] = useState(false);
   const [isQuickSorting, setIsQuickSorting] = useState(false);
   const collapsed = !isHovered;
@@ -78,23 +79,15 @@ export const NavigationBar = ({ className = '' }: NavigationBarProps) => {
       console.warn('[Bench] Need at least two bench units to sort.');
       return;
     }
-    const targetBench = buildTargetBench(bench, 'left');
+    const targetBench = buildTargetBench(bench, benchRankDirection);
     setIsQuickSorting(true);
     try {
-      const response = await fetch('/api/organize_bench', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          dry_run: false,
-          desired_entindex_order: targetBench.map((u) => u.entindex),
-          timing_scale: benchOrganizeTimingScale,
-        }),
+      const result = await organizeBench({
+        targetBench,
+        timings: benchTimings,
+        dryRun: false,
       });
-      const payload = await response.json();
-      if (!response.ok || payload?.status !== 'success') {
-        throw new Error(payload?.message || payload?.error || 'Sort failed');
-      }
-      console.log('[Bench] Sort complete.', { moves: payload?.moves_executed ?? 0 });
+      console.log('[Bench] Sort complete.', { moves: result.moves_executed });
     } catch (e) {
       console.error('[Bench] Sort failed:', e instanceof Error ? e.message : e);
     } finally {
@@ -239,7 +232,7 @@ export const NavigationBar = ({ className = '' }: NavigationBarProps) => {
           <button
             type="button"
             className="navigation-bar__link"
-            title="Sort bench now (same order as Bench Sorter: higher rank left)"
+            title="Sort bench now (uses Bench Sorter settings)"
             onClick={handleQuickBenchSort}
             disabled={isQuickSorting}
           >

@@ -1,4 +1,5 @@
 import type { Unit } from '@/types';
+import type { BenchOrganizeTimings } from '@/utils/benchOrganizeTimings';
 
 export type BenchRankDirection = 'left' | 'right';
 
@@ -33,3 +34,33 @@ export const buildTargetBench = (benchUnits: Unit[], rankDirection: BenchRankDir
 
   return groups.flat();
 };
+
+export interface OrganizeBenchResult {
+  moves_executed: number;
+  diagnostics?: unknown;
+}
+
+export async function organizeBench(options: {
+  targetBench: Unit[];
+  timings: BenchOrganizeTimings;
+  dryRun: boolean;
+}): Promise<OrganizeBenchResult> {
+  const response = await fetch('/api/organize_bench', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      dry_run: options.dryRun,
+      desired_entindex_order: options.targetBench.map((unit) => unit.entindex),
+      timing_scale: options.timings.dragScale,
+      bench_timings: options.timings,
+    }),
+  });
+  const payload = await response.json();
+  if (!response.ok || payload?.status !== 'success') {
+    throw new Error(payload?.message || payload?.error || 'Sort request failed');
+  }
+  return {
+    moves_executed: payload?.moves_executed ?? 0,
+    diagnostics: payload?.diagnostics,
+  };
+}

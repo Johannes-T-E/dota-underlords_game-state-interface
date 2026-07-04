@@ -171,6 +171,7 @@ def organize_bench_endpoint():
         dry_run = bool(request_data.get('dry_run', False))
         desired_entindex_order = request_data.get('desired_entindex_order')
         timing_scale = request_data.get('timing_scale', 1.0)
+        bench_timings = request_data.get('bench_timings')
 
         if match_state.match_id is None:
             return jsonify({
@@ -197,6 +198,7 @@ def organize_bench_endpoint():
             dry_run=dry_run,
             desired_entindex_order=desired_entindex_order,
             timing_scale=timing_scale,
+            bench_timings=bench_timings,
         )
         return jsonify({
             'status': 'success',
