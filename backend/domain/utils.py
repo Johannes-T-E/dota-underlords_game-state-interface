@@ -79,4 +79,3 @@ def is_valid_new_player(gsi_public_player_state):
         gsi_public_player_state.get('losses', 0) == 0 and
         gsi_public_player_state.get('xp', 0) == 0
     )
-

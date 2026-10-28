@@ -23,7 +23,7 @@ The calibrated table ``BOARD_CELL_POINTS_CLIENT_REF`` is indexed by **(row, col)
 So **col == GSI x**, and **row == (BOARD_ROWS - 1) - GSI y** on the board.
 
 **Bench:** GSI ``y == -1``; bench slot index in automation matches **GSI x** (0 = leftmost).
-See ``backend/bench_organizer.py`` (slot indices 0–7).
+See ``backend/service/bench_organizer.py`` (slot indices 0–7).
 ---------------------------------------------------------------------------
 """
 from __future__ import annotations

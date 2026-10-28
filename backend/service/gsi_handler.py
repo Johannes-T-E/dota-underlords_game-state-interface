@@ -3,15 +3,15 @@ GSI Handler - GSI data processing and database writer
 Handles incoming GSI payloads and delegates to game_state for processing
 """
 from datetime import datetime
-from .game_state import (
+from backend.domain.game_state import (
     match_state, db, stats, db_write_queue, data_lock,
     process_and_store_gsi_public_player_state, process_and_store_gsi_private_player_state,
     emit_realtime_update, start_new_match, process_buffered_data, check_match_end,
     abandon_match, _resolve_private_player_account_id
 )
-from .utils import generate_bot_account_id, is_valid_new_player
-from .config import socketio
-from .change_detector import change_detector
+from backend.domain.utils import generate_bot_account_id, is_valid_new_player
+from backend.infrastructure.realtime import emit_event
+from backend.domain.change_detector import change_detector
 
 
 def db_writer_worker():
@@ -299,13 +299,13 @@ def process_public_player_state(gsi_public_player_state, timestamp, persist_to_d
                 change_detector.add_change(match_state.match_id, change)
             
             # Emit player_changes WebSocket event
-            socketio.emit('player_changes', {
+            emit_event('player_changes', {
                 'match_id': match_state.match_id,
                 'account_id': account_id,
                 'changes': detected_changes,
                 'timestamp': timestamp.isoformat(),
                 'gsi_emulated': match_state.gsi_emulated,
-            }, to=None)
+            })
     
     # Update previous state for next comparison
     change_detector.update_previous_state(match_state.match_id, account_id, processed_public_state)
@@ -322,11 +322,11 @@ def process_public_player_state(gsi_public_player_state, timestamp, persist_to_d
             # Send final update to frontend before resetting
             emit_realtime_update()
             # Notify frontend that match ended
-            socketio.emit('match_ended', {
+            emit_event('match_ended', {
                 'match_id': match_state.match_id,
                 'timestamp': timestamp.isoformat(),
                 'gsi_emulated': match_state.gsi_emulated,
-            }, to=None)
+            })
             # Clear change detector buffer for this match
             change_detector.clear_match(match_state.match_id)
             # Now reset the state
@@ -361,4 +361,3 @@ def process_gsi_data(gsi_payload, persist_to_db=True):
         # Emit WebSocket update if there were updates
         if any_updates and match_state.match_id:
             emit_realtime_update()
-

@@ -10,7 +10,7 @@ from typing import Dict, List, Optional, Literal, Any
 from datetime import datetime
 from pathlib import Path
 import os
-from .utils import generate_bot_account_id
+from backend.domain.utils import generate_bot_account_id
 
 
 PlayerCategory = Literal['public_player', 'private_player']
@@ -93,7 +93,7 @@ class UnderlordsDatabaseManager:
     def __init__(self, db_path: Optional[str] = None) -> None:
         # Default to parent directory if not specified
         if db_path is None:
-            db_path = os.path.join(os.path.dirname(__file__), '..', 'underlords_gsi_v5.db')
+            db_path = os.getenv('DATABASE_PATH', os.path.join(os.path.dirname(__file__), '..', '..', 'underlords_gsi_v5.db'))
         self.db_path = db_path
         self.conn = None
         self.init_database()
@@ -947,4 +947,3 @@ class UnderlordsDatabaseManager:
         """Close database connection."""
         if self.conn:
             self.conn.close()
-

@@ -8,11 +8,12 @@ import threading
 import time
 from queue import Queue
 
-from .database import UnderlordsDatabaseManager
-from .utils import generate_match_id, is_valid_new_player, get_highest_hp_player
-from .config import socketio
-from .change_detector import change_detector
-from .matchup_predictor_service import matchup_predictor_service
+from backend.infrastructure.database import UnderlordsDatabaseManager
+from backend.domain.utils import generate_match_id, is_valid_new_player, get_highest_hp_player
+from backend.infrastructure.realtime import emit_event
+from backend.domain.change_detector import change_detector
+from backend.service.matchup_predictor_service import matchup_predictor_service
+from backend.service.player_names import persona_name
 from typing import Optional, Tuple
 
 
@@ -319,7 +320,11 @@ def process_and_store_gsi_public_player_state(account_id: int, gsi_public_player
     processed_public_player_state = {
         # Basic player info
         'account_id': account_id,  # Normalized account_id (int) - bots end with "000", humans use raw account_id
-        'persona_name': gsi_public_player_state.get('persona_name'),  # Only for humans
+        'persona_name': persona_name(
+            account_id,
+            gsi_public_player_state.get('persona_name'),
+            is_bot=gsi_public_player_state.get('is_human_player') is False,
+        ),
         'bot_persona_name': gsi_public_player_state.get('bot_persona_name'),  # Only for bots
         'player_slot': gsi_public_player_state.get('player_slot'),
         'is_human_player': gsi_public_player_state.get('is_human_player'),
@@ -488,7 +493,7 @@ def emit_realtime_update():
         print(f"[MATCHUP PREDICTOR] Failed to compute prediction: {e}")
     
     # Emit immediately - broadcast to ALL connected clients!
-    socketio.emit('match_update', update_data, to=None)
+    emit_event('match_update', update_data)
 
 
 # ==========================================
@@ -502,7 +507,7 @@ def start_new_match(players_data: List[Dict], timestamp: datetime, persist_to_db
     
     # Calculate match counts for each player BEFORE creating the match
     # This ensures the count excludes the current match
-    from .utils import generate_bot_account_id
+    from backend.domain.utils import generate_bot_account_id
     player_match_counts = {}
     for player in players_data:
         is_human = player.get('is_human_player')
@@ -519,7 +524,18 @@ def start_new_match(players_data: List[Dict], timestamp: datetime, persist_to_db
     
     if persist_to_db:
         # Create match in database
-        db.create_match(match_id, players_data, timestamp)
+        named_players = [
+            {
+                **player,
+                'persona_name': persona_name(
+                    player.get('account_id'),
+                    player.get('persona_name'),
+                    is_bot=player.get('is_human_player') is False,
+                ),
+            }
+            for player in players_data
+        ]
+        db.create_match(match_id, named_players, timestamp)
     
     # Reset active in-memory state while preserving pre-match buffers.
     # Buffers are consumed right after this by process_buffered_data(...).
@@ -609,7 +625,7 @@ def abandon_match(match_id: str, timestamp: datetime, reason: str = "Manual", pe
     change_detector.clear_match(match_id)
     
     # Emit update to connected clients
-    socketio.emit('match_abandoned', {
+    emit_event('match_abandoned', {
         'match_id': match_id,
         'reason': reason,
         'timestamp': timestamp.isoformat(),
@@ -777,4 +793,3 @@ def process_buffered_data(match_id: str, timestamp: datetime, persist_to_db: boo
     for account_id, processed_state in match_state.latest_processed_public_player_states.items():
         change_detector.update_previous_state(match_id, account_id, processed_state)
         print(f"[BUFFER] Initialized change detector previous state for player {account_id}, match {match_id}")
-

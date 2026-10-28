@@ -1,68 +1,29 @@
-# Development Setup Guide
+# Development setup
 
-## Quick Start
+## Docker Compose (recommended)
 
-### Option 1: Run Both Servers Manually
+From the project root:
 
-**Terminal 1 - Backend:**
 ```bash
-python app.py
+docker compose up --build -d
 ```
 
-**Terminal 2 - Frontend:**
+Open http://localhost:3000. API documentation is available at http://localhost:3000/docs. Run `docker compose down` to stop the application.
+
+## Local development with Vite HMR
+
+Install Python dependencies from the project root (`pip install -r requirements.txt`), then start the backend:
+
+```bash
+python -m backend.app
+```
+
+In another terminal:
+
 ```bash
 cd frontend
+npm ci
 npm run dev
 ```
 
-Then open http://localhost:5173 in your browser.
-
-### Option 2: Production Mode
-
-Build and run from a single server:
-
-```bash
-cd frontend
-npm run build
-cd ..
-set PRODUCTION=true  # On Windows CMD
-# OR
-$env:PRODUCTION="true"  # On Windows PowerShell
-# OR  
-export PRODUCTION=true  # On Linux/Mac
-
-python app.py
-```
-
-Then open http://localhost:3000 in your browser.
-
-## First Time Setup
-
-1. Install Python dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-2. Install frontend dependencies:
-```bash
-cd frontend
-npm install
-```
-
-## Troubleshooting
-
-### CORS Errors in Development
-Make sure the Flask server is running on port 3000 and the React dev server is running on port 5173. The Vite config includes a proxy that forwards requests to Flask.
-
-### Build Errors
-If you get TypeScript errors, make sure all dependencies are installed:
-```bash
-cd frontend
-npm install
-```
-
-### WebSocket Connection Issues
-- Check that Flask-SocketIO is installed: `pip install flask-socketio`
-- Verify the backend is running on port 3000
-- Check browser console for connection errors
-
+Open http://localhost:5173. Vite proxies `/api`, `/upload` and `/socket.io` to the backend on port 3000. Run the backend directly on Windows if you need host desktop control for the bench organizer.

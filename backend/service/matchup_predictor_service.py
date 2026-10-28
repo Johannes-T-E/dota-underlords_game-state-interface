@@ -3,14 +3,14 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-from .matchup_predictor import DeterministicMatchupPredictor
+from backend.domain.matchup_predictor import DeterministicMatchupPredictor
 
 
 class MatchupPredictorService:
     MAX_FUTURE_ROUNDS = 25
 
     def __init__(self) -> None:
-        model_path = Path(__file__).resolve().parent / "matchup_predictor" / "models.json"
+        model_path = Path(__file__).resolve().parents[1] / "domain" / "matchup_predictor" / "models.json"
         self.predictor = DeterministicMatchupPredictor.from_model_file(model_path)
 
     @staticmethod

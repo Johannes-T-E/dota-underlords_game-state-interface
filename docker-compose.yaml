@@ -1,0 +1,33 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_PATH: /data/underlords_gsi_v5.db
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      AUTO_ABANDON_STALE_MATCHES: ${AUTO_ABANDON_STALE_MATCHES:-true}
+      AUTO_ABANDON_STALE_MATCH_MINUTES: ${AUTO_ABANDON_STALE_MATCH_MINUTES:-60}
+    volumes:
+      - ./underlords_data:/data
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+      - frontend
+
+volumes:
+  underlords_data:
