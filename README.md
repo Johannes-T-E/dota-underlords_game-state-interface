@@ -31,9 +31,9 @@ A real-time scoreboard and match tracker for Dota Underlords using the Game Stat
 
 ### Backend
 - Python 3.x
-- Flask 3.1.2 + Flask-SocketIO 5.5.1
-- Flask-CORS 6.0.1
+- FastAPI + Uvicorn + python-socketio (ASGI)
 - SQLite database
+- Docker Compose + separate frontend nginx and gateway nginx containers
 
 ### Frontend
 - React 19.2.0
@@ -43,7 +43,34 @@ A real-time scoreboard and match tracker for Dota Underlords using the Game Stat
 - Socket.IO Client 4.8.1 (WebSocket)
 - Vite 7.1.7 (build tool)
 
-## Setup
+## Quick start with Docker Compose
+
+```bash
+docker compose up --build -d
+```
+
+Open `http://localhost:3000`. Dota Underlords sends GSI to `http://localhost:3000/upload` (the game's configured port). Compose starts three containers: `backend` (FastAPI), `frontend` (React build served by its own nginx), and `nginx` (the public reverse proxy on port 3000). The gateway forwards `/api/*`, `/upload`, `/docs`, `/openapi.json` and `/socket.io/` to the backend, and everything else to the frontend. API docs: `http://localhost:3000/docs`. Use `docker compose logs -f` to inspect services and `docker compose down` to stop them. SQLite data persists in the `underlords_data` Docker volume.
+
+### Enable GSI in the game
+
+Starting Compose does **not** configure the game. Underlords reads GSI configs from `game/dac/cfg/gamestate_integration/`, **not** directly from `game/dac/cfg/`. Its bundled `gamestate_integration_sample.cfg` has `public_player_state` and `private_player_state` commented out, so it cannot supply this app's match data.
+
+1. Start the services with `docker compose up --build -d`.
+2. Copy `documentation/gamestate_integration_underlords_interface.cfg` to the game's `game/dac/cfg/gamestate_integration/` directory. Keep the filename and `.cfg` extension unchanged. On macOS with the default Steam installation, run this **from the project root**:
+
+   ```bash
+   mkdir -p "$HOME/Library/Application Support/Steam/steamapps/common/Underlords/game/dac/cfg/gamestate_integration"
+   cp documentation/gamestate_integration_underlords_interface.cfg "$HOME/Library/Application Support/Steam/steamapps/common/Underlords/game/dac/cfg/gamestate_integration/"
+   ```
+
+   On Windows or with a non-default Steam library, use **Steam → Underlords → Manage → Browse local files** to find the game directory, then create `game/dac/cfg/gamestate_integration/` there and copy the same file into it. If the game is running on another computer, edit its copy of the config: replace `127.0.0.1` in `uri` with the LAN IP of the machine running Docker.
+3. **Fully quit and restart Underlords** to load the config. Enter a match (a bot match works). Open `http://localhost:3000/api/status` and refresh it: `total_updates` should grow and `last_update` should change. The frontend is at `http://localhost:3000`.
+
+If `total_updates` stays at zero, check `docker compose logs -f nginx` for `POST /upload`. If there are none, check the game's `game/dac/console.log` for `Loading Game State Integration: gamestate_integration_underlords_interface.cfg`; if that line is missing, the config is in the wrong directory or the game was not restarted. A browser `GET /upload` returns 405 by design and does not test GSI delivery.
+
+The Windows-only bench organizer uses desktop input APIs and cannot control the host game from a Linux container. Run the backend directly on Windows to use that feature.
+
+## Setup (without Docker)
 
 ### 1. Configure Environment Variables (Optional)
 
@@ -86,16 +113,11 @@ This launcher will:
 
 If you prefer launching processes manually, run both servers in separate terminals:
 
-**Terminal 1 - Flask Backend:**
+**Terminal 1 - FastAPI Backend:**
 ```bash
 python -m backend.app
 ```
-Or from the project root:
-```bash
-cd backend
-python app.py
-```
-This starts the Flask server on `http://localhost:3000`
+This starts the FastAPI server on `http://localhost:3000`
 
 **Terminal 2 - React Frontend:**
 ```bash
@@ -108,29 +130,7 @@ Open `http://localhost:5173` in your browser for the React app with Hot Module R
 
 ### Production Mode
 
-Build the React app and serve it from Flask:
-
-```bash
-# Build the React app
-cd frontend
-npm run build
-cd ..
-
-# Run Flask with production flag
-PRODUCTION=true python -m backend.app
-```
-Or on Windows:
-```bash
-set PRODUCTION=true
-python -m backend.app
-```
-Or on PowerShell:
-```bash
-$env:PRODUCTION="true"
-python -m backend.app
-```
-
-Open `http://localhost:3000` in your browser.
+Use `docker compose up --build -d` to build and run the React frontend, FastAPI backend and gateway nginx together on port 3000.
 
 ## Project Structure
 
@@ -139,13 +139,13 @@ underlords_gsi_unified/
 ├── backend/                    # Python backend
 │   ├── __init__.py
 │   ├── app.py                  # Main application entry point
-│   ├── config.py               # Configuration and Flask setup
-│   ├── database.py             # Database management and queries
-│   ├── game_state.py           # Game state management, match lifecycle, combat tracking
-│   ├── gsi_handler.py          # GSI data processing, validation, and DB writer thread
-│   ├── change_detector.py      # Change detection system
-│   ├── routes.py               # API routes, build endpoints, and WebSocket handlers
-│   └── utils.py                # Utility functions
+│   ├── config.py               # Runtime settings
+│   ├── socket_events.py        # Client Socket.IO event handlers
+│   ├── startup.py              # Stale-match cleanup at startup
+│   ├── api/                    # FastAPI routers (system, matches, builds, bench, GSI)
+│   ├── domain/                 # Game state, changes, board coordinates, prediction
+│   ├── infrastructure/         # SQLite database and Socket.IO transport
+│   └── service/                # GSI processing, bench automation, prediction service
 ├── frontend/                   # React frontend
 │   ├── src/
 │   │   ├── components/         # Shared React components
@@ -211,7 +211,7 @@ underlords_gsi_unified/
 │   │       ├── abilities.json
 │   │       ├── dac_abilities_english.json
 │   │       └── items_english.json
-│   ├── dist/                   # Production build output
+│   ├── dist/                   # Production build output (served by frontend nginx)
 │   ├── package.json
 │   ├── vite.config.ts          # Vite configuration with proxy settings
 │   └── tsconfig.json           # TypeScript configuration
@@ -452,10 +452,10 @@ The Settings drawer slides in as an overlay panel with category-based navigation
 ## Development Notes
 
 ### CORS Configuration
-In development mode, Flask is configured to allow CORS from `http://localhost:5173` (Vite dev server). The backend runs on port 3000 and accepts GSI data from the game.
+For local development, FastAPI accepts requests from `http://localhost:5173` (Vite dev server). The backend runs on port 3000 and accepts GSI data from the game.
 
 ### Proxy Configuration
-The Vite dev server proxies API requests (`/api`), WebSocket connections (`/socket.io`), and the GSI endpoint (`/upload`) to Flask on port 3000. This allows the frontend dev server to communicate with the backend seamlessly.
+The Vite dev server proxies API requests (`/api`), Socket.IO connections (`/socket.io`), and the GSI endpoint (`/upload`) to FastAPI on port 3000.
 
 ### Hot Module Replacement
 In development mode, the React app supports HMR for instant feedback on code changes.
@@ -518,16 +518,17 @@ cd frontend
 npm run build
 ```
 
-This creates an optimized production build in `frontend/dist/` that Flask can serve.
+This creates an optimized production build in `frontend/dist/`; the Compose frontend image builds and serves it automatically.
 
 ## Environment Variables
 
 All environment variables can be set in a `.env` file in the project root (see `.env.example`).
 
-- `DEBUG` - Enable Flask debug mode (default: `false`)
-- `PRODUCTION` - Enable production mode to serve React build (default: `false`)
-- `SECRET_KEY` - Flask secret key
+- `DEBUG` - Enable Socket.IO debug logging (default: `false`)
 - `LOG_LEVEL` - Logging level (default: `INFO`)
+- `DATABASE_PATH` - SQLite file path (default: `underlords_gsi_v5.db` in the project root; Compose uses `/data/underlords_gsi_v5.db`)
+- `AUTO_ABANDON_STALE_MATCHES` - Close stale in-progress matches at startup (default: `true`)
+- `AUTO_ABANDON_STALE_MATCH_MINUTES` - Stale match age threshold (default: `60`)
 
 ## License
 

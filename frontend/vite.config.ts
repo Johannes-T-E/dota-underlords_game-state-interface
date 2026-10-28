@@ -13,12 +13,12 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      // Proxy API requests to Flask backend
+      // Proxy API requests to the local FastAPI backend
       '/api': {
         target: 'http://localhost:3000',
         changeOrigin: true,
       },
-      // Proxy WebSocket connections to Flask backend
+      // Proxy Socket.IO connections to the local backend
       '/socket.io': {
         target: 'http://localhost:3000',
         ws: true,
@@ -36,4 +36,3 @@ export default defineConfig({
     emptyOutDir: true,
   },
 })
-

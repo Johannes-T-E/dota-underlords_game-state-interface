@@ -36,7 +36,7 @@ except ImportError:
     print("This script requires pywin32 (win32api, win32con, win32gui).", file=sys.stderr)
     sys.exit(1)
 
-from backend.bench_organizer import (  # noqa: E402
+from backend.service.bench_organizer import (  # noqa: E402
     BenchOrganizerError,
     _ensure_process_dpi_aware,
     _find_main_underlords_hwnd,
@@ -134,7 +134,7 @@ def main() -> None:
 
     _cl, _ct, _cr, cb_end = win32gui.GetClientRect(game_hwnd)
     ref_h = cb_end - _ct
-    print("\n--- Paste into backend/board_cells.py ---\n")
+    print("\n--- Paste into backend/domain/board_cells.py ---\n")
     print(f"BOARD_CELLS_REFERENCE_CLIENT_HEIGHT_PX = {ref_h}  # client height when you captured (bottom of GetClientRect)")
 
     print("\nDone.")

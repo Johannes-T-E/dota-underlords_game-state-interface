@@ -23,7 +23,7 @@ export const PlayerNameDisplay = ({
   
   const longNameLength = 18;
 
-  let fullName: string | undefined = personaName || translatedBotName || botPersonaName;
+  const fullName = personaName || translatedBotName || botPersonaName || 'Unknown player';
   let shortName: string | undefined;
   
   if (fullName && fullName.length > longNameLength) {
@@ -42,4 +42,3 @@ export const PlayerNameDisplay = ({
     </span>
   );
 };
-

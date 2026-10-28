@@ -1,6 +1,6 @@
-# Standalone Matchup Predictor
+# Matchup Predictor
 
-Copy this whole folder to another project.
+Deterministic predictor and precomputed model tables used by the backend.
 
 ## Files
 - `predictor.py`: standalone deterministic predictor implementation.
@@ -10,9 +10,9 @@ Copy this whole folder to another project.
 ## Usage
 ```python
 from pathlib import Path
-from standalone_matchup_predictor.predictor import DeterministicMatchupPredictor
+from backend.domain.matchup_predictor import DeterministicMatchupPredictor
 
-root = Path("standalone_matchup_predictor")
+root = Path("backend/domain/matchup_predictor")
 predictor = DeterministicMatchupPredictor.from_model_file(root / "models.json")
 
 result = predictor.predict_matchups(
@@ -24,8 +24,5 @@ result = predictor.predict_matchups(
 print(result.known, result.tier, result.reason, result.prediction)
 ```
 
-## Regenerate models from current DB
-Run from repo root:
-```powershell
-py -3 standalone_matchup_predictor/build_models.py
-```
+`build_models.py` requires the external `comprehensive_round_predictor` training module;
+the checked-in `models.json` is used at runtime.

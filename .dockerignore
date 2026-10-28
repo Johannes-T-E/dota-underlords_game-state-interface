@@ -1,0 +1,15 @@
+.git
+.idea
+.venv
+__pycache__
+*.pyc
+*.db
+*.sqlite*
+.env
+frontend/node_modules
+frontend/dist
+frontend/.vite
+dev_log_img
+documentation
+function testing
+scripts

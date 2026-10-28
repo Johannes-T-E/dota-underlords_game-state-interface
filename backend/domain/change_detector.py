@@ -501,4 +501,3 @@ class ChangeDetector:
 
 # Global instance
 change_detector = ChangeDetector()
-
